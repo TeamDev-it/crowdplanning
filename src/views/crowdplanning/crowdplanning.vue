@@ -3,7 +3,7 @@ import CrowdplanningHeader from '@/components/crowdplanningHeader/crowdplanningH
 
 <template>
     <div id="crowdplanning">
-        <crowdplanning-header v-if="plansGroup"></crowdplanning-header>
+        <crowdplanning-header v-if="plansGroupRoot"></crowdplanning-header>
     </div>
 </template>
 <script lang="ts" src="./crowdplanning.ts" />

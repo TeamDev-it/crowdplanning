@@ -11,7 +11,7 @@ import { MessageService } from "vue-mf-module";
 })
 export default class Crowdplanning extends Vue {
     type = "PLANS";
-    plansGroup: server.Group | undefined = undefined;
+    plansGroupRoot: server.Group | undefined = undefined;
     tasks: server.Task[] = [];
     currentUser: server.Myself | null = null;
 
@@ -20,10 +20,10 @@ export default class Crowdplanning extends Vue {
     }
 
     private async getData(): Promise<void> {
-        this.plansGroup = (await tasksService.getGroups()).find(g => g.taskType.toUpperCase() === this.type.toUpperCase());
+        this.plansGroupRoot = (await tasksService.getGroups()).find(g => g.taskType.toUpperCase() === this.type.toUpperCase());
 
-        if (this.plansGroup?.id)
-            this.tasks = await tasksService.getTasks(this.plansGroup?.id);
+        if (this.plansGroupRoot?.id)
+            this.tasks = await tasksService.getTasks(this.plansGroupRoot?.id);
     }
 
     hasPermission(permission: string): boolean {
