@@ -1,7 +1,9 @@
 import { ModuleInitializer, menuType } from "vue-mf-module";
 import { crowdplanningStore } from "./store";
+import { CONFIGURATION } from "./configuration";
 
 declare let __webpack_public_path__: string;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
 __webpack_public_path__ = process.env.BASE_URL;
 
 export default ModuleInitializer({
@@ -23,4 +25,7 @@ export default ModuleInitializer({
     },
     routes: []
 });
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+async function registerComponents() {}
 
