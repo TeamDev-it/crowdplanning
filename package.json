@@ -3,17 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build --target lib src/libMain.ts ",
+    "watch": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build --watch src/libMain.ts",
+    "builddev": "vue-cli-service build src/libMain.ts --mode development"
   },
   "dependencies": {
-    "core-js": "^3.8.3",
+    "axios": "0.27.2",
+    "blueimp-md5": "^2.19.0",
+    "core-js": "^3.23.1",
+    "qs": "^6.10.5",
+    "tiny-emitter": "2.1.0",
+    "ts-md5": "1.2.11",
     "vue": "^2.6.14",
-    "vue-class-component": "^7.2.3",
+    "vue-class-component": "^7.2.6",
+    "vue-mf-module": "0.3.11",
     "vue-property-decorator": "^9.1.2",
-    "vue-router": "^3.5.1",
-    "vuex": "^3.6.2"
+    "vue-router": "^3.5.4",
+    "vuex": "^3.6.2",
+    "vuex-typed-store": "1.1.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.4.0",
@@ -29,7 +36,8 @@
     "eslint-plugin-vue": "^8.0.3",
     "less": "^4.0.0",
     "less-loader": "^8.0.0",
-    "typescript": "~4.5.5",
+    "style-loader": "^2.0.0",
+    "typescript": "~4.7.3",
     "vue-template-compiler": "^2.6.14"
   },
   "eslintConfig": {
