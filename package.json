@@ -1,11 +1,11 @@
 {
-  "name": "wt_module_crowdplanning",
+  "name": "crowdplanning",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build --target lib src/libMain.ts ",
-    "watch": "export NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build --watch src/libMain.ts",
-    "builddev": "vue-cli-service build src/libMain.ts --mode development"
+    "build": "vue-cli-service build --target lib src/libMain.ts ",
+    "watch": "vue-cli-service build --watch --target lib src/libMain.ts",
+    "builddev": "vue-cli-service build --target lib src/libMain.ts --mode development"
   },
   "dependencies": {
     "axios": "0.27.2",

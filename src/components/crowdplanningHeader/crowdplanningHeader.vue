@@ -1,7 +1,18 @@
 <template>
-    <header v-if="group">
-
-    </header>
+  <header>
+    <div>
+      <div class="search">
+        <input type="text" :placeholder="$t(`task.search`, 'cerca')" v-model.trim="searchedValue" />
+      </div>
+    </div>
+    <div class="header-content">
+      <div class="btn">
+        <button class="square success">
+          <i class="ti ti-plus"></i>
+        </button>
+      </div>
+    </div>
+  </header>
 </template>
 
 <script lang="ts" src="./crowdplanningHeader.ts" />

@@ -1,8 +1,10 @@
 <template>
-    <div></div>
+    <div class="item">
+        <span class="text">{{ value.name }}</span>
+    </div>
 </template>
 
-<style lang="ts" src="./crowdplanningGroupsItem.ts" />
+<script lang="ts" src="./crowdplanningGroupsItem.ts" />
 
 <style lang="less" scoped>
 @import url(./crowdplanningGroupsItem.less);

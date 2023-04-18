@@ -7,7 +7,8 @@ import { MessageService } from "vue-mf-module";
 @Component({
     components: {
         CrowdplanningHeader
-    }
+    },
+    name: "crowdplanning-component"
 })
 export default class Crowdplanning extends Vue {
     type = "PLANS";
@@ -17,6 +18,8 @@ export default class Crowdplanning extends Vue {
 
     async mounted() {
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
+
+        await this.getData();
     }
 
     private async getData(): Promise<void> {

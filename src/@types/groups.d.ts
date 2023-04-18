@@ -9,5 +9,6 @@ declare namespace server {
         taskType: string;
         roles: string[];
         visibleroles: string[];
+        public: boolean;
     }
 }

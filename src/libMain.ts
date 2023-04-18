@@ -1,6 +1,7 @@
 import { ModuleInitializer, menuType } from "vue-mf-module";
 import { crowdplanningStore } from "./store";
 import { CONFIGURATION } from "./configuration";
+import { routes } from "./router";
 
 declare let __webpack_public_path__: string;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
@@ -12,20 +13,15 @@ export default ModuleInitializer({
             description: "Crowdplanning",
             name: "Crowdplanning",
             hidden: () => false,
-            icon: "",
+            icon: "<i class='ti ti-file-like'></i>",
             class: "main",
             routeName: "crowdplanning",
             featureflags: []
         }, { section: menuType.drawer });
 
         mainstore.registerModule(crowdplanningStore.PREFIX, crowdplanningStore);
-        await registerComponents();
 
         Object.assign(CONFIGURATION, configuration || {});
     },
-    routes: []
+    routes
 });
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-async function registerComponents() {}
-

@@ -1,9 +1,10 @@
-
-import CrowdplanningHeader from '@/components/crowdplanningHeader/crowdplanningHeader';
-
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <div id="crowdplanning">
-        <crowdplanning-header v-if="plansGroupRoot"></crowdplanning-header>
+    <div id="crowdplanning" :class="{fullscreen: !currentUser}">
+        <crowdplanning-header />
+        <div class="crowdplanning-content">
+
+        </div>
     </div>
 </template>
 <script lang="ts" src="./crowdplanning.ts" />

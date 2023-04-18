@@ -1,7 +1,17 @@
 #crowdplanning {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: 60px 1fr;
-    height: 100%;
-    overflow: hidden;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 60px 1fr;
+  height: 100%;
+  overflow: hidden;
+
+  &.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    background-color: var(--white);
+  }
 }

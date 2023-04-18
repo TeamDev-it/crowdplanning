@@ -5,13 +5,31 @@ console.log(__dirname);
 console.log('ENV:' + process.env.NODE_ENV);
 var isDevelopment = process.env.NODE_ENV == 'development';
 
+class ModuleIdPrefixer {
+  constructor(prefix) {
+    this.prefix = prefix;
+  }
+
+  apply(compiler) {
+    compiler.hooks.compilation.tap('ModuleIdPrefixer', (compilation) => {
+      compilation.hooks.afterOptimizeModuleIds.tap('ModuleIdPrefixer', (modules) => {
+        for (var mod of modules) {
+          if (mod.id && mod.id.match(/\.\/src\//))
+            mod.id = this.prefix + mod.id;
+        }
+      });
+    });
+  }
+}
+
 var plugins = [
   new webpack.DefinePlugin({
     'process.env': {
       NODE_ENV: process.env.NODE_ENV,
       BASE_URL: process.env.BASE_URL
     }
-  })
+  }),
+  new ModuleIdPrefixer("module:crowdplanning")
 ];
 
 module.exports = {
@@ -26,6 +44,7 @@ module.exports = {
       }
     },
     output: {
+      hashFunction: "sha256",
       filename: '[name].js',
       chunkFilename: '[name].js',
       libraryTarget: 'umd'

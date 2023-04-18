@@ -8,4 +8,4 @@ declare namespace locations {
         altitude: number;
         wkid: number;
     }
-}
+}   

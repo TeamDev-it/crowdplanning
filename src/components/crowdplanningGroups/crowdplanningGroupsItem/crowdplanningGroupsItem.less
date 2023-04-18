@@ -1,0 +1,21 @@
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 270px;
+    width: 270px;
+
+    .text {
+        text-transform: uppercase;
+    }
+}
+
+@media(max-width: var(--low-res-tablet-max-width)) {
+    .item {
+        width: fit-content
+    }
+
+    .text {
+        padding: 0.5rem 2 rem;
+    }
+}

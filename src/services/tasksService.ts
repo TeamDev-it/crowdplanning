@@ -7,14 +7,14 @@ class TasksService extends baseRestService {
         this.baseUrl = () => CONFIGURATION.TasksServiceUri;
     }
 
-    async getGroups(includeVisible = false, autodefault = true): Promise<server.Group[]> {
-        const result = (await this.Get<server.Group[]>('/d/groups', { includeVisible })) || [];
+    async getGroups(autodefault = true): Promise<server.Group[]> {
+        const result = (await this.Get<server.Group[]>(`/d/groups/public?workspaceid=${CONFIGURATION.workspaceId}`)) || [];
 
         if (autodefault) {
             for (const group of result) {
                 const defaultGroup = Object.assign({ default: true }, group);
                 defaultGroup.children = [];
-                group.children.splice(0, 0, defaultGroup);
+                group.children?.splice(0, 0, defaultGroup);
             }
         }
 

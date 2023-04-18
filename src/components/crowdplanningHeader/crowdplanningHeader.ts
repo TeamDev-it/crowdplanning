@@ -1,14 +1,19 @@
 import Component from "vue-class-component";
 import Vue from "vue";
-import { Prop } from "vue-property-decorator";
+import { store } from "@/store";
 
 @Component({})
 export default class CrowdplanningHeader extends Vue {
-    @Prop()
-    group!: server.Group;
+    get searchedValue(): string {
+        return store.getters.crowdplanning.getSearchedValue();
+    }
+
+    set searchedValue(value: string) {
+        store.actions.crowdplanning.setSearchedValue(value);
+    }
 
     hasPermission(permission: string): boolean {
-        return this.$can(`${this.group.taskType}.${permission}`);
+        return this.$can(`PLANS.${permission}`);
     }
 
     async addTask(): Promise<void> {
