@@ -6,6 +6,6 @@
 
 <script lang="ts" src="./crowdplanningHeader.ts" />
 
-<style lang="less">
+<style lang="less" scoped>
 @import url(./crowdplanningHeader.less);
 </style>

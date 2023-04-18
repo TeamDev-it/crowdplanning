@@ -2,21 +2,39 @@ import Vuex, { ActionTree, GetterTree, Store } from 'vuex'
 import { CreateTypedStoreProxy } from 'vuex-typed-store'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CrowdplanningStoreModel {}
+export interface CrowdplanningStoreModel {
+  selectedCategory: server.Group | null
+}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CrowdplanningStoreGetters {} 
+export interface CrowdplanningStoreGetters {
+  getSelectedCategory(): server.Group | null;
+} 
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface CrowdplanningStoreActions {}
+export interface CrowdplanningStoreActions {
+  setSelectedCategory(value: server.Group | null): void;
+}
 
 export const crowdplanningStore = {
   PREFIX: "crowdplanning",
   namespaced: true,
-  state: {} as CrowdplanningStoreModel,
-  getters: {} as GetterTree<CrowdplanningStoreModel, CrowdplanningStoreModel>,
-  mutations: {},
-  actions: {} as ActionTree<CrowdplanningStoreModel, unknown>
+  state: {
+    selectedCategory: null
+  } as CrowdplanningStoreModel,
+  getters: {
+    getSelectedCategory: (state) => state.selectedCategory,
+  } as GetterTree<CrowdplanningStoreModel, CrowdplanningStoreModel>,
+  mutations: {
+    SET_SELECTED_CATEGORY(state: CrowdplanningStoreModel, model: server.Group) {
+      state.selectedCategory = model;
+    }
+  },
+  actions: {
+    setSelectedCategories(context, model: server.Group): void {
+      context.commit("SET_SELECTED_CATEGORY", model);
+    }
+  } as ActionTree<CrowdplanningStoreModel, unknown>
 };
 
 interface StoreModel {

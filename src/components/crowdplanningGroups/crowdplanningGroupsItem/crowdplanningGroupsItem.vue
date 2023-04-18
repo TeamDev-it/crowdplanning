@@ -4,6 +4,6 @@
 
 <style lang="ts" src="./crowdplanningGroupsItem.ts" />
 
-<style lang="less">
+<style lang="less" scoped>
 @import url(./crowdplanningGroupsItem.less);
 </style>

@@ -7,6 +7,6 @@ import CrowdplanningHeader from '@/components/crowdplanningHeader/crowdplanningH
     </div>
 </template>
 <script lang="ts" src="./crowdplanning.ts" />
-<style lang="less">
+<style lang="less" scoped>
 @import url(./crowdplanning.less);
 </style>

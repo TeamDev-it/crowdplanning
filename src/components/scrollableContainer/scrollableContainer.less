@@ -1,0 +1,17 @@
+.scrollable-container {
+  display: flex;
+  align-items: flex-start;
+
+  .scrollable-content {
+    display: flex;
+    flex: 1;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* F */
+  }
+
+  .scrollable-content::-webkit-scrollbar {
+    display: none;
+  }
+}
