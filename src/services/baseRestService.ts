@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import Axios, { AxiosInstance, AxiosPromise, AxiosResponse, AxiosBasicCredentials, AxiosRequestConfig } from "axios";
 import Qs from "qs";
 import { MessageService } from "vue-mf-module";

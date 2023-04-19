@@ -1,6 +1,9 @@
 <template>
   <div class="group-list">
-    <crowdplanning-groups-item v-for="category in categories" :key="category.id" :value="category" :selectedCategory="selectedCategory" />
+    <div class="item" @click="$event => selectedCategory = null" :class="{active: !selectedCategory}">
+      <span class="text">{{ $t("plans.groups.see_all", "vedi tutto").toUpperCase() }}</span>
+    </div>
+    <crowdplanning-groups-item v-for="group in groups" :key="group.id" :value="group" :selectedCategory="selectedCategory" @click.native="$event => selectedCategory = group"/>
   </div>
 </template>
 

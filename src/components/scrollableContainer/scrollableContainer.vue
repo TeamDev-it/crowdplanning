@@ -1,10 +1,14 @@
 <template>
-    <div class="scrollable-container">
-        <button ref="left" class="scroll-left-btn"></button>
+    <div class="scrollable-container" v-show="scrollableContent">
+        <div class="scroll left-btn" v-if="isLeftScrollButtonVisible" @click="scroll('left')">
+            <i class="ti ti-chevron-left"></i>
+        </div>
         <div class="scrollable-content" ref="scrollableContent">
             <slot></slot>
         </div>
-        <button ref="right" class="scroll-right-btn"></button>
+        <div class="scroll right-btn" v-if="isRightScrollButtonVisible" @click="scroll('right')">
+            <i class="ti ti-chevron-right"></i>
+        </div>
     </div>
 </template>
 

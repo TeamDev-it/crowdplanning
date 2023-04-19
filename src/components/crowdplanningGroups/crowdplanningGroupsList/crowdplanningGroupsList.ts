@@ -10,15 +10,19 @@ import { store } from "@/store";
         CrowdplanningGroupsItem
     }
 })
-export default class CrowdPlanningGroupList extends Vue {
+export default class CrowdplanningGroupList extends Vue {
     @Prop({required: true})
-    group!: server.Group;
+    groups!: server.Group[];
+
+    mounted() {
+        console.log("groups: ", this.groups)
+    }
+
+    set selectedCategory(value: server.Group | null) {
+        store.actions.crowdplanning.setSelectedCategory(value);
+    }
 
     get selectedCategory(): server.Group | null {
         return store.getters.crowdplanning.getSelectedCategory();
-    }
-
-    get categories(): server.Group[] {
-        return this.group.children;
     }
 }

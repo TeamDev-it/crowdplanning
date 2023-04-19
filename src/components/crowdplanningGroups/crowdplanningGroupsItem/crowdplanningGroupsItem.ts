@@ -7,5 +7,6 @@ export default class CrowdplanningGroupsItem extends Vue {
     @Prop({required: true})
     value!: server.Group;
 
-
+    @Prop({required: true})
+    selectedCategory!: server.Group | null;
 }

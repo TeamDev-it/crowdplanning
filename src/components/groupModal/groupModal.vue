@@ -2,14 +2,14 @@
   <div class="modal taskgroup">
     <header>
       <h2>{{ $t('plans.group.create.newGroup', 'Crea una nuova categoria') }}</h2>
-      <button class="square none" @click="$event => close()">
+      <button class="square none" @click="_$event => close()">
         <i class="ti ti-x"></i>
       </button>
     </header>
     <section>
       <div class="area">
         <label>{{ $t(`task.group.create.shortName`, 'nome breve del gruppo') }}</label>
-        <input :disabled="value.data.default" v-model="value.data.name" required="true" :placeholder="$t('task.group.create.placeholder', 'inserisci un nome per il tuo gruppo')" v-validate="(errs: any, a: any) => setError('title', errs)" />
+        <input :disabled="value.data.default" v-model="value.data.name" required="true" :placeholder="$t('task.group.create.placeholder', 'inserisci un nome per il tuo gruppo')" v-validate="(errs, _a) => setError('title', errs)" />
       </div>
       <div class="area">
         <label>{{ $t(`task.group.create.description`, 'descrizione breve del gruppo') }}</label>

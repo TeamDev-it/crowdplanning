@@ -5,13 +5,49 @@ type ScrollDirection = 'left' | 'right';
 
 @Component
 export default class ScrollableContainer extends Vue {
-    scrollableContent: HTMLDivElement = this.$refs.scrollableContent as HTMLDivElement;
+    private scrollAmount = 0;
+    private unitScrollAmount = 200;
 
+    scrollableContent = {} as HTMLDivElement;
+
+    get isLeftScrollButtonVisible(): boolean {
+        return this.scrollAmount >= this.unitScrollAmount;
+    }
+
+    get isRightScrollButtonVisible(): boolean {
+        if (this.scrollableContent)
+            return this.scrollAmount < this.scrollableContent.scrollWidth - this.scrollableContent.clientWidth;
+
+        return true;
+    }
+
+    mounted() {
+        this.scrollableContent = this.$refs.scrollableContent as HTMLDivElement;
+    }
+ 
     scroll(scrollDirection: ScrollDirection): void {
         if (scrollDirection === "left") {
-            this.scrollableContent.scrollLeft += -1 * 150;
+            this.subtractScrollValue();
+            this.scrollableContent.scrollTo({
+                top: 0,
+                left: this.scrollAmount,
+                behavior: "smooth"
+            });
         } else {
-            this.scrollableContent.scrollLeft += 1 * 150;
+            this.addScrollValue();
+            this.scrollableContent.scrollTo({
+                top: 0,
+                left: this.scrollAmount,
+                behavior: "smooth"
+            });
         }
     }
+
+    private subtractScrollValue(): void {
+        this.scrollAmount -= this.unitScrollAmount;
+    }
+
+    private addScrollValue(): void {
+        this.scrollAmount += this.unitScrollAmount;
+    } 
 }

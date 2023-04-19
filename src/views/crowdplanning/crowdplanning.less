@@ -1,6 +1,5 @@
 #crowdplanning {
   display: grid;
-  grid-template-columns: auto 1fr;
   grid-template-rows: 60px 1fr;
   height: 100%;
   overflow: hidden;
@@ -11,7 +10,12 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 10000;
+    z-index: 100;
     background-color: var(--white);
+  }
+
+  .crowdplanning-content {
+    padding: 1rem;
+    overflow: hidden;
   }
 }

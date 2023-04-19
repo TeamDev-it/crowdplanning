@@ -41,7 +41,7 @@ export const crowdplanningStore = {
     }
   },
   actions: {
-    setSelectedCategories(context, model: server.Group): void {
+    setSelectedCategory(context, model: server.Group): void {
       context.commit("SET_SELECTED_CATEGORY", model);
     },
     setSearchedValue(context, model: string): void {

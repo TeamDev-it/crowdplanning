@@ -1,21 +1,30 @@
+import CrowdplanningGroupList from "@/components/crowdplanningGroups/crowdplanningGroupsList/crowdplanningGroupsList.vue";
 import CrowdplanningHeader from "@/components/crowdplanningHeader/crowdplanningHeader.vue";
+import groupModal from "@/components/groupModal/groupModal.vue";
+import ScrollableContainer from "@/components/scrollableContainer/scrollableContainer.vue";
+import { CONFIGURATION } from "@/configuration";
 import { tasksService } from "@/services/tasksService";
 import Vue from "vue";
 import Component from "vue-class-component";
-import { MessageService } from "vue-mf-module";
+import { MessageService, Projector } from "vue-mf-module";
 
 @Component({
     components: {
-        CrowdplanningHeader
+        CrowdplanningHeader,
+        ScrollableContainer,
+        CrowdplanningGroupList: CrowdplanningGroupList
     },
     name: "crowdplanning-component"
 })
 export default class Crowdplanning extends Vue {
-    type = "PLANS";
-    plansGroupRoot: server.Group | undefined = undefined;
+    plansGroupRoot: server.Group = {} as server.Group;
     tasks: server.Task[] = [];
     currentUser: server.Myself | null = null;
 
+    get groups(): server.Group[] {
+        return this.plansGroupRoot?.children ?? [];
+    }
+    
     async mounted() {
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
 
@@ -23,13 +32,36 @@ export default class Crowdplanning extends Vue {
     }
 
     private async getData(): Promise<void> {
-        this.plansGroupRoot = (await tasksService.getGroups()).find(g => g.taskType.toUpperCase() === this.type.toUpperCase());
+        const allGroups = (await tasksService.getGroups())
+            .filter(g => g.taskType.toUpperCase() === CONFIGURATION.defaultTaskType.toUpperCase());
+
+        this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
+
+        if (this.plansGroupRoot) {
+            this.plansGroupRoot.children = allGroups.filter(x => x.parentGroupId === this.plansGroupRoot?.id);
+        }
 
         if (this.plansGroupRoot?.id)
             this.tasks = await tasksService.getTasks(this.plansGroupRoot?.id);
     }
 
     hasPermission(permission: string): boolean {
-        return this.$can(`${this.type}.${permission}`);
+        return this.$can(`${CONFIGURATION.defaultTaskType}.${permission}`);
+    }
+
+    async createGroup(): Promise<void> {
+        const g = {} as server.Group;
+
+        g.parentGroupId = this.plansGroupRoot?.id ?? "";
+        g.taskType = this.plansGroupRoot?.taskType ?? "PLANS";
+
+        const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
+
+        if (result) {
+            this.plansGroupRoot?.children.push(result);
+        } else {
+            // error message
+            MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.group-create-error", "Errore durante la creazione della categoria"));
+        }
     }
 }

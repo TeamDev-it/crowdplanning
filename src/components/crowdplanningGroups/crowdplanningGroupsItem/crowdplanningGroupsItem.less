@@ -4,10 +4,22 @@
     justify-content: center;
     max-width: 270px;
     width: 270px;
+    height: 55px;
+    background-color: var(--white);
+    border-radius: var(--border-radius);
 
     .text {
         text-transform: uppercase;
     }
+
+    &.active {
+        background-color: var(--ok-color);
+        color: var(--white);
+    }
+}
+
+.item:hover {
+    cursor: pointer;
 }
 
 @media(max-width: var(--low-res-tablet-max-width)) {
@@ -16,6 +28,6 @@
     }
 
     .text {
-        padding: 0.5rem 2 rem;
+        padding: 0.5rem 1rem;
     }
 }
