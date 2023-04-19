@@ -33,25 +33,8 @@ class TasksService extends baseRestService {
         return await this.Put<server.Task>(`/${task.id}`, task);
     }
 
-    async getTasks(groupid: string,
-        options: {
-            fromDate?: Date,
-            toDate?: Date,
-            onlyroot: boolean,
-            archived: boolean,
-            state?: string,
-            priority?: number,
-            skip?: number,
-            take?: number,
-            showClusterRoot: boolean,
-            tags?: server.Tag[]
-        } = { archived: false, onlyroot: false, showClusterRoot: true }): Promise<server.Task[]> {
-
-        const filter = Object.assign({}, options);
-        if (filter.tags) {
-            filter["tags"] = options.tags?.map(t => t.name).join('|') as any;
-        }
-        return (await this.Get<server.Task[]>(`/group/${groupid}`, filter)) || [];
+    async getTasks(workspaceId: string): Promise<server.Task[]> {
+        return await this.Get<server.Task[]>(`/group/plans`, {workspaceId}) || [];
     }
 
     async getTask(id: string): Promise<server.Task | null> {

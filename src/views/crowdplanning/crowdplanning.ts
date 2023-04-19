@@ -40,9 +40,9 @@ export default class Crowdplanning extends Vue {
         if (this.plansGroupRoot) {
             this.plansGroupRoot.children = allGroups.filter(x => x.parentGroupId === this.plansGroupRoot?.id);
         }
-
+        
         if (this.plansGroupRoot?.id)
-            this.tasks = await tasksService.getTasks(this.plansGroupRoot?.id);
+            this.tasks = await tasksService.getTasks(CONFIGURATION.workspaceId);
     }
 
     hasPermission(permission: string): boolean {
