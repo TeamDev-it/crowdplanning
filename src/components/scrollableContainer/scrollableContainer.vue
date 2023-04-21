@@ -1,5 +1,5 @@
 <template>
-    <div class="scrollable-container" v-show="scrollableContent">
+    <div class="scrollable-container" :key="componentKey" v-if="scrollableContent">
         <div class="scroll left-btn" v-if="isLeftScrollButtonVisible" @click="scroll('left')">
             <i class="ti ti-chevron-left"></i>
         </div>

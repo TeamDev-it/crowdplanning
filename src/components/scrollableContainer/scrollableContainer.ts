@@ -7,24 +7,30 @@ type ScrollDirection = 'left' | 'right';
 export default class ScrollableContainer extends Vue {
     private scrollAmount = 0;
     private unitScrollAmount = 200;
+    componentKey = 0;
 
     scrollableContent = {} as HTMLDivElement;
-
-    get isLeftScrollButtonVisible(): boolean {
-        return this.scrollAmount >= this.unitScrollAmount;
-    }
-
-    get isRightScrollButtonVisible(): boolean {
-        if (this.scrollableContent)
-            return this.scrollAmount < this.scrollableContent.scrollWidth - this.scrollableContent.clientWidth;
-
-        return true;
-    }
+    isRightScrollButtonVisible = false;
+    isLeftScrollButtonVisible = false;
 
     mounted() {
         this.scrollableContent = this.$refs.scrollableContent as HTMLDivElement;
+
+        this.checkButtonsVisibility();
+
+        window.addEventListener('resize', () => {
+            this.scrollAmount = 0;
+            this.checkButtonsVisibility()
+        });
     }
- 
+
+    checkButtonsVisibility(): void {
+        this.isLeftScrollButtonVisible = this.scrollAmount >= this.unitScrollAmount;
+        this.isRightScrollButtonVisible = this.scrollAmount < this.scrollableContent.scrollWidth - this.scrollableContent.clientWidth;
+    }
+
+
+
     scroll(scrollDirection: ScrollDirection): void {
         if (scrollDirection === "left") {
             this.subtractScrollValue();
@@ -41,6 +47,8 @@ export default class ScrollableContainer extends Vue {
                 behavior: "smooth"
             });
         }
+
+        this.checkButtonsVisibility();
     }
 
     private subtractScrollValue(): void {
@@ -49,5 +57,5 @@ export default class ScrollableContainer extends Vue {
 
     private addScrollValue(): void {
         this.scrollAmount += this.unitScrollAmount;
-    } 
+    }
 }

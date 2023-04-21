@@ -14,10 +14,6 @@ export default class CrowdplanningGroupList extends Vue {
     @Prop({required: true})
     groups!: server.Group[];
 
-    mounted() {
-        console.log("groups: ", this.groups)
-    }
-
     set selectedCategory(value: server.Group | null) {
         store.actions.crowdplanning.setSelectedCategory(value);
     }

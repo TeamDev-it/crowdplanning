@@ -8,12 +8,14 @@
     "builddev": "vue-cli-service build --target lib src/libMain.ts --mode development"
   },
   "dependencies": {
+    "@arcgis/core": "^4.26.5",
     "axios": "0.27.2",
     "blueimp-md5": "^2.19.0",
     "core-js": "^3.23.1",
     "qs": "^6.10.5",
     "tiny-emitter": "2.1.0",
     "ts-md5": "1.2.11",
+    "v-calendar": "^2.4.1",
     "vue": "^2.6.14",
     "vue-class-component": "^7.2.6",
     "vue-mf-module": "0.3.11",
@@ -38,7 +40,8 @@
     "less-loader": "^8.0.0",
     "style-loader": "^2.0.0",
     "typescript": "~4.7.3",
-    "vue-template-compiler": "^2.6.14"
+    "vue-template-compiler": "^2.6.14",
+    "moment": "^2.29.4"
   },
   "eslintConfig": {
     "root": true,

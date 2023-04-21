@@ -1,0 +1,35 @@
+.datetime {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto 2px;
+  align-items: center;
+  justify-items: flex-start;
+  height: 32px;
+  min-width: 110px;
+  grid-column-gap: 5px;
+  cursor: pointer;
+
+  i {
+    grid-row: 1/-1;
+    grid-column: 1;
+    color: var(--light-grey);
+  }
+
+  &.novalue {
+    i {
+      color: var(--grey-semidark2) !important;
+    }
+  }
+
+  time {
+    grid-column: 2;
+    font-size: smaller;
+    line-height: 10px;
+    font-weight: normal;
+  }
+
+  svg {
+    grid-column: 1/-1;
+    grid-row: 3;
+  }
+}

@@ -17,5 +17,20 @@
   .crowdplanning-content {
     padding: 1rem;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .groups {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+
+      .btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
   }
 }

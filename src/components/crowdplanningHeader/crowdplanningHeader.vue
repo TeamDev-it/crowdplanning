@@ -8,7 +8,7 @@
     <div class="header-content">
       <div class="btn">
         <button class="square success" v-if="currentUser">
-          <i class="ti ti-plus" @click="$event => $emit('createGroup')"></i>
+          <i class="ti ti-plus" @click="$event => addTask()"></i>
         </button>
       </div>
     </div>
