@@ -49,6 +49,44 @@
         </div>
       </div>
     </header>
+    <header class="drag-and-drop-container">
+      <div class="area fullspace">
+        <small>{{ $t('plans.modal.add-images', 'Aggiungi immagini*').toUpperCase() }}</small>
+        <drag-and-drop
+          :files="images"
+          :fileTypes="'images'"
+          :customTextLocaleKey="'plans.modal.upload-images'"
+          :clickableTextLocaleKey="'plans.modal.upload-from-device'"
+          @removeFromImages="removeFromImages"
+          @removeFromFiles="removeFromFiles"
+          @addToImages="addToImages"
+          @addToFiles="addToFiles"
+        ></drag-and-drop>
+      </div>
+      <div class="area fullspace">
+        <small>{{ $t('plans.modal.add-attachments', 'Aggiungi allegati*').toUpperCase() }}</small>
+        <drag-and-drop
+          :files="files"
+          :fileTypes="'documents'"
+          :customTextLocaleKey="'plans.modal.upload-files'"
+          :clickableTextLocaleKey="'plans.modal.upload-from-device'"
+          @removeFromImages="removeFromImages"
+          @removeFromFiles="removeFromFiles"
+          @addToImages="addToImages"
+          @addToFiles="addToFiles"
+        ></drag-and-drop>
+      </div>
+    </header>
+    <header>
+      <div class="area fullspace">
+        <span>{{ $t("plans.modal.citizen-can-view-others-comments", "CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI").toUpperCase() }}</span>
+        <toggle v-model="value.data.public" />
+      </div>
+      <div class="area fullspace">
+        <span>{{ $t("plans.modal.citizen-can-view-others-votes", "CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI") }}</span>
+        <toggle v-model="value.data.public" />
+      </div>
+    </header>
   </div>
 </template>
 

@@ -1,0 +1,35 @@
+.list-preview {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: scroll;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  .container {
+    position: relative;
+
+    > img {
+      width: 150px;
+      height: auto;
+    }
+
+    .remove {
+      position: absolute;
+      top: 0rem;
+      left: 0rem;
+      background-color: var(--error-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: -0.5rem;
+      height: -0.5rem;
+      border-radius: var(--border-radius);
+
+      > i {
+        color: var(--white);
+        font-size: 0.8rem;
+      }
+    }
+  }
+}
