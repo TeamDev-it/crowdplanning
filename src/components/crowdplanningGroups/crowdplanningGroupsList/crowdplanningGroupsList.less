@@ -7,7 +7,7 @@
     .item {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-around;
         max-width: 270px;
         width: 270px;
         height: 55px;
@@ -22,10 +22,20 @@
             background-color: var(--ok-color);
             color: var(--white);
         }
+
+        .icon {
+            display: none;
+        }
     }
 
     .item:hover {
         cursor: pointer;
+
+        .icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     }
     
     @media(max-width: var(--low-res-tablet-max-width)) {

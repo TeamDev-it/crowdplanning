@@ -3,6 +3,7 @@ import Vue from 'vue';
 import { Prop } from "vue-property-decorator";
 import CrowdplanningGroupsItem from "../crowdplanningGroupsItem/crowdplanningGroupsItem.vue";
 import { store } from "@/store";
+import { MessageService } from "vue-mf-module";
 
 
 @Component({
@@ -11,8 +12,11 @@ import { store } from "@/store";
     }
 })
 export default class CrowdplanningGroupList extends Vue {
-    @Prop({required: true})
+    @Prop({ required: true })
     groups!: server.Group[];
+
+    @Prop({ required: true })
+    rootGroup!: server.Group;
 
     set selectedCategory(value: server.Group | null) {
         store.actions.crowdplanning.setSelectedCategory(value);
@@ -20,5 +24,9 @@ export default class CrowdplanningGroupList extends Vue {
 
     get selectedCategory(): server.Group | null {
         return store.getters.crowdplanning.getSelectedCategory();
+    }
+
+    openStatesModal(): void {
+        MessageService.Instance.send("OPEN_STATES_CONFIGURATION", this.rootGroup);
     }
 }

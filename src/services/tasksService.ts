@@ -34,7 +34,7 @@ class TasksService extends baseRestService {
     }
 
     async getTasks(workspaceId: string): Promise<server.Task[]> {
-        return await this.Get<server.Task[]>(`/group/plans`, {workspaceId}) || [];
+        return await this.Get<server.Task[]>(`/group/plans`, { workspaceId }) || [];
     }
 
     async getTask(id: string): Promise<server.Task | null> {
@@ -43,6 +43,10 @@ class TasksService extends baseRestService {
 
     async deleteTask(task: server.Task): Promise<void> {
         await this.delete(`/${task.id}`);
+    }
+
+    async getStates(group: server.Group): Promise<server.State[]> {
+        return (await this.Get<server.State[]>(`/d/states/type/${group.taskType}`)) || [];
     }
 }
 

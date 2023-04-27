@@ -1,11 +1,13 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop } from "vue-property-decorator";
-import { IProjectableModel } from "vue-mf-module";
+import { IProjectableModel, MessageService } from "vue-mf-module";
 import SearchWidget from "../arcgisWidgets/search/search.vue";
 import dateTime from "../dateTime/dateTime.vue";
 import DatePickerVue from "v-calendar/src/components/DatePicker.vue";
 import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
+import { tasksService } from "@/services/tasksService";
+import { attachmentService } from "@/services/attachmentService";
 
 @Component({
     components: {
@@ -24,6 +26,10 @@ export default class TaskModal extends Vue {
     images: Array<File> = [];
 
     errors: { [id: string]: string } = {};
+
+    mounted() {
+        this.task.state = "Review";
+    }
 
     setError(id: string, value: string) {
         Vue.set(this.errors, id, value);
@@ -67,5 +73,29 @@ export default class TaskModal extends Vue {
 
         if (idx === -1)
             this.files.push(value);
+    }
+
+    async confirm(): Promise<void> {
+        // Save new task
+        const result: server.Task | null = await tasksService.createTask(this.task.groupId, this.task);
+
+        if (!result) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
+            return;
+        }
+
+        if (this.images.length) {
+            // upload images
+            await attachmentService.saveAttachments(this.images, `${result.group.taskType}-${result.id}`);
+        }
+
+        if (this.files.length) {
+            // upload files
+            await attachmentService.saveAttachments(this.files, `${result.group.taskType}-${result.id}`);
+        }
+
+        MessageService.Instance.send("PLANS_CREATED", result);
+
+        this.close();
     }
 }

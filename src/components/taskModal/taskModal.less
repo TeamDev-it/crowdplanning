@@ -25,10 +25,10 @@
     grid-column: 1/-1;
     min-height: 0;
 
-
     > .fullspace {
       flex: 1;
       overflow: hidden;
+      padding: 0.2rem;
     }
 
     &.drag-and-drop-container {
@@ -102,6 +102,17 @@
         }
       }
 
+      .autocomplete {
+        position: relative;
+
+        .autocomplete-results {
+          width: 300px;
+          position: absolute;
+          background-color: var(--white);
+          padding: var(--input-box-padding);
+        }
+      }
+
       .date-picker-container {
         border: 1px solid var(--grey-semidark2);
       }
@@ -127,6 +138,8 @@
 
   footer {
     grid-row: -1;
+    display: flex;
+    justify-content: flex-end;
   }
 
   header.function-selector {

@@ -23,6 +23,8 @@ declare namespace server {
         subtaskCount?: { type: string, count: number }[];
         isClusterRoot: boolean;
         tags: string[];
+        citizenCanSeeOthersRatings: boolean;
+        citizenCanSeeOthersComments: boolean;
     }
 
     export interface TaskUser {

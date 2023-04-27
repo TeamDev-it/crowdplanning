@@ -9,14 +9,16 @@
           <i class="ti ti-calendar-off"></i>
           <div class="text">{{ taskDate }}</div>
         </div>
-        <div class="title" v-if="value.title">
-          <text>{{ value.title.toUpperCase() }}</text>
+        <div class="title">
+          <span v-if="value.title">{{ value.title.toUpperCase() }}</span>
         </div>
-        <div class="description" v-if="value.description" v-html="value.description"></div>
+        <div class="description">
+          <span v-if="value.description" v-html="value.description"></span>
+        </div>
       </div>
-      <div class="commands">
+      <div class="commands" v-if="showCommands">
         <div class="go-detail colrow">
-          <div class="text">
+          <div class="text" @click="selectTask">
             {{ $t('plans.card.go-to-details', 'Vai al dettaglio').toUpperCase() }}
           </div>
           <i class="ti ti-chevron-right"></i>

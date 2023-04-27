@@ -58,7 +58,6 @@ export default class DragAndDrop extends Vue {
 
     private pushFileList(fileList: FileList | never[]): void {
         for (let i = 0; i < fileList.length; i++) {
-            debugger
             const idx = this.files.findIndex(x => x.name === fileList[i].name && x.size === fileList[i].size && x.type === fileList[i].type && x.lastModified === fileList[i].lastModified);
 
             if (idx === -1)

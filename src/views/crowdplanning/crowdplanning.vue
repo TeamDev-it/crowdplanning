@@ -5,7 +5,7 @@
     <div class="crowdplanning-content">
       <div class="groups">
         <scrollable-container v-if="plansGroupRoot && plansGroupRoot.id && plansGroupRoot.children.length">
-          <crowdplanning-group-list :groups="groups"></crowdplanning-group-list>
+          <crowdplanning-group-list :groups="groups" :rootGroup="plansGroupRoot"></crowdplanning-group-list>
         </scrollable-container>
         <div class="btn">
           <button class="square success" v-if="currentUser">
@@ -13,10 +13,21 @@
           </button>
         </div>
       </div>
-      <div class="tasks">
-        <scrollableContainer v-if="tasks && tasks.length">
-          <task-list :tasks="tasks"></task-list>
+      <div class="tasks" v-if="filteredTasks && filteredTasks.length && !selectedTask">
+        <scrollableContainer>
+          <task-list :tasks="filteredTasks"></task-list>
         </scrollableContainer>
+      </div>
+      <div class="task-detail">
+        <task-detail :task="selectedTask">
+        </task-detail>
+      </div>
+      <div class="map">
+        <task-map 
+        v-if="(selectedGroup || plansGroupRoot) && states.length" 
+        :group="selectedGroup ?? plansGroupRoot" 
+        :states="states" 
+        :tasks="filteredTasks"></task-map>
       </div>
     </div>
   </div>

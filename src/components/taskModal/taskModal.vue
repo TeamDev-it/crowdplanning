@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="area fixed">
-        <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
+        <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
         <div class="date-picker-container">
           <date-picker-vue v-model="task.dueDate" mode="dateTime" timezone="utc">
             <template v-slot="{ inputEvents }">
@@ -80,13 +80,19 @@
     <header>
       <div class="area fullspace">
         <span>{{ $t("plans.modal.citizen-can-view-others-comments", "CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI").toUpperCase() }}</span>
-        <toggle v-model="value.data.public" />
+        <toggle v-model="task.citizenCanSeeOthersComments" />
       </div>
       <div class="area fullspace">
         <span>{{ $t("plans.modal.citizen-can-view-others-votes", "CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI") }}</span>
-        <toggle v-model="value.data.public" />
+        <toggle v-model="task.citizenCanSeeOthersRatings" />
       </div>
     </header>
+    <footer>
+      <button class="success none" @click="confirm">
+        <i class="ti ti-check" />
+        {{ $t('plans.modal.confirm', 'Conferma') }}
+      </button>
+    </footer>
   </div>
 </template>
 
