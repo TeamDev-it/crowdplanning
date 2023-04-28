@@ -24,7 +24,7 @@
       </div>
       <div class="map">
         <task-map 
-        v-if="(selectedGroup || plansGroupRoot) && states.length" 
+        v-if="(selectedGroup || plansGroupRoot) && states.length"
         :group="selectedGroup ?? plansGroupRoot" 
         :states="states" 
         :tasks="filteredTasks"></task-map>

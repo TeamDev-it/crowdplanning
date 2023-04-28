@@ -90,7 +90,7 @@ export default class Crowdplanning extends Vue {
         if (this.plansGroupRoot?.id)
             this.tasks = await tasksService.getTasks(CONFIGURATION.workspaceId);
 
-        this.states = await tasksService.getStates(this.plansGroupRoot);
+        this.states = await tasksService.getStates(CONFIGURATION.workspaceId);
     }
 
     hasPermission(permission: string): boolean {

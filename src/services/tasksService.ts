@@ -45,8 +45,8 @@ class TasksService extends baseRestService {
         await this.delete(`/${task.id}`);
     }
 
-    async getStates(group: server.Group): Promise<server.State[]> {
-        return (await this.Get<server.State[]>(`/d/states/type/${group.taskType}`)) || [];
+    async getStates(workspaceId: string): Promise<server.State[]> {
+        return (await this.Get<server.State[]>(`/d/states/plans`, { workspaceId })) || [];
     }
 }
 

@@ -1,5 +1,11 @@
 <template>
-    <div></div>
+    <div class="container">
+        <div class="text">
+            {{ $t('plans.spid.log-in', 'Accedi per condividere la tua opinione!') }}
+        </div>
+        <div class="button" @click="askLogin">
+        </div>
+    </div>
 </template>
 <style lang="less" scoped>
 @import url(./spidLogin.less);
