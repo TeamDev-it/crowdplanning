@@ -1,6 +1,6 @@
 <template>
   <div class="list-preview">
-    <div class="container" v-for="(file, index) of files" :key="index">
+    <div class="container" v-for="(file, index) of files" :v-tooltip="file.name" :key="index">
       <img src="@/assets/images/placeholder_file.png" alt="file" />
       <div class="remove" @click="() => $emit('removeFromList', file)">
         <i class="ti ti-x"></i>

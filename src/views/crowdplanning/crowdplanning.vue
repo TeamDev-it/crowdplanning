@@ -8,7 +8,7 @@
           <crowdplanning-group-list :groups="groups" :rootGroup="plansGroupRoot"></crowdplanning-group-list>
         </scrollable-container>
         <div class="btn">
-          <button class="square success" v-if="currentUser">
+          <button class="square success" v-if="currentUser && hasPermission('canCreatePlansGroup')">
             <i class="ti ti-plus" @click="createGroup()"></i>
           </button>
         </div>
