@@ -1,0 +1,25 @@
+.scrollable-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--grey-light);
+  height: fit-content;
+  padding: .5rem;
+
+  .scroll {
+    cursor: pointer;
+  }
+
+  .scrollable-content {
+    display: flex;
+    flex: 1;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* F */
+  }
+
+  .scrollable-content::-webkit-scrollbar {
+    display: none;
+  }
+}

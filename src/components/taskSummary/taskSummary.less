@@ -1,0 +1,40 @@
+.summary-container {
+  display: grid;
+  grid-auto-flow: row;
+  grid: auto 1fr auto;
+  background-color: var(--white);
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+
+  .title-date {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  .attachments {
+    display: flex;
+    flex-direction: column;
+
+    .files {
+      display: grid;
+      grid-template-columns: minmax(50%, 1fr) minmax(50%, 1fr);
+
+      .documents {
+        .file {
+          cursor: pointer;
+          > img {
+            max-height: 100px;
+            width: auto;
+          }
+        }
+      }
+
+      .images {
+        > img {
+          max-height: 100px;
+          width: auto;
+        }
+      }
+    }
+  }
+}

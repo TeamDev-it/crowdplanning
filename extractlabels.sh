@@ -1,0 +1,1 @@
+find ./src/ -type f -exec sed -rn 's/.*\$t\((.*), (.*)\).*/\1:\2,/gp' {} \; >> "labels.txt"

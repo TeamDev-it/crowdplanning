@@ -1,0 +1,32 @@
+.autocomplete {
+    position: relative;
+
+    > input {
+        width: 300px;
+    }
+  }
+
+  .autocomplete-results {
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--grey-light);
+    height: 120px;
+    min-height: 1em;
+    max-height: 6em;    
+    overflow: auto;
+  }
+
+  .autocomplete-result {
+    list-style: none;
+    text-align: left;
+    padding: 4px 2px;
+    cursor: pointer;
+    overflow: hidden;
+    word-wrap: break-word;
+    max-width: 300px;
+  }
+
+  .autocomplete-result:hover {
+    background-color: var(--primary-color);
+    color: white;
+  }

@@ -1,0 +1,36 @@
+#crowdplanning {
+    > header {
+        height: 100%;
+        display: grid;
+        grid-template-columns: var(--aside-min-width) 1fr;
+        min-width: var(--aside-min-width);
+        grid-row: 1;
+        gap: 1rem;
+        box-shadow: var(--aside-box-shadow);
+        border-bottom: 1px solid var(--grey-semidark2);
+        overflow-y: hidden;
+        overflow-x: auto;
+        background-color: var(--background-color);
+
+        .search {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-right: 1px solid var(--grey-semidark2);
+            padding: 0 1rem;
+
+            > input {
+                width: 100%;
+            }
+         }
+
+         .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 1rem;
+         }
+    }
+}
