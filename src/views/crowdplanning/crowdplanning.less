@@ -1,0 +1,41 @@
+#crowdplanning {
+  display: grid;
+  grid-template-rows: 60px 1fr;
+  height: 100%;
+  overflow: hidden;
+
+  &.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    background-color: var(--white);
+  }
+
+  .crowdplanning-content {
+    padding: 1rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .groups {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      letter-spacing: 1px;
+
+      .btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+
+    .map {
+      overflow: hidden;
+    }
+  }
+}

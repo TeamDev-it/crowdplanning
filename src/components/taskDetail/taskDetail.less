@@ -1,0 +1,27 @@
+.detail-container {
+  width: 100%;
+  height: fit-content;
+  background-color: var(--grey-light);
+  padding: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  overflow: hidden;
+  gap: 1rem;
+  position: relative;
+
+  .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: var(--black);
+    width: var(--font-size-lg);;
+    height: var(--font-size-lg);;
+    border-radius: 50%;
+    display: flex;
+    cursor: pointer;
+
+    > i {
+      font-size: var(--font-size-lg);
+    }
+  }
+}

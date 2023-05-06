@@ -1,0 +1,46 @@
+{
+  "name": "crowdplanning",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "vue-cli-service build --target lib src/libMain.ts ",
+    "watch": "vue-cli-service build --watch --target lib src/libMain.ts",
+    "builddev": "vue-cli-service build --target lib src/libMain.ts --mode development"
+  },
+  "dependencies": {
+    "@arcgis/core": "^4.26.5",
+    "axios": "0.27.2",
+    "blueimp-md5": "^2.19.0",
+    "core-js": "^3.23.1",
+    "lodash": "^4.17.21",
+    "qs": "^6.10.5",
+    "tiny-emitter": "2.1.0",
+    "ts-md5": "1.2.11",
+    "v-calendar": "^2.4.1",
+    "vue": "^2.6.14",
+    "vue-class-component": "^7.2.6",
+    "vue-mf-module": "0.3.11",
+    "vue-property-decorator": "^9.1.2",
+    "vue-router": "^3.5.4",
+    "vuex": "^3.6.2",
+    "vuex-typed-store": "1.1.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.194",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-typescript": "~5.0.0",
+    "@vue/cli-plugin-vuex": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "less": "^4.0.0",
+    "less-loader": "^8.0.0",
+    "moment": "^2.29.4",
+    "style-loader": "^2.0.0",
+    "typescript": "~4.7.3",
+    "vue-template-compiler": "^2.6.14"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

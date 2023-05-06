@@ -1,0 +1,42 @@
+.task-card {
+  width: 330px;
+  max-width: 330px;
+  display: grid;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+
+  .card-content {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    grid-template-rows: 1fr auto;
+
+    .commands {
+      cursor: pointer;
+    }
+
+    .commands:hover {
+      .go-detail {
+        .text {
+          font-weight: var(--font-weight-bold);
+        }
+      }
+    }
+
+    .task-data {
+      display: grid;
+      gap: 0.5rem;
+
+      .title {
+        font-weight: var(--font-weight-bold);
+      }
+    }
+
+    .colrow {
+      display: grid;
+      grid-template-columns: max-content max-content;
+      align-items: center;
+      justify-content: flex-end;
+    }
+  }
+}
