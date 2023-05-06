@@ -2,6 +2,8 @@ import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop } from "vue-property-decorator";
 import { store } from "@/store";
+import { attachmentService } from "@/services/attachmentService";
+import { CONFIGURATION } from "@/configuration";
 
 @Component
 export default class TaskCard extends Vue {
@@ -11,11 +13,28 @@ export default class TaskCard extends Vue {
     @Prop({ default: true })
     showCommands!: boolean;
 
+    coverImageUri = '';
+    loading = true;
+
     get taskDate(): string {
         return `${this.value.creationDate.getDate()}/${this.value.creationDate.getMonth()}/${this.value.creationDate.getFullYear()}`;
     }
 
+    async mounted() {
+        this.coverImageUri = this.getTaskImageUrl();
+
+        this.loading = false;
+    }
+
     selectTask(): void {
         store.actions.crowdplanning.setSelectedTask(this.value);
+    }
+
+    private getTaskImageUrl(): string {
+        try {
+            return attachmentService.getFileUrl(CONFIGURATION.defaultTaskType, `${CONFIGURATION.defaultTaskType}-${this.value.workspaceId}-${this.value.id}`);
+        } catch (err) {
+            return '';
+        }
     }
 }
