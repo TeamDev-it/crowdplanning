@@ -5,7 +5,7 @@
       <div v-if="task.creationDate">{{ taskDate }}</div>
     </div>
     <div class="description" v-html="task.description"></div>
-    <div class="attachments">
+    <div class="attachments" v-if="files.length">
       <div class="section-title">{{ $t('plans.attachments', 'allegati').toUpperCase() }}</div>
       <div class="files">
         <div class="images" v-if="images.length">

@@ -2,7 +2,7 @@
 <template>
   <div id="crowdplanning">
     <crowdplanning-header :currentUser="currentUser" @addTask="addTask()" />
-    <div class="crowdplanning-content">
+    <div class="crowdplanning-content" v-if="!loading">
       <div class="groups">
         <scrollable-container v-if="plansGroupRoot && plansGroupRoot.id && plansGroupRoot.children.length">
           <crowdplanning-group-list :groups="groups" :rootGroup="plansGroupRoot"></crowdplanning-group-list>

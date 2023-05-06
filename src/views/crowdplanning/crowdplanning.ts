@@ -31,6 +31,7 @@ export default class Crowdplanning extends Vue {
     tasks: server.Task[] = [];
     currentUser: server.Myself | null = null;
     states: server.State[] = [];
+    loading = true;
 
     get groups(): server.Group[] {
         return this.plansGroupRoot?.children ?? [];
@@ -67,6 +68,7 @@ export default class Crowdplanning extends Vue {
     }
 
     async mounted() {
+        debugger
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
         MessageService.Instance.subscribe("PLANS_CREATED", this.plansCreated);
 
@@ -91,7 +93,9 @@ export default class Crowdplanning extends Vue {
             this.tasks = await tasksService.getTasks(CONFIGURATION.workspaceId);
 
         this.states = await tasksService.getStates(CONFIGURATION.workspaceId);
-    }
+
+        this.loading = false;
+    }   
 
     hasPermission(permission: string): boolean {
         return this.$can(`${CONFIGURATION.defaultTaskType}.${permission}`);
