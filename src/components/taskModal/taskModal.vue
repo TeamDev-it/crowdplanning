@@ -17,8 +17,12 @@
         </select>
       </div>
       <div class="area">
-        <small>{{ $t('plans.moda.posizione', 'posizione').toLocaleUpperCase() }}</small>
+        <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
         <search-widget @locationSelected="locationSelected"></search-widget>
+      </div>
+      <div class="area">
+        <small>{{ $t('plans.modal.cover-image', 'Immagine di copertina').toLocaleUpperCase() }}</small>
+        <input type="file" :accept='imageContentTypes' @change="$event => onChangeCoverImage($event)" />
       </div>
     </header>
     <header>
@@ -79,12 +83,12 @@
     </header>
     <header>
       <div class="area fullspace">
-        <span>{{ $t("plans.modal.citizen-can-view-others-comments", "CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI").toUpperCase() }}</span>
-        <toggle v-model="task.citizenCanSeeOthersComments" />
+        <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
+        <toggle v-model="citizenCanSeeOthersComments" />
       </div>
       <div class="area fullspace">
-        <span>{{ $t("plans.modal.citizen-can-view-others-votes", "CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI") }}</span>
-        <toggle v-model="task.citizenCanSeeOthersRatings" />
+        <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI') }}</span>
+        <toggle v-model="citizenCanSeeOthersRatings" />
       </div>
     </header>
     <footer>

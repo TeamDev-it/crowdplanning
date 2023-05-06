@@ -21,6 +21,19 @@ class AttachmentService extends baseRestService {
         }
     }
 
+    public async saveFile(context: string, id: string, file: File): Promise<{ id: string } | null> {
+        const data = new FormData();
+
+        data.append("file", file, file.name);
+
+        try {
+            return await this.Post<{ id: string } | null>(`/${context}/file/${id}`, data);
+        } catch (err) {
+            console.error(err);
+            return null;
+        }
+    }
+
     public async getAttachments(id: string, skip = 0, take = 100): Promise<server.FileAttach[]> {
         return await this.Get<server.FileAttach[]>(`/PLANS-${id}/plans/data`, { id: id, workspaceId: CONFIGURATION.workspaceId, skip, take }) ?? [];
     }
