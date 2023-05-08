@@ -4,6 +4,7 @@
             {{ $t("plans.citizen.assess-proposal", "Valuta la proposta").toUpperCase() }}
         </div>
         <spid-login v-if="!mySelf"></spid-login>
+        <component v-else :is="ratingComponent" :id="id" :type="type"></component>
     </div>
 </template>
 <style lang="less" scoped>
