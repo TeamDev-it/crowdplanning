@@ -8,6 +8,7 @@ import DatePickerVue from "v-calendar/src/components/DatePicker.vue";
 import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
 import { tasksService } from "@/services/tasksService";
 import { attachmentService } from "@/services/attachmentService";
+import { imagesContentTypes } from "@/@types/inputFileTypes";
 
 @Component({
     components: {
@@ -24,8 +25,15 @@ export default class TaskModal extends Vue {
     task: server.Task = {} as server.Task;
     files: Array<File> = [];
     images: Array<File> = [];
+    coverImage: File | null = null;
+    citizenCanSeeOthersRatings = false;
+    citizenCanSeeOthersComments = false;
 
     errors: { [id: string]: string } = {};
+
+    get imageContentTypes(): string {
+        return imagesContentTypes;
+    }
 
     mounted() {
         this.task.state = "Review";
@@ -75,6 +83,10 @@ export default class TaskModal extends Vue {
             this.files.push(value);
     }
 
+    onChangeCoverImage(event: InputEvent) {
+        this.coverImage = (event.target as any).files[0];
+    }
+
     async confirm(): Promise<void> {
         // Save new task
         const result: server.Task | null = await tasksService.createTask(this.task.groupId, this.task);
@@ -82,6 +94,20 @@ export default class TaskModal extends Vue {
         if (!result) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
+        }
+        
+        const relatedItemOptions: server.relatedItemOptions = {
+            workspaceId: result?.workspaceId ?? '',
+            relationId: result?.id,
+            relationType: result.group.taskType,
+            citizenCanSeeOthersComments: this.citizenCanSeeOthersComments,
+            citizenCanSeeOthersRatings: this.citizenCanSeeOthersRatings
+        };
+
+        const relatedItemOptionsResult = await MessageService.Instance.ask("SAVE_RELATED_ITEM_OPTIONS", relatedItemOptions);
+
+        if (this.coverImage) {
+            await attachmentService.saveFile(result.group.taskType, `${result.group.taskType}-${result.workspaceId}-${result.id}`, this.coverImage);
         }
 
         if (this.images.length) {

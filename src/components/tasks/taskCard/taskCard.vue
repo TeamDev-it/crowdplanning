@@ -1,8 +1,8 @@
 <template>
-  <div class="task-card">
-    <!-- <div class="image">
-
-        </div> -->
+  <div class="task-card" v-if="!loading">
+    <div class="image" v-if="coverImageUri">
+      <img :src="coverImageUri" :alt="$t('plans.cover-image', 'Immagine di copertina')" />
+    </div>
     <div class="card-content">
       <div class="task-data">
         <div class="date colrow">
@@ -12,8 +12,7 @@
         <div class="title">
           <span v-if="value.title">{{ value.title.toUpperCase() }}</span>
         </div>
-        <div class="description">
-          <span v-if="value.description" v-html="value.description"></span>
+        <div class="description" v-if="value.description" v-html="value.description">
         </div>
       </div>
       <div class="commands" v-if="showCommands">

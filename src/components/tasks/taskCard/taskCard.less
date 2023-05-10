@@ -5,6 +5,14 @@
   background-color: var(--card-background);
   border-radius: var(--border-radius);
 
+  .image {
+    > img {
+      width: 100%;
+      max-height: 200px;
+      height: 200px;
+    }
+  }
+
   .card-content {
     display: grid;
     gap: 0.5rem;
@@ -13,6 +21,16 @@
 
     .commands {
       cursor: pointer;
+    }
+
+    .description {
+      max-height: 100px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
     }
 
     .commands:hover {
