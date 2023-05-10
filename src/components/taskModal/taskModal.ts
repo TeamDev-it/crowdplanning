@@ -22,7 +22,7 @@ export default class TaskModal extends Vue {
     @Prop({ required: true })
     value!: IProjectableModel<server.Group[]>;
 
-    task: server.Task = {} as server.Task;
+    task: server.Task = { groupId: '' } as server.Task;
     files: Array<File> = [];
     images: Array<File> = [];
     coverImage: File | null = null;
@@ -87,7 +87,44 @@ export default class TaskModal extends Vue {
         this.coverImage = (event.target as any).files[0];
     }
 
+    private requiredFieldsSatisfied(): boolean {
+        if (!this.task.location) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
+            return false;
+        }
+
+        if (!this.task.description) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
+            return false;
+        }
+
+        if (!this.task.startDate) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
+            return false;
+        }
+
+        if (!this.task.dueDate) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
+            return false;
+        }
+
+        if (!this.images.length) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.images_error', 'Inserisci delle immagini'));
+            return false;
+        }
+
+        if (!this.files.length) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.attachments_error', 'Inserisci degli allegati'));
+            return false;
+        }
+
+        return true;
+    }
+
     async confirm(): Promise<void> {
+        if (!this.requiredFieldsSatisfied()) {
+            return;
+        }
         // Save new task
         const result: server.Task | null = await tasksService.createTask(this.task.groupId, this.task);
 
@@ -95,7 +132,7 @@ export default class TaskModal extends Vue {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
         }
-        
+
         const relatedItemOptions: server.relatedItemOptions = {
             workspaceId: result?.workspaceId ?? '',
             relationId: result?.id,
