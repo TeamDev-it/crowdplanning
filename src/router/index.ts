@@ -5,7 +5,7 @@ export const routes: Array<RouteConfig> = [
   path: '/crowdplanning',
   name: 'crowdplanning',
   meta: {
-    avoidKickoff: true
+    requireAuth: false
   },
   component: () => import(/* webpackChunkName: "crowdplanning" */ '@/views/crowdplanning/crowdplanning.vue')
 }];
