@@ -1,7 +1,8 @@
 <template>
   <div v-if="task" class="detail-container">
+    <task-card :value="task" :showCommands="false"></task-card>
     <task-summary :task="task"></task-summary>
-    <citizen-interaction></citizen-interaction>
+    <citizen-interaction :id="task.id" :type="task.group.taskType"></citizen-interaction>
     <div class="close" @click="clearTask">
       <i class="ti ti-x"></i>
     </div>

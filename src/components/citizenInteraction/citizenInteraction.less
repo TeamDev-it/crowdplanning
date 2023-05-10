@@ -1,11 +1,18 @@
 .container {
-    min-height: 200px;
-    min-width: 300px;
-    border-radius: var(--border-radius);
-    background-color: var(--white);
-    padding: .5rem;
+  min-width: 300px;
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  padding: 0.5rem;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
 
-    .title {
-        font-weight: var(--font-weight-bold);
-    }
+  .rating {
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
+  .title {
+    font-weight: var(--font-weight-bold);
+  }
 }
