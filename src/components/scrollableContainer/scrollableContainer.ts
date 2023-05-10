@@ -26,7 +26,7 @@ export default class ScrollableContainer extends Vue {
 
     checkButtonsVisibility(): void {
         this.isLeftScrollButtonVisible = this.scrollAmount >= this.unitScrollAmount;
-        this.isRightScrollButtonVisible = this.scrollAmount < this.scrollableContent.scrollWidth - this.scrollableContent.clientWidth;
+        this.isRightScrollButtonVisible = this.scrollAmount <= this.scrollableContent.scrollWidth - this.scrollableContent.clientWidth;
     }
 
 
