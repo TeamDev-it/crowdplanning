@@ -68,7 +68,6 @@ export default class Crowdplanning extends Vue {
     }
 
     async mounted() {
-        debugger
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
         MessageService.Instance.subscribe("PLANS_CREATED", this.plansCreated);
 
