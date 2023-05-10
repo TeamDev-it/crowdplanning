@@ -5,6 +5,6 @@ import { MessageService } from "vue-mf-module";
 @Component({})
 export default class SpidLogin extends Vue {
     askLogin(): void {
-        MessageService.Instance.send("ASK_LOGIN", true);
+        MessageService.Instance.send("ASK_LOGIN");
     }
 }
