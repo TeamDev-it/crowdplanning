@@ -4,7 +4,7 @@
     <crowdplanning-header :currentUser="currentUser" @addTask="addTask()" />
     <div class="crowdplanning-content" v-if="!loading">
       <div class="groups">
-        <scrollable-container v-if="plansGroupRoot && plansGroupRoot.id && plansGroupRoot.children.length">
+        <scrollable-container v-if="plansGroupRoot && plansGroupRoot.id">
           <crowdplanning-group-list :groups="groups" :rootGroup="plansGroupRoot"></crowdplanning-group-list>
         </scrollable-container>
         <div class="btn">
