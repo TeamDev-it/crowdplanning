@@ -18,7 +18,7 @@
           <task-list :tasks="filteredTasks"></task-list>
         </scrollableContainer>
       </div>
-      <div class="task-detail">
+      <div class="task-detail" v-if="selectedTask">
         <task-detail :task="selectedTask">
         </task-detail>
       </div>
