@@ -1,5 +1,5 @@
 export const CONFIGURATION = {
-    TasksServiceUri: "https://api.v2.wise.town/tasks",
+    PlansServiceUri: "http://localhost:5000/crowdplanning/",
     priorities: [{ id: 5, name: 'priority.emergency', icon: '', color: '#c62828' },
     { id: 4, name: 'priority.very-hight', icon: '', color: '#ef5350' },
     { id: 3, name: 'priority.hight', icon: '', color: '#FFB300' },

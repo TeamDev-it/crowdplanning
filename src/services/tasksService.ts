@@ -4,25 +4,7 @@ import { baseRestService } from "./baseRestService";
 class TasksService extends baseRestService {
     constructor() {
         super();
-        this.baseUrl = () => CONFIGURATION.TasksServiceUri;
-    }
-
-    async getGroups(): Promise<server.Group[]> {
-        const result = (await this.Get<server.Group[]>(`/d/groups/public?workspaceid=${CONFIGURATION.workspaceId}`)) || [];
-
-        return result;
-    }
-
-    async deleteGroup(id: string): Promise<unknown> {
-        return await this.Delete(`/group/${id}`);
-    }
-
-    async createGroup(model: server.Group): Promise<server.Group | null> {
-        return await this.Post<server.Group>('/d/groups', model);
-    }
-
-    async updateGroup(groupId: string, model: server.Group): Promise<server.Group | null> {
-        return await this.Put<server.Group>(`/d/groups/${groupId}`, model);
+        this.baseUrl = () => CONFIGURATION.PlansServiceUri;
     }
 
     async createTask(groupid: string, task: server.Task): Promise<server.Task | null> {

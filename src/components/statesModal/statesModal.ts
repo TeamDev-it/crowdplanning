@@ -5,6 +5,7 @@ import { Prop, Watch } from "vue-property-decorator";
 import ValidateDirective from 'vue-mf-module';
 import { Drag, Drop } from 'vue-drag-drop';
 import { store } from "@/store";
+import { statesService } from "@/services/statesService";
 
 @Component({
     directives: {
@@ -14,7 +15,6 @@ import { store } from "@/store";
     }
 })
 export default class statesModal extends Vue {
-
     @Prop()
     value!: IProjectableModel<server.Group>;
 
@@ -27,7 +27,7 @@ export default class statesModal extends Vue {
     }
 
     async mounted() {
-        await tasksService.getStates(this.value.data);
+        await statesService.getStates(this.value.data.id);
     }
 
     handleDrop(to: server.State, from: server.State) {
@@ -57,7 +57,7 @@ export default class statesModal extends Vue {
 
     async close() {
         for (const state of this.states) {
-            await tasksService.updateState(state);
+            await statesService.setState(state);
         }
 
         this.value.resolve(this.value.data);
@@ -69,14 +69,14 @@ export default class statesModal extends Vue {
         var idx = states.indexOf(s);
         if (idx >= 0) states.splice(idx, 1);
 
-        store.actions.tasks.setStates({ group: this.value.data.id, states });
-        await tasksService.removeState(s);
+        store.actions.crowdplanning.setStates({ groupId: this.value.data.id, states });
+        await statesService.removeState(s.id);
     }
 
     async addState(s: string) {
         var states = Array.from(this.states);
         states.push({ state: s, type: this.value.data.taskType } as server.State)
         this.recalcIndex(states);
-        store.actions.tasks.setStates({ group: this.value.data.id, states });
+        store.actions.crowdplanning.setStates({ groupId: this.value.data.id, states });
     }
 }
