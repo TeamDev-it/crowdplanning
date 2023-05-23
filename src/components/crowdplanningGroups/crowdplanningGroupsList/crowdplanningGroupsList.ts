@@ -27,6 +27,6 @@ export default class CrowdplanningGroupList extends Vue {
     }
 
     openStatesModal(): void {
-        MessageService.Instance.send("OPEN_STATES_CONFIGURATION", this.rootGroup);
+        MessageService.Instance.send("OPEN_PLANS_STATES_MODAL", this.rootGroup);
     }
 }

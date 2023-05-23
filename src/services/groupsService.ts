@@ -7,22 +7,20 @@ class GroupsService extends baseRestService {
         this.baseUrl = () => CONFIGURATION.PlansServiceUri;
     }
 
-    async getGroups(): Promise<server.Group[]> {
-        const result = (await this.Get<server.Group[]>(`/d/groups/public?workspaceid=${CONFIGURATION.workspaceId}`)) || [];
+    public async getGroups(): Promise<server.Group[]> {
+        return (await this.Get<server.Group[]>(`/groups`)) || [];
+    }
 
-        return result;
+    public async getPublicGroups(workspaceId: string): Promise<server.Group[]> {
+        return (await this.Get<server.Group[]>(`/groups/public?workspaceid=${workspaceId}`)) || [];
     }
 
     async deleteGroup(id: string): Promise<unknown> {
         return await this.Delete(`/group/${id}`);
     }
 
-    async createGroup(model: server.Group): Promise<server.Group | null> {
-        return await this.Post<server.Group>('/d/groups', model);
-    }
-
-    async updateGroup(groupId: string, model: server.Group): Promise<server.Group | null> {
-        return await this.Put<server.Group>(`/d/groups/${groupId}`, model);
+    public async Set(model: server.Group): Promise<server.Group | null> {
+        return await this.Post<server.Group>('/groups', model);
     }
 }
 

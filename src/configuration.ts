@@ -1,5 +1,5 @@
 export const CONFIGURATION = {
-    PlansServiceUri: "http://localhost:5000/crowdplanning/",
+    PlansServiceUri: "http://localhost:5000/crowdplanning",
     priorities: [{ id: 5, name: 'priority.emergency', icon: '', color: '#c62828' },
     { id: 4, name: 'priority.very-hight', icon: '', color: '#ef5350' },
     { id: 3, name: 'priority.hight', icon: '', color: '#FFB300' },
@@ -8,6 +8,9 @@ export const CONFIGURATION = {
     { id: 0, name: 'priority.none', icon: '', color: '#dce0e2' }],
     LocationServiceUri: "http://localhost:8081/tasks/",
     FileServiceUri: "https://api.v2.wise.town/generic",
-    workspaceId: "12345678-a111-b222-c333-123456789abd",
-    defaultTaskType: "PLANS"
+    defaultTaskType: "PLANS",
+    domainWorkspaceMap: new Map<string, string>([
+        ["app.v2.wise.town", "12345678-a111-b222-c333-123456789abd"],
+        ["localhost", "12345678-a111-b222-c333-123456789abd"]
+    ])
 };

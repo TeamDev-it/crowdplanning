@@ -19,6 +19,7 @@ export default class statesModal extends Vue {
     value!: IProjectableModel<server.Group>;
 
     get states(): server.State[] {
+        debugger
         return Array.from(store.getters.crowdplanning.getStates(this.value.data.id) || []);
     }
 
@@ -27,7 +28,11 @@ export default class statesModal extends Vue {
     }
 
     async mounted() {
-        await statesService.getStates(this.value.data.id);
+        await this.getStateAndUpdateStore();
+    }
+
+    private async getStateAndUpdateStore(): Promise<void> {
+        const states: server.State[] = await statesService.getStates(this.value.data.workspaceId);
     }
 
     handleDrop(to: server.State, from: server.State) {
@@ -75,7 +80,7 @@ export default class statesModal extends Vue {
 
     async addState(s: string) {
         var states = Array.from(this.states);
-        states.push({ state: s, type: this.value.data.taskType } as server.State)
+        states.push({ state: s } as server.State)
         this.recalcIndex(states);
         store.actions.crowdplanning.setStates({ groupId: this.value.data.id, states });
     }

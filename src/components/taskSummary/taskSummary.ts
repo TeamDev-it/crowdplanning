@@ -14,12 +14,15 @@ import ImagesPreview from "../file/imagesPreview/imagesPreview.vue";
 })
 export default class TaskSummary extends Vue {
     @Prop()
-    task!: server.Task;
+    task!: server.Plan;
+
+    @Prop({required: true})
+    workspaceId!: string;
 
     files: server.FileAttach[] = [];
 
     public async mounted(): Promise<void> {
-        this.files = await attachmentService.getAttachments(`${this.task.id}`)
+        this.files = await attachmentService.getAttachments(`${this.task.id}`, this.workspaceId)
     }
 
     get images(): server.FileAttach[] {
@@ -31,11 +34,11 @@ export default class TaskSummary extends Vue {
     }
 
     getImagePreview(file: server.FileAttach): string {
-        return attachmentService.getImagePreviewUri("PLANS", file.id);
+        return attachmentService.getImagePreviewUri("PLANS", file.id, this.workspaceId);
     }
 
     async downloadDocument(doc: server.FileAttach): Promise<void> {
-        const uri: string = attachmentService.getFileUrl("PLANS", doc.id);
+        const uri: string = attachmentService.getFileUrl("PLANS", doc.id, this.workspaceId);
 
         const a: HTMLAnchorElement = document.createElement("a");
 

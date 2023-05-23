@@ -15,7 +15,7 @@ import { store } from "@/store";
 })
 export default class TaskDetail extends Vue {
     @Prop({ required: true })
-    task!: server.Task;
+    task!: server.Plan;
 
     clearTask(): void {
         store.actions.crowdplanning.setSelectedTask(null);

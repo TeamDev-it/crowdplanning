@@ -13,7 +13,7 @@ export default class TaskMap extends Vue {
     states!: server.State[];
 
     @Prop({ default: [] })
-    tasks!: server.Task[];
+    tasks!: server.Plan[];
 
     @Prop({ default: null })
     center!: number[] | null;
@@ -53,7 +53,7 @@ export default class TaskMap extends Vue {
                     }
                 }))
             },
-            dataMapping: (i: locations.Location & { task: server.Task }, updateMap) => {
+            dataMapping: (i: locations.Location & { task: server.Plan }, updateMap) => {
                 const data = { id: i.id, state: i.task.state };
 
                 // osservo l'oggetto in mappa.
@@ -89,7 +89,7 @@ export default class TaskMap extends Vue {
                     .map(t => Object.assign({
                         "id": 0,
                         "relationId": t.id,
-                        "relationType": t.group.taskType,
+                        "relationType": t.group.id,
                         task: t
                     }, t.location)));
         }

@@ -1,35 +1,28 @@
 import { CONFIGURATION } from "@/configuration";
 import { baseRestService } from "./baseRestService";
-
-class TasksService extends baseRestService {
+class PlansService extends baseRestService {
     constructor() {
         super();
         this.baseUrl = () => CONFIGURATION.PlansServiceUri;
     }
 
-    async createTask(groupid: string, task: server.Task): Promise<server.Task | null> {
-        return await this.Post<server.Task>(`/group/${groupid}`, task);
+    public async Set(groupId: string, model: server.Plan): Promise<server.Plan | null> {
+        if (!model.id) return await this.Post<server.Plan>(`/group/${groupId}`, model);
+
+        return await this.Put<server.Plan>(`/group/${groupId}`, model);
     }
 
-    async updateTask(task: server.Task): Promise<server.Task | null> {
-        return await this.Put<server.Task>(`/${task.id}`, task);
+    public async getPlans(): Promise<server.Plan[]> {
+        return await this.Get<server.Plan[]>(``) || [];
     }
 
-    async getTasks(workspaceId: string): Promise<server.Task[]> {
-        return await this.Get<server.Task[]>(`/group/plans`, { workspaceId }) || [];
+    public async getPublicPlans(workspaceId: string): Promise<server.Plan[]> {
+        return await this.Get<server.Plan[]>(`/${workspaceId}/getAllPublic`) || [];
     }
 
-    async getTask(id: string): Promise<server.Task | null> {
-        return await this.Get<server.Task>(`/${id}`);
-    }
-
-    async deleteTask(task: server.Task): Promise<void> {
-        await this.delete(`/${task.id}`);
-    }
-
-    async getStates(workspaceId: string): Promise<server.State[]> {
-        return (await this.Get<server.State[]>(`/d/states/plans`, { workspaceId })) || [];
+    async deleteTask(id: string): Promise<void> {
+        await this.delete(`/${id}`);
     }
 }
 
-export const tasksService = new TasksService();
+export const plansService = new PlansService();

@@ -34,12 +34,12 @@ class AttachmentService extends baseRestService {
         }
     }
 
-    public async getAttachments(id: string, skip = 0, take = 100): Promise<server.FileAttach[]> {
-        return await this.Get<server.FileAttach[]>(`/PLANS-${id}/plans/data`, { id: id, workspaceId: CONFIGURATION.workspaceId, skip, take }) ?? [];
+    public async getAttachments(id: string, workspaceId: string, skip = 0, take = 100): Promise<server.FileAttach[]> {
+        return await this.Get<server.FileAttach[]>(`/PLANS-${id}/plans/data`, { id: id, workspaceId: workspaceId, skip, take }) ?? [];
     }
 
-    public getImagePreviewUri(context: string, fileId: string): string {
-        return `${this.baseUrl()}/${context}/plans/thumb/${fileId}?workspaceId=${CONFIGURATION.workspaceId}&width=400&height=400&quality=90`;
+    public getImagePreviewUri(context: string, fileId: string, workspaceId: string): string {
+        return `${this.baseUrl()}/${context}/plans/thumb/${fileId}?workspaceId=${workspaceId}&width=400&height=400&quality=90`;
     }
 
     public getImageUri(context: string, fileId: string): string {
@@ -50,12 +50,12 @@ class AttachmentService extends baseRestService {
         return await this.Get<server.FileAttach[]>(`/${context}/data`, { skip, take });
     }
 
-    public async getFile(context: string, id: string): Promise<server.FileResult | null> {
-        return await this.Get<server.FileResult | null>(`/${context}/file/${id}`, { workspaceId: CONFIGURATION.workspaceId });
+    public async getFile(context: string, id: string, workspaceId: string): Promise<server.FileResult | null> {
+        return await this.Get<server.FileResult | null>(`/${context}/file/${id}`, { workspaceId: workspaceId });
     }
 
-    public getFileUrl(context: string, id: string): string {
-        return `${CONFIGURATION.FileServiceUri}/${context}/plans/file/${id}?workspaceId=${CONFIGURATION.workspaceId}`;
+    public getFileUrl(context: string, id: string, workspaceId: string): string {
+        return `${CONFIGURATION.FileServiceUri}/${context}/plans/file/${id}?workspaceId=${workspaceId}`;
     }
 }
 

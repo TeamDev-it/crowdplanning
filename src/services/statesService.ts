@@ -1,5 +1,6 @@
 import { CONFIGURATION } from "@/configuration";
 import { baseRestService } from "./baseRestService";
+import { store } from "@/store";
 
 class StatesService extends baseRestService {
     constructor() {
@@ -8,7 +9,7 @@ class StatesService extends baseRestService {
     }
 
     public async getStates(workspaceId: string): Promise<server.State[]> {
-        return (await this.Get<server.State[]>(`/states`, { workspaceId })) || [];
+        return await this.Get<server.State[]>(`/states/${workspaceId}`) || [];
     }
 
     public async setState(state: server.State): Promise<server.State | null> {

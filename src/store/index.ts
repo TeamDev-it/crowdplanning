@@ -7,7 +7,7 @@ Vue.use(Vuex);
 export interface CrowdplanningStoreModel {
   selectedCategory: server.Group | null,
   searchedValue: string,
-  selectedTask: server.Task | null,
+  selectedTask: server.Plan | null,
   states: { [groupId: string]: server.State[] },
   groups: server.Group[],
 }
@@ -25,7 +25,7 @@ export interface CrowdplanningStoreGetters {
 export interface CrowdplanningStoreActions {
   setSelectedCategory(value: server.Group | null): void;
   setSearchedValue(value: string): void;
-  setSelectedTask(value: server.Task | null): void;
+  setSelectedTask(value: server.Plan | null): void;
   setStates(model: { groupId: string, states: server.State[] }): void;
 }
 
@@ -52,11 +52,11 @@ export const crowdplanningStore = {
     SET_SEARCHED_VALUE(state: CrowdplanningStoreModel, model: string) {
       state.searchedValue = model;
     },
-    SET_SELECTED_TASK(state: CrowdplanningStoreModel, model: server.Task) {
+    SET_SELECTED_TASK(state: CrowdplanningStoreModel, model: server.Plan) {
       state.selectedTask = model;
     },
     SET_STATES(state: CrowdplanningStoreModel, model: { groupId: string, states: server.State[] }) {
-      state.states[model.groupId] = model.states;
+      Vue.set(state.states, model.groupId, model.states);
     }
   },
   actions: {
@@ -66,8 +66,11 @@ export const crowdplanningStore = {
     setSearchedValue(context, model: string): void {
       context.commit("SET_SEARCHED_VALUE", model);
     },
-    setSelectedTask(context, model: server.Task): void {
+    setSelectedTask(context, model: server.Plan): void {
       context.commit("SET_SELECTED_TASK", model);
+    },
+    setStates(context, model: { groupId: string, states: server.State[] }): void {
+      context.commit("SET_STATES", model);
     }
   } as ActionTree<CrowdplanningStoreModel, unknown>
 };

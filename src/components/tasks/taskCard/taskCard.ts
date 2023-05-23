@@ -8,7 +8,7 @@ import { CONFIGURATION } from "@/configuration";
 @Component
 export default class TaskCard extends Vue {
     @Prop()
-    value!: server.Task;
+    value!: server.Plan;
 
     @Prop({ default: true })
     showCommands!: boolean;
@@ -32,7 +32,7 @@ export default class TaskCard extends Vue {
 
     private getTaskImageUrl(): string {
         try {
-            return attachmentService.getFileUrl(CONFIGURATION.defaultTaskType, `${CONFIGURATION.defaultTaskType}-${this.value.workspaceId}-${this.value.id}`);
+            return attachmentService.getFileUrl(CONFIGURATION.defaultTaskType, `${CONFIGURATION.defaultTaskType}-${this.value.workspaceId}-${this.value.id}`, this.value.workspaceId!);
         } catch (err) {
             return '';
         }

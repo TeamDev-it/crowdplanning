@@ -6,7 +6,7 @@ import SearchWidget from "../arcgisWidgets/search/search.vue";
 import dateTime from "../dateTime/dateTime.vue";
 import DatePickerVue from "v-calendar/src/components/DatePicker.vue";
 import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
-import { tasksService } from "@/services/tasksService";
+import { plansService } from "@/services/tasksService";
 import { attachmentService } from "@/services/attachmentService";
 import { imagesContentTypes } from "@/@types/inputFileTypes";
 
@@ -22,7 +22,7 @@ export default class TaskModal extends Vue {
     @Prop({ required: true })
     value!: IProjectableModel<server.Group[]>;
 
-    task: server.Task = { groupId: '' } as server.Task;
+    task: server.Plan = { groupId: '' } as server.Plan;
     files: Array<File> = [];
     images: Array<File> = [];
     coverImage: File | null = null;
@@ -126,39 +126,51 @@ export default class TaskModal extends Vue {
             return;
         }
         // Save new task
-        const result: server.Task | null = await tasksService.createTask(this.task.groupId, this.task);
+        const result: server.Plan | null = await plansService.Set(this.task.groupId, this.task);
 
         if (!result) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
         }
 
-        const relatedItemOptions: server.relatedItemOptions = {
-            workspaceId: result?.workspaceId ?? '',
-            relationId: result?.id,
-            relationType: result.group.taskType,
-            citizenCanSeeOthersComments: this.citizenCanSeeOthersComments,
-            citizenCanSeeOthersRatings: this.citizenCanSeeOthersRatings
-        };
-
-        const relatedItemOptionsResult = await MessageService.Instance.ask("SAVE_RELATED_ITEM_OPTIONS", relatedItemOptions);
-
         if (this.coverImage) {
-            await attachmentService.saveFile(result.group.taskType, `${result.group.taskType}-${result.workspaceId}-${result.id}`, this.coverImage);
+            try {
+                await attachmentService.saveFile(result.group.id, `${result.group.id}-${result.workspaceId}-${result.id}`, this.coverImage);
+                result.hasCoverImage = true;
+            } catch (err) {
+                await this.rollbackTaskCreation(result.id);
+            }
         }
 
         if (this.images.length) {
             // upload images
-            await attachmentService.saveAttachments(this.images, `${result.group.taskType}-${result.id}`);
+            try {
+                await attachmentService.saveAttachments(this.images, `${result.group.id}-${result.id}`);
+            } catch (err) {
+                await this.rollbackTaskCreation(result.id);
+            }
         }
 
         if (this.files.length) {
             // upload files
-            await attachmentService.saveAttachments(this.files, `${result.group.taskType}-${result.id}`);
+            try {
+                await attachmentService.saveAttachments(this.files, `${result.group.id}-${result.id}`);
+            } catch {
+                await this.rollbackTaskCreation(result.id);
+            }
         }
+
+        // Update plan with new properties
+        await plansService.Set(this.task.groupId, result);
 
         MessageService.Instance.send("PLANS_CREATED", result);
 
         this.close();
+    }
+
+    private async rollbackTaskCreation(id: string): Promise<void> {
+        await plansService.deleteTask(id);
+
+        MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
     }
 }
