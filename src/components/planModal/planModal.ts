@@ -22,12 +22,13 @@ export default class PlanModal extends Vue {
     @Prop({ required: true })
     value!: IProjectableModel<server.Group[]>;
 
-    task: server.Plan = { groupId: '' } as server.Plan;
+    task: server.Plan = { groupId: '', visibleLayers: [] } as unknown as server.Plan;
     files: Array<File> = [];
     images: Array<File> = [];
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
+    tmpVisibleLayer = "";
 
     errors: { [id: string]: string } = {};
 
@@ -172,5 +173,18 @@ export default class PlanModal extends Vue {
         await plansService.deleteTask(id);
 
         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
+    }
+
+    public confirmVisibleLayer() {
+        debugger
+        if (!this.tmpVisibleLayer) return;
+
+        this.task.visibleLayers.push(this.tmpVisibleLayer);
+
+        this.tmpVisibleLayer = "";
+    }
+
+    removeLayer(idx: number): void {
+        this.task.visibleLayers.splice(idx, 1);
     }
 }

@@ -1,3 +1,11 @@
+class MapType {
+    public static readonly topographic: string = "topographic";
+    public static readonly imagery: string = 'imagery';
+    public static readonly streets: string = "streets";
+    public static readonly streetsNight: string = "streets night";
+    public static readonly navigation: string = "navigation";
+}
+
 export const CONFIGURATION = {
     PlansServiceUri: "http://localhost:5000/crowdplanning",
     priorities: [{ id: 5, name: 'priority.emergency', icon: '', color: '#c62828' },
@@ -12,5 +20,12 @@ export const CONFIGURATION = {
     domainWorkspaceMap: new Map<string, string>([
         ["app.v2.wise.town", "12345678-a111-b222-c333-123456789abd"],
         ["localhost", "12345678-a111-b222-c333-123456789abd"]
-    ])
+    ]),
+    planMapType: [
+        { value: MapType.topographic, labelKey: 'plans.modal.maptype.topographic', labelText: 'Topografica' },
+        { value: MapType.imagery, labelKey: 'plans.modal.maptype.imagery', labelText: 'Imagery' },
+        { value: MapType.streets, labelKey: 'plans.modal.maptype.streets', labelText: "Streets" },
+        { value: MapType.streetsNight, labelKey: 'plans.modal.maptype.streets-night', labelText: "Streets night" },
+        { value: MapType.navigation, labelKey: 'plans.modal.maptype.navigation', labelText: "Navigation" }
+    ] as Array<{ value: string, labelKey: string, labelText: string }>
 };

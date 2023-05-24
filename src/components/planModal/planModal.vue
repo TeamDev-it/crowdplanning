@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="confirm">
+  <form @submit.prevent="confirm" @keydown.enter="$event.preventDefault()">
     <div class="modal task">
       <header class="title">
         <input
@@ -30,11 +30,30 @@
         </div>
         <div class="area">
           <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-          <search-widget @locationSelected="locationSelected" @keydown.native.stop></search-widget>
+          <search-widget @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></search-widget>
         </div>
         <div class="area">
           <small>{{ $t('plans.modal.cover-image', 'Immagine di copertina').toLocaleUpperCase() }}</small>
-          <input type="file" :accept="imageContentTypes" @change="$event => onChangeCoverImage($event)" required @keydown.native.stop />
+          <input type="file" :accept="imageContentTypes" @change="$event => onChangeCoverImage($event)" required @keydown.native.prevent />
+        </div>
+      </header>
+      <header class="map-settings">
+        <div class="area">
+          <small>{{ $t('plans.modal.map-type-label', "Tipologia mappa").toUpperCase() }}</small>
+          <select v-model="task.mapType" @keydown.native.stop>
+            <option value="topographic">{{ $t('plans.modal.maptype.topographic', 'Topografica') }}</option>
+            <option 
+          </select>
+        </div>
+        <div class="area">
+          <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
+          <input type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="$event => confirmVisibleLayer()" />
+        </div>
+        <div class="area layers">
+          <div v-for="(layer, idx) in task.visibleLayers">
+            <i class="ti ti-x" @click="removeLayer(idx)"></i>
+            <p>{{ layer }}</p>
+          </div>
         </div>
       </header>
       <header>
@@ -102,7 +121,7 @@
         </div>
         <div class="area fullspace">
           <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI') }}</span>
-          <toggle v-model="citizenCanSeeOthersRatings" @keydown.native.stop/>
+          <toggle v-model="citizenCanSeeOthersRatings" @keydown.native.stop />
         </div>
       </header>
       <footer>
