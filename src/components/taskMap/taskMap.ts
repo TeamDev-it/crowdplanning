@@ -28,7 +28,7 @@ export default class TaskMap extends Vue {
         return [{
             id: this.group.id,
             name: this.group.name,
-            dataType: this.group.taskType,
+            dataType: "",
             visible: true,
             data: this.datas,
             type: "managed",

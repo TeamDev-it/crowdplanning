@@ -14,7 +14,7 @@
           </button>
         </div>
         <div class="state-container">
-          <drop tag="article" @drop="handleDrop(s, ...arguments)" v-for="(s, idx) in sortedStates.filter(s => s.state == state)" :key="`c-${idx}`">
+          <drop tag="article" @drop="handleDrop(s, ...arguments)" v-for="(s, idx) in sortedStates.filter(s => s.generalStatus == state)" :key="`c-${idx}`">
             <drag class="drag mini-card" :transfer-data="s">
               <i class="wt drag_indicator"></i>
 

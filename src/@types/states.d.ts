@@ -6,5 +6,6 @@ declare namespace server {
     name: string;
     state: string;
     orderIndex: number;
+    generalStatus: string;
   }
 }

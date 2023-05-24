@@ -8,8 +8,12 @@ class StatesService extends baseRestService {
         this.baseUrl = () => CONFIGURATION.PlansServiceUri;
     }
 
-    public async getStates(workspaceId: string): Promise<server.State[]> {
-        return await this.Get<server.State[]>(`/states/${workspaceId}`) || [];
+    public async getStates(group: server.Group): Promise<server.State[]> {
+        const result = await this.Get<server.State[]>(`/states/${group.workspaceId}`) || [];
+
+        store.actions.crowdplanning.setStates({ groupId: group.id, states: result });
+
+        return result;
     }
 
     public async setState(state: server.State): Promise<server.State | null> {
