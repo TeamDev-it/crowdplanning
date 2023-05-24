@@ -16,7 +16,7 @@ class GroupsService extends baseRestService {
     }
 
     async deleteGroup(id: string): Promise<unknown> {
-        return await this.Delete(`/group/${id}`);
+        return await this.Delete(`/groups/${id}`);
     }
 
     public async Set(model: server.Group): Promise<server.Group | null> {

@@ -5,10 +5,10 @@
     <div class="crowdplanning-content" v-if="!loading">
       <div class="groups">
         <scrollable-container>
-          <crowdplanning-group-list v-if="plansGroupRoot && plansGroupRoot.id" :groups="groups" :rootGroup="plansGroupRoot"></crowdplanning-group-list>
+          <crowdplanning-group-list :key="componentKey" v-if="plansGroupRoot && plansGroupRoot.id" :groups="groups" :rootGroup="plansGroupRoot" @rootGroupChanged="rootGroupChanged"></crowdplanning-group-list>
         </scrollable-container>
         <div class="btn">
-          <button class="square success" v-if="currentUser && hasPermission('canCreatePlansGroup')">
+          <button class="square success" v-if="currentUser && hasPermission('groups.cancreate')">
             <i class="ti ti-plus" @click="createGroup()"></i>
           </button>
         </div>

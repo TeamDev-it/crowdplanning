@@ -9,6 +9,16 @@
   background-color: var(--white);
   border-radius: var(--border-radius);
 
+  .group-detail {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .commands {
+    display: none;
+  }
+
   .text {
     text-transform: uppercase;
   }
@@ -16,6 +26,14 @@
   &.active {
     background-color: var(--ok-color);
     color: var(--white);
+  }
+}
+
+.item:hover {
+  justify-content: space-evenly !important;
+
+  .commands {
+    display: inline;
   }
 }
 

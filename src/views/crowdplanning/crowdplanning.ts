@@ -15,6 +15,7 @@ import { cloneDeep } from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { MessageService, Projector } from "vue-mf-module";
+import { Watch } from "vue-property-decorator";
 
 @Component({
     components: {
@@ -35,6 +36,8 @@ export default class Crowdplanning extends Vue {
     states: server.State[] = [];
     loading = true;
     workspaceId = "";
+
+    componentKey: number = 0;
 
     get groups(): server.Group[] {
         return this.plansGroupRoot?.children ?? [];
@@ -79,6 +82,11 @@ export default class Crowdplanning extends Vue {
 
     private plansCreated(task: server.Plan): void {
         this.plans.push(task);
+    }
+
+    public rootGroupChanged(group: server.Group): void {
+        this.plansGroupRoot = group;
+        this.componentKey++;
     }
 
     private async getData(): Promise<void> {
@@ -127,6 +135,7 @@ export default class Crowdplanning extends Vue {
 
         if (result) {
             this.plansGroupRoot?.children.push(result);
+            this.componentKey++;
         } else {
             // error message
             MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.group-create-error", "Errore durante la creazione della categoria"));
