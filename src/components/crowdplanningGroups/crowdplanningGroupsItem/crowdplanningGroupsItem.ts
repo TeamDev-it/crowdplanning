@@ -9,4 +9,8 @@ export default class CrowdplanningGroupsItem extends Vue {
 
     @Prop({required: true})
     selectedCategory!: server.Group | null;
+
+    get iconCode(): string {
+        return `ti ti-${this.value.iconCode}`;
+    }
 }

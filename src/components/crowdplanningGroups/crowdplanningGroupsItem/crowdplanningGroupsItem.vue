@@ -1,5 +1,6 @@
 <template>
     <div class="item" :class="{active: selectedCategory === value}">
+        <i :class="iconCode"></i>
         <span class="text">{{ value.name }}</span>
     </div>
 </template>

@@ -18,7 +18,7 @@ import { imagesContentTypes } from "@/@types/inputFileTypes";
         DragAndDrop
     }
 })
-export default class TaskModal extends Vue {
+export default class PlanModal extends Vue {
     @Prop({ required: true })
     value!: IProjectableModel<server.Group[]>;
 

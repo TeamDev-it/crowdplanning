@@ -1,10 +1,10 @@
 import CrowdplanningGroupList from "@/components/crowdplanningGroups/crowdplanningGroupsList/crowdplanningGroupsList.vue";
 import CrowdplanningHeader from "@/components/crowdplanningHeader/crowdplanningHeader.vue";
 import groupModal from "@/components/groupModal/groupModal.vue";
+import PlanModal from "@/components/planModal/planModal.vue";
 import ScrollableContainer from "@/components/scrollableContainer/scrollableContainer.vue";
 import TaskDetail from "@/components/taskDetail/taskDetail.vue";
 import TaskMap from "@/components/taskMap/taskMap.vue";
-import TaskModal from "@/components/taskModal/taskModal.vue";
 import TaskList from "@/components/tasks/taskList/taskList.vue";
 import { CONFIGURATION } from "@/configuration";
 import { groupsService } from "@/services/groupsService";
@@ -22,7 +22,7 @@ import { MessageService, Projector } from "vue-mf-module";
         ScrollableContainer,
         CrowdplanningGroupList,
         TaskList,
-        TaskModal,
+        PlanModal,
         TaskMap,
         TaskDetail
     },
@@ -134,6 +134,6 @@ export default class Crowdplanning extends Vue {
     }
 
     async addTask(): Promise<void> {
-        await Projector.Instance.projectAsyncTo(TaskModal as never, this.groups);
+        await Projector.Instance.projectAsyncTo(PlanModal as never, this.groups);
     }
 }

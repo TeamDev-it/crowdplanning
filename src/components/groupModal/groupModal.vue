@@ -8,17 +8,23 @@
     </header>
     <section>
       <div class="area">
-        <label>{{ $t(`task.group.create.shortName`, 'nome breve del gruppo') }}</label>
+        <label>{{ $t(`plan.group.create.shortName`, 'nome breve del gruppo') }}</label>
         <input :disabled="value.data.default" v-model="value.data.name" required="true" :placeholder="$t('task.group.create.placeholder', 'inserisci un nome per il tuo gruppo')" v-validate="(errs, _a) => setError('title', errs)" />
       </div>
       <div class="area">
-        <label>{{ $t(`task.group.create.description`, 'descrizione breve del gruppo') }}</label>
-        <input v-model="value.data.description" :placeholder="$t('task.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')" />
+        <label>{{ $t(`plan.group.create.description`, 'descrizione breve del gruppo') }}</label>
+        <input v-model="value.data.description" :placeholder="$t('plan.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')" />
       </div>
       <template v-if="!value.data.default">
         <div class="area">
-          <label>{{ $t('task.group.public', 'marca il gruppo come pubblico e disponibile per le applicazioni non autenticate') }}</label>
+          <label>{{ $t('plan.group.public', 'marca il gruppo come pubblico e disponibile per le applicazioni non autenticate') }}</label>
           <toggle v-model="value.data.public" />
+        </div>
+      </template>
+      <template>
+        <div class="area">
+          <label>{{ $t('plan.group.create.icon.label', "Personalizza il gruppo con un'icona") }}</label>
+          <input v-model="value.data.iconCode" :placeholder="$t('plan.group.create.icon.placeholder', 'Inserisci un codice tabler icon')" />
         </div>
       </template>
       <div class="area" v-if="value.data.id">

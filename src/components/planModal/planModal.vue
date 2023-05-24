@@ -115,8 +115,8 @@
   </form>
 </template>
 
-<script lang="ts" src="./taskModal.ts" />
+<script lang="ts" src="./planModal.ts" />
 
 <style lang="less">
-@import url(./taskModal.less);
+@import url(./planModal.less);
 </style>
