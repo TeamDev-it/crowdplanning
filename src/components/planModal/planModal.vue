@@ -39,10 +39,9 @@
       </header>
       <header class="map-settings">
         <div class="area">
-          <small>{{ $t('plans.modal.map-type-label', "Tipologia mappa").toUpperCase() }}</small>
+          <small>{{ $t('plans.modal.map-type-label', 'Tipologia mappa').toUpperCase() }}</small>
           <select v-model="task.mapType" @keydown.native.stop>
-            <option value="topographic">{{ $t('plans.modal.maptype.topographic', 'Topografica') }}</option>
-            <option 
+            <option v-for="mapType in mapTypeFromConfiguration" :key="`${mapType.value}${mapType.labelKey}${mapType.labelText}`" :value="mapType.value">{{ $t(mapType.labelKey, mapType.labelText) }}</option>
           </select>
         </div>
         <div class="area">
@@ -56,31 +55,32 @@
           </div>
         </div>
       </header>
-      <header>
-        <div class="editor">
-          <small>{{ $t('plans.modal.description', 'descrizione*') }}</small>
+      <header class="editor">
+        <div class="area">
+          <small>{{ $t('plans.modal.description', 'descrizione*').toUpperCase() }}</small>
           <content-editor v-model="task.description" @keydown.native.stop></content-editor>
         </div>
-      </header>
-      <header class="dates">
-        <div class="area fixed">
-          <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
-          <div class="date-picker-container">
-            <date-picker-vue v-model="task.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
-              <template v-slot="{ inputEvents }">
-                <date-time :value="task.startDate" :events="inputEvents"></date-time>
-              </template>
-            </date-picker-vue>
+        <div class="dates">
+          <div class="start-date">
+            <small>{{ $t('plans.modal.start-date', 'data inizio').toUpperCase() }}</small>
+            <div class="date-picker-container">
+              <date-picker-vue v-model="task.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
+                <template v-slot="{ inputEvents }">
+                  <date-time :value="task.startDate" :events="inputEvents"></date-time>
+                </template>
+              </date-picker-vue>
+            </div>
           </div>
-        </div>
-        <div class="area fixed">
-          <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
-          <div class="date-picker-container">
-            <date-picker-vue v-model="task.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
-              <template v-slot="{ inputEvents }">
-                <date-time :value="task.dueDate" :events="inputEvents"></date-time>
-              </template>
-            </date-picker-vue>
+
+          <div class="due-date">
+            <small>{{ $t('plans.modal.due-date', 'data fine').toUpperCase() }}</small>
+            <div class="date-picker-container">
+              <date-picker-vue v-model="task.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
+                <template v-slot="{ inputEvents }">
+                  <date-time :value="task.dueDate" :events="inputEvents"></date-time>
+                </template>
+              </date-picker-vue>
+            </div>
           </div>
         </div>
       </header>
@@ -136,6 +136,14 @@
 
 <script lang="ts" src="./planModal.ts" />
 
-<style lang="less">
+<style lang="less" scoped>
 @import url(./planModal.less);
+</style>
+
+<style lang="less">
+.date-picker-container {
+  .datetime {
+    height: 100%;
+  }
+}
 </style>

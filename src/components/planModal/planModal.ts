@@ -9,6 +9,7 @@ import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
 import { plansService } from "@/services/tasksService";
 import { attachmentService } from "@/services/attachmentService";
 import { imagesContentTypes } from "@/@types/inputFileTypes";
+import { CONFIGURATION } from "@/configuration";
 
 @Component({
     components: {
@@ -22,7 +23,7 @@ export default class PlanModal extends Vue {
     @Prop({ required: true })
     value!: IProjectableModel<server.Group[]>;
 
-    task: server.Plan = { groupId: '', visibleLayers: [] } as unknown as server.Plan;
+    task: server.Plan = {} as server.Plan;
     files: Array<File> = [];
     images: Array<File> = [];
     coverImage: File | null = null;
@@ -36,8 +37,18 @@ export default class PlanModal extends Vue {
         return imagesContentTypes;
     }
 
+    get mapTypeFromConfiguration(): Array<{ value: string, labelKey: string, labelText: string }> {
+        return CONFIGURATION.planMapType;
+    }
+
     mounted() {
-        this.task.state = "Review";
+        this.task = {
+            ...this.task,
+            groupId: '',
+            state: "Review",
+            visibleLayers: [],
+            mapType: this.task.mapType ? this.task.mapType : this.mapTypeFromConfiguration[0].value
+        };
     }
 
     setError(id: string, value: string) {
@@ -88,6 +99,18 @@ export default class PlanModal extends Vue {
         this.coverImage = (event.target as any).files[0];
     }
 
+    public confirmVisibleLayer() {
+        if (!this.tmpVisibleLayer) return;
+
+        this.task.visibleLayers.push(this.tmpVisibleLayer);
+
+        this.tmpVisibleLayer = "";
+    }
+
+    removeLayer(idx: number): void {
+        this.task.visibleLayers.splice(idx, 1);
+    }
+
     private requiredFieldsSatisfied(): boolean {
         if (!this.task.location) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
@@ -122,69 +145,9 @@ export default class PlanModal extends Vue {
         return true;
     }
 
-    async confirm(): Promise<void> {
-        if (!this.requiredFieldsSatisfied()) {
-            return;
-        }
-        // Save new task
-        const result: server.Plan | null = await plansService.Set(this.task.groupId, this.task);
-
-        if (!result) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
-            return;
-        }
-
-        if (this.coverImage) {
-            try {
-                await attachmentService.saveFile(result.group.id, `${result.group.id}-${result.workspaceId}-${result.id}`, this.coverImage);
-                result.hasCoverImage = true;
-            } catch (err) {
-                await this.rollbackTaskCreation(result.id);
-            }
-        }
-
-        if (this.images.length) {
-            // upload images
-            try {
-                await attachmentService.saveAttachments(this.images, `${result.group.id}-${result.id}`);
-            } catch (err) {
-                await this.rollbackTaskCreation(result.id);
-            }
-        }
-
-        if (this.files.length) {
-            // upload files
-            try {
-                await attachmentService.saveAttachments(this.files, `${result.group.id}-${result.id}`);
-            } catch {
-                await this.rollbackTaskCreation(result.id);
-            }
-        }
-
-        // Update plan with new properties
-        await plansService.Set(this.task.groupId, result);
-
-        MessageService.Instance.send("PLANS_CREATED", result);
-
-        this.close();
-    }
-
     private async rollbackTaskCreation(id: string): Promise<void> {
         await plansService.deleteTask(id);
 
         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
-    }
-
-    public confirmVisibleLayer() {
-        debugger
-        if (!this.tmpVisibleLayer) return;
-
-        this.task.visibleLayers.push(this.tmpVisibleLayer);
-
-        this.tmpVisibleLayer = "";
-    }
-
-    removeLayer(idx: number): void {
-        this.task.visibleLayers.splice(idx, 1);
     }
 }
