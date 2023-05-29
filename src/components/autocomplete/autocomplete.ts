@@ -35,6 +35,7 @@ export default class Autocomplete extends Vue {
     loading = true;
 
     async mounted(): Promise<void> {
+        debugger
         if (this.inputValues) {
             this.datas = this.inputValues;
         } else {

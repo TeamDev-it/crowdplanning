@@ -120,7 +120,14 @@
           <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
         </div>
         <div class="area fullspace" v-if="hasClusterParent">
-          <autocomplete-plans :inputValues="plans" :selectValueCallback="autocompleteSelectValueCallback" :filterFunction="autocompleteFilterFunction"></autocomplete-plans>
+          <autocomplete
+            :inputValues="plans"
+            :selectValueCallback="autocompleteSelectValueCallback"
+            :filterFunction="autocompleteFilterFunction"
+            :labelKey="'PLANS.modal.plan.autocomplete'"
+            :placeholderKey="'PLANS.modal.plan.autocomplete.placeholder'"
+            :showThisPropertyAsItemName="'title'"
+          ></autocomplete>
         </div>
       </header>
       <header>
