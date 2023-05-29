@@ -5,6 +5,7 @@ import { attachmentService } from "@/services/attachmentService";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import FilesPreview from "../file/filesPreview/filesPreview.vue";
 import ImagesPreview from "../file/imagesPreview/imagesPreview.vue";
+import { CONFIGURATION } from "@/configuration";
 
 @Component({
     components: {
@@ -34,11 +35,11 @@ export default class TaskSummary extends Vue {
     }
 
     getImagePreview(file: server.FileAttach): string {
-        return attachmentService.getImagePreviewUri("PLANS", file.id, this.workspaceId);
+        return attachmentService.getImagePreviewUri(CONFIGURATION.context, file.id, this.workspaceId);
     }
 
     async downloadDocument(doc: server.FileAttach): Promise<void> {
-        const uri: string = attachmentService.getFileUrl("PLANS", doc.id, this.workspaceId);
+        const uri: string = attachmentService.getFileUrl(CONFIGURATION.context, doc.id, this.workspaceId);
 
         const a: HTMLAnchorElement = document.createElement("a");
 

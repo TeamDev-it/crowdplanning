@@ -6,17 +6,20 @@ import SearchWidget from "../arcgisWidgets/search/search.vue";
 import dateTime from "../dateTime/dateTime.vue";
 import DatePickerVue from "v-calendar/src/components/DatePicker.vue";
 import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
-import { plansService } from "@/services/tasksService";
-import { attachmentService } from "@/services/attachmentService";
+import { plansService } from "@/services/plansService";
 import { imagesContentTypes } from "@/@types/inputFileTypes";
 import { CONFIGURATION } from "@/configuration";
+import Autocomplete from "../autocomplete/autocomplete.vue";
+import { store } from "@/store";
+import { attachmentService } from "@/services/attachmentService";
 
 @Component({
     components: {
         SearchWidget,
         DatePickerVue,
         dateTime,
-        DragAndDrop
+        DragAndDrop,
+        Autocomplete
     }
 })
 export default class PlanModal extends Vue {
@@ -30,6 +33,7 @@ export default class PlanModal extends Vue {
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
     tmpVisibleLayer = "";
+    hasClusterParent = false;
 
     errors: { [id: string]: string } = {};
 
@@ -39,6 +43,10 @@ export default class PlanModal extends Vue {
 
     get mapTypeFromConfiguration(): Array<{ value: string, labelKey: string, labelText: string }> {
         return CONFIGURATION.planMapType;
+    }
+
+    get plans(): server.Plan[] {
+        return store.getters.crowdplanning.getPlans();
     }
 
     mounted() {
@@ -107,8 +115,65 @@ export default class PlanModal extends Vue {
         this.tmpVisibleLayer = "";
     }
 
+    public autocompleteSelectValueCallback(value: server.Plan): void {
+        this.task = { ...this.task, parentId: value.id };
+    }
+
+    autocompleteFilterFunction(plans: server.Plan[], filteringValue: string): server.Plan[] {
+        return plans.filter(x =>
+            x.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
+            x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
+    }
+
     removeLayer(idx: number): void {
         this.task.visibleLayers.splice(idx, 1);
+    }
+
+    async confirm(): Promise<void> {
+        if (!this.requiredFieldsSatisfied()) {
+            return;
+        }
+        // Save new task
+        const result: server.Plan | null = await plansService.Set(this.task.groupId, this.task);
+
+        if (!result) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
+            return;
+        }
+
+        if (this.coverImage) {
+            try {
+                await attachmentService.saveFile(result.group.id, `${result.group.id}-${result.workspaceId}-${result.id}`, this.coverImage);
+                result.hasCoverImage = true;
+            } catch (err) {
+                await this.rollbackTaskCreation(result.id);
+            }
+        }
+
+        if (this.images.length) {
+            // upload images
+            try {
+                await attachmentService.saveAttachments(this.images, `${result.group.id}-${result.id}`);
+            } catch (err) {
+                await this.rollbackTaskCreation(result.id);
+            }
+        }
+
+        if (this.files.length) {
+            // upload files
+            try {
+                await attachmentService.saveAttachments(this.files, `${result.group.id}-${result.id}`);
+            } catch {
+                await this.rollbackTaskCreation(result.id);
+            }
+        }
+
+        // Update plan with new properties
+        await plansService.Set(this.task.groupId, result);
+
+        MessageService.Instance.send("PLANS_CREATED", result);
+
+        this.close();
     }
 
     private requiredFieldsSatisfied(): boolean {

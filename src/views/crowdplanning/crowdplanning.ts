@@ -9,7 +9,7 @@ import TaskList from "@/components/tasks/taskList/taskList.vue";
 import { CONFIGURATION } from "@/configuration";
 import { groupsService } from "@/services/groupsService";
 import { statesService } from "@/services/statesService";
-import { plansService } from "@/services/tasksService";
+import { plansService } from "@/services/plansService";
 import { store } from "@/store";
 import { cloneDeep } from "lodash";
 import Vue from "vue";
@@ -121,7 +121,7 @@ export default class Crowdplanning extends Vue {
     }
 
     hasPermission(permission: string): boolean {
-        return this.$can(`${CONFIGURATION.defaultTaskType}.${permission}`);
+        return this.$can(`${CONFIGURATION.context}.${permission}`);
     }
 
     async createGroup(): Promise<void> {

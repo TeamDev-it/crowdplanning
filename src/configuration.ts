@@ -16,7 +16,7 @@ export const CONFIGURATION = {
     { id: 0, name: 'priority.none', icon: '', color: '#dce0e2' }],
     LocationServiceUri: "http://localhost:8081/tasks/",
     FileServiceUri: "https://api.v2.wise.town/generic",
-    defaultTaskType: "PLANS",
+    context: "PLANS",
     domainWorkspaceMap: new Map<string, string>([
         ["app.v2.wise.town", "12345678-a111-b222-c333-123456789abd"],
         ["localhost", "12345678-a111-b222-c333-123456789abd"]

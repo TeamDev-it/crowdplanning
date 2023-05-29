@@ -27,12 +27,12 @@ export default class TaskCard extends Vue {
     }
 
     selectTask(): void {
-        store.actions.crowdplanning.setSelectedTask(this.value);
+        store.actions.crowdplanning.setSelectedPlan(this.value);
     }
 
     private getTaskImageUrl(): string {
         try {
-            return attachmentService.getFileUrl(CONFIGURATION.defaultTaskType, `${CONFIGURATION.defaultTaskType}-${this.value.workspaceId}-${this.value.id}`, this.value.workspaceId!);
+            return attachmentService.getFileUrl(CONFIGURATION.context, `${CONFIGURATION.context}-${this.value.workspaceId}-${this.value.id}`, this.value.workspaceId!);
         } catch (err) {
             return '';
         }

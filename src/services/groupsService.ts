@@ -1,5 +1,6 @@
 import { CONFIGURATION } from "@/configuration";
 import { baseRestService } from "./baseRestService";
+import { store } from "@/store";
 
 class GroupsService extends baseRestService {
     constructor() {
@@ -8,19 +9,33 @@ class GroupsService extends baseRestService {
     }
 
     public async getGroups(): Promise<server.Group[]> {
-        return (await this.Get<server.Group[]>(`/groups`)) || [];
+        const result = (await this.Get<server.Group[]>(`/groups`)) || [];
+
+        store.actions.crowdplanning.setGroups(result);
+
+        return result;
     }
 
     public async getPublicGroups(workspaceId: string): Promise<server.Group[]> {
-        return (await this.Get<server.Group[]>(`/groups/public?workspaceid=${workspaceId}`)) || [];
+        const result = (await this.Get<server.Group[]>(`/groups/public?workspaceid=${workspaceId}`)) || [];
+
+        store.actions.crowdplanning.setGroups(result);
+
+        return result
     }
 
-    async deleteGroup(id: string): Promise<unknown> {
-        return await this.Delete(`/groups/${id}`);
+    async deleteGroup(id: string): Promise<void> {
+        await this.Delete(`/groups/${id}`);
+
+        store.actions.crowdplanning.deleteGroup(id);
     }
 
     public async Set(model: server.Group): Promise<server.Group | null> {
-        return await this.Post<server.Group>('/groups', model);
+        const result = await this.Post<server.Group>('/groups', model);
+
+        store.actions.crowdplanning.setGroup(model);
+
+        return result;
     }
 }
 

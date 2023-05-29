@@ -10,23 +10,31 @@ export interface CrowdplanningStoreModel {
   selectedTask: server.Plan | null,
   states: { [groupId: string]: server.State[] },
   groups: server.Group[],
+  plans: server.Plan[],
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CrowdplanningStoreGetters {
   getSelectedCategory(): server.Group | null;
   getSearchedValue(): string;
-  getSelectedTask(): string;
+  getSelectedPlan(): string;
   getStates(groupId: string): server.State[];
   getGroups(): server.Group[];
+  getPlans(): server.Plan[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CrowdplanningStoreActions {
   setSelectedCategory(value: server.Group | null): void;
   setSearchedValue(value: string): void;
-  setSelectedTask(value: server.Plan | null): void;
+  setSelectedPlan(value: server.Plan | null): void;
   setStates(model: { groupId: string, states: server.State[] }): void;
+  setPlans(model: server.Plan[]): void;
+  setGroups(model: server.Group[]): void;
+  deleteGroup(model: string): void;
+  deletePlan(model: string): void;
+  setPlan(model: server.Plan): void;
+  setGroup(model: server.Group): void;
 }
 
 export const crowdplanningStore = {
@@ -37,13 +45,16 @@ export const crowdplanningStore = {
     searchedValue: '',
     selectedTask: null,
     groups: [],
-    states: {}
+    states: {},
+    plans: []
   } as CrowdplanningStoreModel,
   getters: {
     getSelectedCategory: (state) => () => state.selectedCategory,
     getSearchedValue: (state) => () => state.searchedValue,
     getSelectedTask: (state) => () => state.selectedTask,
-    getStates: (state) => (groupId: string) => state.states[groupId]
+    getStates: (state) => (groupId: string) => state.states[groupId],
+    getPlans: (state) => () => state.plans,
+    getGroups: (state) => () => state.groups,
   } as GetterTree<CrowdplanningStoreModel, CrowdplanningStoreModel>,
   mutations: {
     SET_SELECTED_CATEGORY(state: CrowdplanningStoreModel, model: server.Group) {
@@ -57,6 +68,36 @@ export const crowdplanningStore = {
     },
     SET_STATES(state: CrowdplanningStoreModel, model: { groupId: string, states: server.State[] }) {
       Vue.set(state.states, model.groupId, model.states);
+    },
+    SET_PLANS(state: CrowdplanningStoreModel, model: server.Plan[]) {
+      state.plans = model;
+    },
+    SET_GROUPS(state: CrowdplanningStoreModel, model: server.Group[]) {
+      state.groups = model;
+    },
+    DELETE_GROUP(state: CrowdplanningStoreModel, model: string) {
+      const idx = state.groups.findIndex(x => x.id === model);
+
+      if (idx !== -1)
+        state.groups = state.groups.splice(idx, 1);
+    },
+    SET_GROUP(state: CrowdplanningStoreModel, model: server.Group) {
+      const idx = state.groups.findIndex(x => x.id === model.id);
+
+      if (idx !== -1)
+        state.groups = [...state.groups, state.groups[idx] = model];
+    },
+    DELETE_PLAN(state: CrowdplanningStoreModel, model: string) {
+      const idx = state.plans.findIndex(x => x.id === model);
+
+      if (idx !== -1)
+        state.plans = state.plans.splice(idx, 1);
+    },
+    SET_PLAN(state: CrowdplanningStoreModel, model: server.Plan) {
+      const idx = state.plans.findIndex(x => x.id === model.id);
+
+      if (idx !== -1)
+        state.plans = [...state.plans, state.plans[idx] = model];
     }
   },
   actions: {
@@ -71,6 +112,21 @@ export const crowdplanningStore = {
     },
     setStates(context, model: { groupId: string, states: server.State[] }): void {
       context.commit("SET_STATES", model);
+    },
+    setPlans(context, model: server.Plan[]): void {
+      context.commit("SET_PLANS", model);
+    },
+    setGroups(context, model: server.Group[]): void {
+      context.commit("SET_GROUPS", model);
+    },
+    deletePlan(context, model: string): void {
+      context.commit("DELETE_PLAN", model);
+    },
+    setPlan(context, model: server.Plan): void {
+      context.commit("SET_PLAN", model);
+    },
+    deleteGroup(context, model: string): void {
+      context.commit("DELETE_GROUP", model);
     }
   } as ActionTree<CrowdplanningStoreModel, unknown>
 };

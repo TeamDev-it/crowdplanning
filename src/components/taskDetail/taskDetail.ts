@@ -18,6 +18,6 @@ export default class TaskDetail extends Vue {
     task!: server.Plan;
 
     clearTask(): void {
-        store.actions.crowdplanning.setSelectedTask(null);
+        store.actions.crowdplanning.setSelectedPlan(null);
     }
 }

@@ -116,6 +116,15 @@
       </header>
       <header>
         <div class="area fullspace">
+          <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto') }}</span>
+          <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
+        </div>
+        <div class="area fullspace" v-if="hasClusterParent">
+          <autocomplete-plans :inputValues="plans" :selectValueCallback="autocompleteSelectValueCallback" :filterFunction="autocompleteFilterFunction"></autocomplete-plans>
+        </div>
+      </header>
+      <header>
+        <div class="area fullspace">
           <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
           <toggle v-model="citizenCanSeeOthersComments" @keydown.native.stop />
         </div>
