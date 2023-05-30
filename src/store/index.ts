@@ -7,7 +7,7 @@ Vue.use(Vuex);
 export interface CrowdplanningStoreModel {
   selectedCategory: server.Group | null,
   searchedValue: string,
-  selectedTask: server.Plan | null,
+  selectedPlan: server.Plan | null,
   states: { [groupId: string]: server.State[] },
   groups: server.Group[],
   plans: server.Plan[],
@@ -29,6 +29,7 @@ export interface CrowdplanningStoreActions {
   setSearchedValue(value: string): void;
   setSelectedPlan(value: server.Plan | null): void;
   setStates(model: { groupId: string, states: server.State[] }): void;
+  setState(model: { state: server.State, groupId: string }): void;
   setPlans(model: server.Plan[]): void;
   setGroups(model: server.Group[]): void;
   deleteGroup(model: string): void;
@@ -43,7 +44,7 @@ export const crowdplanningStore = {
   state: {
     selectedCategory: null,
     searchedValue: '',
-    selectedTask: null,
+    selectedPlan: null,
     groups: [],
     states: {},
     plans: []
@@ -51,7 +52,7 @@ export const crowdplanningStore = {
   getters: {
     getSelectedCategory: (state) => () => state.selectedCategory,
     getSearchedValue: (state) => () => state.searchedValue,
-    getSelectedTask: (state) => () => state.selectedTask,
+    getSelectedTask: (state) => () => state.selectedPlan,
     getStates: (state) => (groupId: string) => state.states[groupId],
     getPlans: (state) => () => state.plans,
     getGroups: (state) => () => state.groups,
@@ -63,11 +64,24 @@ export const crowdplanningStore = {
     SET_SEARCHED_VALUE(state: CrowdplanningStoreModel, model: string) {
       state.searchedValue = model;
     },
-    SET_SELECTED_TASK(state: CrowdplanningStoreModel, model: server.Plan) {
-      state.selectedTask = model;
+    SET_SELECTED_PLAN(state: CrowdplanningStoreModel, model: server.Plan) {
+      state.selectedPlan = model;
     },
     SET_STATES(state: CrowdplanningStoreModel, model: { groupId: string, states: server.State[] }) {
       Vue.set(state.states, model.groupId, model.states);
+    },
+    SET_STATE(state: CrowdplanningStoreModel, model: { state: server.State, groupId: string }) {
+      const states = [...state.states[model.groupId]];
+
+      const idx = states.findIndex(x => x.id === model.state.id);
+
+      if (idx !== -1) {
+        states[idx] = model.state;
+      } else {
+        states.push(model.state);
+      }
+
+      Vue.set(state.states, model.groupId, states);
     },
     SET_PLANS(state: CrowdplanningStoreModel, model: server.Plan[]) {
       state.plans = model;
@@ -107,11 +121,14 @@ export const crowdplanningStore = {
     setSearchedValue(context, model: string): void {
       context.commit("SET_SEARCHED_VALUE", model);
     },
-    setSelectedTask(context, model: server.Plan): void {
-      context.commit("SET_SELECTED_TASK", model);
+    setSelectedPlan(context, model: server.Plan): void {
+      context.commit("SET_SELECTED_PLAN", model);
     },
     setStates(context, model: { groupId: string, states: server.State[] }): void {
       context.commit("SET_STATES", model);
+    },
+    setState(context, model: { state: server.State, groupId: string }): void {
+      context.commit("SET_STATE", model);
     },
     setPlans(context, model: server.Plan[]): void {
       context.commit("SET_PLANS", model);

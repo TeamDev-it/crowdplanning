@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { Component, Prop } from 'vue-property-decorator';
+import { Component, Prop, Watch } from 'vue-property-decorator';
 
 @Component({})
 export default class Autocomplete extends Vue {
@@ -16,9 +16,6 @@ export default class Autocomplete extends Vue {
     dataSourceFunction!: dataSourceFunction<any> | null;
 
     @Prop({ required: true })
-    selectValueCallback!: Function;
-
-    @Prop({ required: true })
     filterFunction!: Function;
 
     @Prop({ default: "" })
@@ -33,9 +30,15 @@ export default class Autocomplete extends Vue {
     searchedText = "";
     datas: Array<{ id: string } & any> = [];
     loading = true;
+    suggestionOpen = false;
+
+    get filteredValues(): Array<any> {
+        if (!this.searchedText) return this.datas;
+
+        return this.filterFunction(this.datas, this.searchedText);
+    }
 
     async mounted(): Promise<void> {
-        debugger
         if (this.inputValues) {
             this.datas = this.inputValues;
         } else {
@@ -47,13 +50,15 @@ export default class Autocomplete extends Vue {
         this.loading = false;
     }
 
-    get filteredValues(): Array<any> {
-        if (!this.searchedText) return this.datas;
+    onItemClickHandler(item: any): void {
+        this.$emit('valueChanged', item);
 
-        return this.filterFunction(this.datas, this.searchedText);
+        this.searchedText = item[this.showThisPropertyAsItemName];
+
+        this.suggestionOpen = false;
     }
 
-    onItemClickHandler(item: any): void {
-        this.selectValueCallback(item);
+    onInputHandler() {
+        this.suggestionOpen = !!this.searchedText.length;
     }
 }

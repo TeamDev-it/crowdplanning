@@ -115,7 +115,7 @@ export default class PlanModal extends Vue {
         this.tmpVisibleLayer = "";
     }
 
-    public autocompleteSelectValueCallback(value: server.Plan): void {
+    public valueChanged(value: server.Plan): void {
         this.task = { ...this.task, parentId: value.id };
     }
 
@@ -143,7 +143,7 @@ export default class PlanModal extends Vue {
 
         if (this.coverImage) {
             try {
-                await attachmentService.saveFile(result.group.id, `${result.group.id}-${result.workspaceId}-${result.id}`, this.coverImage);
+                await attachmentService.saveFile(CONFIGURATION.context, `${CONFIGURATION.context}-${result.workspaceId}-${result.id}`, this.coverImage);
                 result.hasCoverImage = true;
             } catch (err) {
                 await this.rollbackTaskCreation(result.id);
@@ -153,7 +153,7 @@ export default class PlanModal extends Vue {
         if (this.images.length) {
             // upload images
             try {
-                await attachmentService.saveAttachments(this.images, `${result.group.id}-${result.id}`);
+                await attachmentService.saveAttachments(this.images, `${CONFIGURATION.context}-${result.id}`);
             } catch (err) {
                 await this.rollbackTaskCreation(result.id);
             }
@@ -162,7 +162,7 @@ export default class PlanModal extends Vue {
         if (this.files.length) {
             // upload files
             try {
-                await attachmentService.saveAttachments(this.files, `${result.group.id}-${result.id}`);
+                await attachmentService.saveAttachments(this.files, `${CONFIGURATION.context}-${result.id}`);
             } catch {
                 await this.rollbackTaskCreation(result.id);
             }

@@ -114,19 +114,20 @@
           ></drag-and-drop>
         </div>
       </header>
-      <header>
+      <header v-if="plans.length">
         <div class="area fullspace">
           <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto') }}</span>
           <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
         </div>
         <div class="area fullspace" v-if="hasClusterParent">
           <autocomplete
+            v-model="task.parentId"
             :inputValues="plans"
-            :selectValueCallback="autocompleteSelectValueCallback"
             :filterFunction="autocompleteFilterFunction"
             :labelKey="'PLANS.modal.plan.autocomplete'"
             :placeholderKey="'PLANS.modal.plan.autocomplete.placeholder'"
             :showThisPropertyAsItemName="'title'"
+            @valueChanged="valueChanged"
           ></autocomplete>
         </div>
       </header>

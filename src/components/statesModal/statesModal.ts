@@ -26,7 +26,7 @@ export default class statesModal extends Vue {
         return this.states.sort((a, b) => a.orderIndex - b.orderIndex);
     }
 
-    async mounted() {}
+    async mounted() { }
 
     handleDrop(to: server.State, from: server.State) {
         var temp = Array.from(this.sortedStates);
@@ -35,15 +35,18 @@ export default class statesModal extends Vue {
         this.recalcIndex(temp);
     }
 
-    handleDropState(state: string, from: server.State) {
-        if (state != from.state)
-            from.state = state;
+    handleDropState(generalStatus: string, from: server.State) {
+        if (generalStatus != from.generalStatus) {
+            from.generalStatus = generalStatus;
+
+            store.actions.crowdplanning.setState({ state: from, groupId: this.value.data.id });
+        }
     }
 
     recalcIndex(list: server.State[]) {
         for (let index = 0; index < list.length; index++) {
             const element = list[index];
-            switch (element.state) {
+            switch (element.generalStatus) {
                 case 'New': element.orderIndex = 100 + index + 1; break;
                 case 'Open': element.orderIndex = 200 + index + 1; break;
                 case 'Active': element.orderIndex = 300 + index + 1; break;
@@ -55,7 +58,7 @@ export default class statesModal extends Vue {
 
     async close() {
         for (const state of this.states) {
-            await statesService.setState(state);
+            await statesService.setState(state, this.value.data.id);
         }
 
         this.value.resolve(this.value.data);

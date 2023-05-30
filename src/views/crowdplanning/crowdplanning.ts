@@ -52,7 +52,7 @@ export default class Crowdplanning extends Vue {
     }
 
     get selectedTask(): server.Plan | null {
-        return store.state.crowdplanning.selectedTask;
+        return store.state.crowdplanning.selectedPlan;
     }
 
     get filteredTasks(): server.Plan[] {

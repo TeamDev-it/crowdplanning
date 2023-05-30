@@ -16,10 +16,17 @@ class StatesService extends baseRestService {
         return result;
     }
 
-    public async setState(state: server.State): Promise<server.State | null> {
-        if (!state.id) return await this.Post("/states", state);
+    public async setState(state: server.State, groupId: string): Promise<server.State | null> {
+        let result: server.State | null = null;
 
-        return await this.Put("/states", state);
+        if (!state.id)
+            result = await this.Post("/states", state);
+        else
+            result = await this.Put("/states", state);
+
+        store.actions.crowdplanning.setState({groupId: groupId, state: state});
+
+        return result;
     }
 
     public async removeState(id: number): Promise<void> {

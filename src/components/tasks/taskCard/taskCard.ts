@@ -16,10 +16,6 @@ export default class TaskCard extends Vue {
     coverImageUri = '';
     loading = true;
 
-    get taskDate(): string {
-        return `${this.value.creationDate.getDate()}/${this.value.creationDate.getMonth()}/${this.value.creationDate.getFullYear()}`;
-    }
-
     async mounted() {
         this.coverImageUri = this.getTaskImageUrl();
 

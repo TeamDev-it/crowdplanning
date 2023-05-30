@@ -5,6 +5,7 @@ import TaskCard from "../tasks/taskCard/taskCard.vue";
 import TaskSummary from "../taskSummary/taskSummary.vue";
 import CitizenInteraction from "../citizenInteraction/citizenInteraction.vue";
 import { store } from "@/store";
+import { CONFIGURATION } from "@/configuration";
 
 @Component({
     components: {
@@ -16,6 +17,10 @@ import { store } from "@/store";
 export default class TaskDetail extends Vue {
     @Prop({ required: true })
     task!: server.Plan;
+
+    get type(): string {
+        return CONFIGURATION.context;
+    }
 
     clearTask(): void {
         store.actions.crowdplanning.setSelectedPlan(null);
