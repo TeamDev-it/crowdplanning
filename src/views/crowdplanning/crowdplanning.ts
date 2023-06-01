@@ -55,7 +55,7 @@ export default class Crowdplanning extends Vue {
         return store.state.crowdplanning.selectedPlan;
     }
 
-    get filteredTasks(): server.Plan[] {
+    get filteredPlans(): server.Plan[] {
         let result: server.Plan[] = cloneDeep(this.plans);
 
         if (this.selectedTask) {

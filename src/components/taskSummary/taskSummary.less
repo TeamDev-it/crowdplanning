@@ -1,15 +1,33 @@
 .summary-container {
   display: grid;
-  grid-auto-flow: row;
-  grid: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   background-color: var(--white);
   padding: 0.5rem;
   border-radius: var(--border-radius);
   overflow: auto;
 
-  .title-date {
-    display: grid;
-    grid-template-columns: 1fr auto;
+  header {
+    margin: var(--spacer);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    > div {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacer);
+    }
+  }
+
+  article {
+    margin: var(--spacer);
+    .title {
+      margin-bottom: var(--spacer);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+    }
   }
 
   .attachments {

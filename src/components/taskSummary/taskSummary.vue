@@ -1,25 +1,24 @@
 <template>
   <div class="summary-container">
-    <div class="title-date">
-      <div v-if="task.title">{{ task.title.toUpperCase() }}</div>
-      <div v-if="task.creationDate">{{ taskDate }}</div>
-    </div>
-    <div class="description" v-html="task.description"></div>
-    <div class="attachments" v-if="files.length">
-      <div class="section-title">{{ $t('plans.attachments', 'allegati').toUpperCase() }}</div>
-      <div class="files">
-        <div class="images" v-if="images.length">
-          <div class="text">{{ $t('plans.images', 'Immagini') }}</div>
-          <img v-for="image of images" :key="image.id" :src="getImagePreview(image)" />
-        </div>
-        <div class="documents" v-if="documents.length">
-          <div class="text">{{ $t('plans.documents', 'Documenti') }}</div>
-          <div class="file" v-for="doc of documents" :key="doc.id" @click="downloadDocument(doc)">
-            <img src="@/assets/images/placeholder_file.png" />
-        </div>
-        </div>
+    <header>
+      <div v-if="group" class="group">
+        <i :class="iconCode(group?.iconCode ?? '')"></i>
+        <span class="text">{{ group?.name }}</span>
       </div>
-    </div>
+      <div v-if="plan.location" class="location">
+        <i class="ti ti-map-pin"></i>
+        <span>{{ addressLocation }}</span>
+      </div>
+      <div class="date">
+        <i class="ti ti-calendar"></i>
+        <span>{{ plan.dueDate }}</span>
+      </div>
+    </header>
+    <article>
+      <div class="title">{{ $t('plan.summary.description-label', 'Descrizione') }}</div>
+      <div class="description" v-html="plan.description"></div>
+    </article>
+    <attachments-list v-if="files.length" :files="files" :workspaceId="workspaceId"></attachments-list>
   </div>
 </template>
 

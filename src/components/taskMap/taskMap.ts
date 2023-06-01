@@ -28,7 +28,7 @@ export default class TaskMap extends Vue {
         return [{
             id: this.group.id,
             name: this.group.name,
-            dataType: "",
+            dataType: "PLANS",
             visible: true,
             data: this.datas,
             type: "managed",
@@ -42,7 +42,7 @@ export default class TaskMap extends Vue {
             symbols: {
                 field: "state",
                 symbols: this.states.map(s => ({
-                    value: s.state,
+                    value: s.generalStatus,
                     symbol: {
                         color: HexToRGBA(s.color, .9),
                         size: "20",
@@ -85,7 +85,7 @@ export default class TaskMap extends Vue {
 
         for (const s of this.states) {
             layerdata?.push(...
-                this.tasks.filter(i => i.state == s.state && i.location)
+                this.tasks.filter(i => i.state == s.generalStatus && i.location)
                     .map(t => Object.assign({
                         "id": 0,
                         "relationId": t.id,

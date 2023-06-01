@@ -20,6 +20,7 @@ export interface CrowdplanningStoreGetters {
   getSelectedPlan(): string;
   getStates(groupId: string): server.State[];
   getGroups(): server.Group[];
+  getGroupById(id: string): server.Group | null;
   getPlans(): server.Plan[];
 }
 
@@ -56,6 +57,7 @@ export const crowdplanningStore = {
     getStates: (state) => (groupId: string) => state.states[groupId],
     getPlans: (state) => () => state.plans,
     getGroups: (state) => () => state.groups,
+    getGroupById: (state) => (id: string) => state.groups.find(x => x.id === id),
   } as GetterTree<CrowdplanningStoreModel, CrowdplanningStoreModel>,
   mutations: {
     SET_SELECTED_CATEGORY(state: CrowdplanningStoreModel, model: server.Group) {

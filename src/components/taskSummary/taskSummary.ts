@@ -6,50 +6,42 @@ import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileType
 import FilesPreview from "../file/filesPreview/filesPreview.vue";
 import ImagesPreview from "../file/imagesPreview/imagesPreview.vue";
 import { CONFIGURATION } from "@/configuration";
+import { store } from "@/store";
+import { MessageService } from "vue-mf-module";
+import AttachmentsList from "../attachmentsList/attachmentsList.vue";
 
 @Component({
     components: {
         FilesPreview,
-        ImagesPreview
+        ImagesPreview,
+        AttachmentsList
     }
 })
 export default class TaskSummary extends Vue {
     @Prop()
-    task!: server.Plan;
+    plan!: server.Plan;
 
-    @Prop({required: true})
+    @Prop({ required: true })
     workspaceId!: string;
 
     files: server.FileAttach[] = [];
+    group: server.Group | null = null;
+    addressLocation: string = '';
 
     public async mounted(): Promise<void> {
-        this.files = await attachmentService.getAttachments(`${this.task.id}`, this.workspaceId)
+        this.files = await attachmentService.getAttachments(`${this.plan.id}`, this.workspaceId)
+
+        this.group = store.getters.crowdplanning.getGroupById(this.plan.groupId);
+
+        if (this.plan.location)
+            this.addressLocation = await MessageService.Instance.ask("LOCATION_TO_ADDRESS", this.plan.location);
     }
 
-    get images(): server.FileAttach[] {
-        return this.files.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
-    }
-
-    get documents(): server.FileAttach[] {
-        return this.files.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
-    }
-
-    getImagePreview(file: server.FileAttach): string {
-        return attachmentService.getImagePreviewUri(CONFIGURATION.context, file.id, this.workspaceId);
-    }
-
-    async downloadDocument(doc: server.FileAttach): Promise<void> {
-        const uri: string = attachmentService.getFileUrl(CONFIGURATION.context, doc.id, this.workspaceId);
-
-        const a: HTMLAnchorElement = document.createElement("a");
-
-        a.setAttribute("href", uri);
-        a.setAttribute("target", "_blank");
-
-        a.click();
+    iconCode(iconCode: string): string {
+        return `ti ti-${this.group?.iconCode}`;
     }
 
     get taskDate(): string {
-        return `${this.task.creationDate.getDate()}/${this.task.creationDate.getMonth()}/${this.task.creationDate.getFullYear()}`;
+        return `${this.plan.creationDate.getDate()}/${this.plan.creationDate.getMonth()}/${this.plan.creationDate.getFullYear()}`;
     }
 }
