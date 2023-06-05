@@ -13,6 +13,7 @@ declare namespace locations {
         id?: string,
         name?: string,
         dataType: string,
+        renderer?: any,
         symbols: {
             field: string,
             symbols: {
