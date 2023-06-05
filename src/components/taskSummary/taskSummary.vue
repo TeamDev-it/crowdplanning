@@ -18,7 +18,7 @@
       <div class="title">{{ $t('plan.summary.description-label', 'Descrizione') }}</div>
       <div class="description" v-html="plan.description"></div>
     </article>
-    <attachments-list v-if="files.length" :files="files" :workspaceId="workspaceId"></attachments-list>
+    <attachments-list v-if="files.length && workspaceId" :files="files" :workspaceId="workspaceId"></attachments-list>
   </div>
 </template>
 

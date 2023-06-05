@@ -35,7 +35,7 @@ class AttachmentService extends baseRestService {
     }
 
     public async getAttachments(id: string, workspaceId: string, skip = 0, take = 100): Promise<server.FileAttach[]> {
-        return await this.Get<server.FileAttach[]>(`/${CONFIGURATION.context}-${id}/plans/data`, { id: id, workspaceId: workspaceId, skip, take }) ?? [];
+        return await this.Get<server.FileAttach[]>(`/${CONFIGURATION.context}-${id}/data`, { id: id, workspaceId: workspaceId, skip, take }) ?? [];
     }
 
     public getImagePreviewUri(context: string, fileId: string, workspaceId: string): string {
