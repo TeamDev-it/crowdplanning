@@ -80,8 +80,10 @@ export default class Crowdplanning extends Vue {
         await this.getData();
     }
 
-    private plansCreated(task: server.Plan): void {
-        this.plans.push(task);
+    private plansCreated(plan: server.Plan): void {
+        store.actions.crowdplanning.setPlan(plan);
+
+        this.plans = store.getters.crowdplanning.getPlans();
     }
 
     public rootGroupChanged(group: server.Group): void {
@@ -143,6 +145,6 @@ export default class Crowdplanning extends Vue {
     }
 
     async addTask(): Promise<void> {
-        await Projector.Instance.projectAsyncTo(PlanModal as never, this.groups);
+        await Projector.Instance.projectAsyncTo(PlanModal as never, { groups: this.groups });
     }
 }

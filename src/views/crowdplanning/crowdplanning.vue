@@ -2,8 +2,8 @@
 <template>
   <div id="crowdplanning">
     <crowdplanning-header :currentUser="currentUser" @addTask="addTask()" />
-    <div class="crowdplanning-content" v-if="!loading">
-      <div class="groups">
+    <div class="crowdplanning-content" :class="{'plan-selected': selectedTask}" v-if="!loading">
+      <div class="groups" v-if="!selectedTask">
         <scrollable-container>
           <crowdplanning-group-list :key="componentKey" v-if="plansGroupRoot && plansGroupRoot.id" :groups="groups" :rootGroup="plansGroupRoot" @rootGroupChanged="rootGroupChanged"></crowdplanning-group-list>
         </scrollable-container>

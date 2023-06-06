@@ -38,6 +38,10 @@ class AttachmentService extends baseRestService {
         return await this.Get<server.FileAttach[]>(`/${CONFIGURATION.context}-${id}/data`, { id: id, workspaceId: workspaceId, skip, take }) ?? [];
     }
 
+    public async deleteAttachment(id: string, planId: string): Promise<void | null> {
+        return await this.Delete(`/${CONFIGURATION.context}-${planId}/${id}`);
+    }
+
     public getImagePreviewUri(context: string, fileId: string, workspaceId: string): string {
         return `${this.baseUrl()}/${context}/plans/thumb/${fileId}?workspaceId=${workspaceId}&width=400&height=400&quality=90`;
     }

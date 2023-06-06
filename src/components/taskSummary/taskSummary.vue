@@ -11,14 +11,13 @@
       </div>
       <div class="date">
         <i class="ti ti-calendar"></i>
-        <span>{{ plan.dueDate }}</span>
+        <span>{{ formattedDate }}</span>
       </div>
     </header>
     <article>
       <div class="title">{{ $t('plan.summary.description-label', 'Descrizione') }}</div>
       <div class="description" v-html="plan.description"></div>
     </article>
-    <attachments-list v-if="files.length && workspaceId" :files="files" :workspaceId="workspaceId"></attachments-list>
   </div>
 </template>
 

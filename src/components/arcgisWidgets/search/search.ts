@@ -1,15 +1,25 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import Search from "@arcgis/core/widgets/Search";
+import { Prop } from "vue-property-decorator";
 
 @Component
 export default class SearchWidget extends Vue {
+    @Prop({default: ''})
+    value!: string;
+
     location: locations.Location = {} as locations.Location;
     locationName = '';
     searchResponse: __esri.SearchResponse | null = null;
     searchResults: __esri.SearchResult[] = [];
 
     searchWidet = new Search();
+
+    mounted() {
+        if (this.value) {
+            this.locationName = this.value;
+        }
+    }
 
     async searchLocation(): Promise<void> {
         this.searchResponse = await this.searchWidet.search(this.locationName);

@@ -1,27 +1,48 @@
 .detail-container {
   width: 100%;
   background-color: var(--grey-light);
-  padding: 0.5rem;
   display: grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-rows: auto 1fr;
   overflow: hidden;
   gap: 1rem;
   position: relative;
   height: 100%;
+  border: 2px solid var(--ok-color);
+  border-radius: var(--border-radius);
 
-  .close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    color: var(--black);
-    width: var(--font-size-lg);;
-    height: var(--font-size-lg);;
-    border-radius: 50%;
+  .header {
+    width: 100%;
+    height: 2rem;
+    background-color: var(--ok-color);
+    color: var(--white);
     display: flex;
-    cursor: pointer;
+    flex-direction: row;
 
-    > i {
-      font-size: var(--font-size-lg);
+    .title {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      margin-left: 0.5rem;
+      font-weight: var(--font-weight-bold);
     }
+
+    .commands {
+      display: flex;
+      flex-flow: row;
+      gap: 1rem;
+      margin-right: 0.5rem;
+
+      > div {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1rem;
   }
 }

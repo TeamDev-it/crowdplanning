@@ -23,18 +23,18 @@
           <small>{{ $t('plans.modal.categoria', 'categoria*').toUpperCase() }}</small>
           <select v-model="task.groupId" required @keydown.native.stop>
             <option value="" disabled>{{ $t('plans.modal.select.default_option', "Seleziona un'opzione") }}</option>
-            <option v-for="group of value.data" :key="group.id" :value="group.id">
+            <option v-for="group of groups" :key="group.id" :value="group.id">
               {{ group.name.toUpperCase() }}
             </option>
           </select>
         </div>
         <div class="area">
           <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-          <search-widget @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></search-widget>
+          <search-widget v-if="!loading" v-model="locationName" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></search-widget>
         </div>
         <div class="area">
           <small>{{ $t('plans.modal.cover-image', 'Immagine di copertina').toLocaleUpperCase() }}</small>
-          <input type="file" :accept="imageContentTypes" @change="$event => onChangeCoverImage($event)" required @keydown.native.prevent />
+          <input type="file" :accept="imageContentTypes" @change="$event => onChangeCoverImage($event)" :required="!task.hasCoverImage" @keydown.native.prevent />
         </div>
       </header>
       <header class="map-settings">
@@ -58,7 +58,7 @@
       <header class="editor">
         <div class="area">
           <small>{{ $t('plans.modal.description', 'descrizione*').toUpperCase() }}</small>
-          <content-editor v-model="task.description" @keydown.native.stop></content-editor>
+          <content-editor v-if="!loading" v-model="task.description" @keydown.native.stop></content-editor>
         </div>
         <div class="dates">
           <div class="start-date">
@@ -114,6 +114,9 @@
           ></drag-and-drop>
         </div>
       </header>
+      <header v-if="planMode === 'edit' && attachments.length">
+        <attachments-list :files="attachments" :workspaceId="task.workspaceId" :orientation="'row'" :planId="task.id" :editable="true" @fileRemoved="fileRemoved"></attachments-list>
+      </header>
       <header v-if="plans.length">
         <div class="area fullspace">
           <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto') }}</span>
@@ -161,6 +164,15 @@
 .date-picker-container {
   .datetime {
     height: 100%;
+  }
+}
+
+.modal {
+  header {
+    > .attachments {
+      width: 100%;
+      max-width: 100%;
+    }
   }
 }
 </style>

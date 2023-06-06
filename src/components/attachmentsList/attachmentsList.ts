@@ -4,17 +4,26 @@ import { Prop } from "vue-property-decorator";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import { CONFIGURATION } from "@/configuration";
 import { attachmentService } from "@/services/attachmentService";
+import { MessageService } from "vue-mf-module";
 
 @Component({})
 export default class AttachmentsList extends Vue {
     @Prop({ default: [] })
     files!: server.FileAttach[];
 
-    @Prop({required: true})
+    @Prop({ required: true })
     workspaceId!: string;
 
+    @Prop({ default: 'column' })
+    orientation!: 'column' | 'row';
+
+    @Prop({default: false})
+    editable!: boolean;
+
+    @Prop({default: ''})
+    planId!: string;
+
     mounted() {
-        debugger
     }
 
     get images(): server.FileAttach[] {
@@ -38,5 +47,19 @@ export default class AttachmentsList extends Vue {
         a.setAttribute("target", "_blank");
 
         a.click();
+    }
+
+    public hasPermission(value: string): boolean {
+        return this.$can(`PLANS.${value}`);
+    }
+
+    async remove(id: string): Promise<void> {
+        try {
+            await attachmentService.deleteAttachment(id, this.planId);
+
+            this.$emit('fileRemoved', id);
+        } catch(_) {
+            MessageService.Instance.send('ERROR', this.$t('plans.error-deleting-file', "Errore durante l'eliminazione del file"));
+        }
     }
 }

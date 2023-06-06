@@ -86,8 +86,6 @@ export default class TaskMap extends Vue {
         const layerdata = this.values.filter(x => x.data)[0].data;
         layerdata?.splice(0, layerdata?.length);
 
-        debugger
-
         for (const s of this.states) {
             layerdata?.push(...
                 this.tasks.filter(i => i.state == s.generalStatus && i.location)

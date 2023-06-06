@@ -12,6 +12,7 @@ import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
 import { attachmentService } from "@/services/attachmentService";
+import AttachmentsList from "../attachmentsList/attachmentsList.vue";
 
 @Component({
     components: {
@@ -19,21 +20,27 @@ import { attachmentService } from "@/services/attachmentService";
         DatePickerVue,
         dateTime,
         DragAndDrop,
-        Autocomplete
+        Autocomplete,
+        AttachmentsList
     }
 })
 export default class PlanModal extends Vue {
     @Prop({ required: true })
-    value!: IProjectableModel<server.Group[]>;
+    value!: IProjectableModel<string>;
 
     task: server.Plan = {} as server.Plan;
     files: Array<File> = [];
     images: Array<File> = [];
+    attachments: Array<server.FileAttach> = [];
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
     tmpVisibleLayer = "";
     hasClusterParent = false;
+    locationName: string = '';
+    planMode: planMode = "create";
+
+    loading = true;
 
     errors: { [id: string]: string } = {};
 
@@ -49,14 +56,47 @@ export default class PlanModal extends Vue {
         return store.getters.crowdplanning.getPlans();
     }
 
-    mounted() {
-        this.task = {
-            ...this.task,
-            groupId: '',
-            state: "Review",
-            visibleLayers: [],
-            mapType: this.task.mapType ? this.task.mapType : this.mapTypeFromConfiguration[0].value
-        };
+    get groups(): server.Group[] {
+        return store.getters.crowdplanning.getGroups().filter(x => x.parentGroupId);
+    }
+
+    get planIfExists() {
+        debugger
+        if (this.value.data)
+            return store.getters.crowdplanning.getPlanById(this.value.data);
+    }
+
+    fileRemoved(id: string) {
+        const idx = this.attachments.findIndex(x => x.id === id);
+
+        this.attachments.splice(idx, 1);
+    }
+
+    async mounted() {
+        if (this.value.data) {
+            this.planMode = "edit";
+        }
+
+        if (this.value?.data) {
+            this.task = this.planIfExists ?? {} as server.Plan;
+        } else {
+            this.task = {
+                ...this.task,
+                groupId: '',
+                state: "Review",
+                visibleLayers: [],
+                mapType: this.task.mapType ? this.task.mapType : this.mapTypeFromConfiguration[0].value
+            };
+        }
+
+        if (this.task.location)
+            this.locationName = await MessageService.Instance.ask('LOCATION_TO_ADDRESS', this.task.location);
+
+        if (this.value.data) {
+            this.attachments = await attachmentService.getAttachments(`${this.task.id}`, this.task.workspaceId ?? '');
+        }
+
+        this.loading = false;
     }
 
     setError(id: string, value: string) {
@@ -197,12 +237,12 @@ export default class PlanModal extends Vue {
             return false;
         }
 
-        if (!this.images.length) {
+        if (!this.images.length && this.planMode === 'create') {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.images_error', 'Inserisci delle immagini'));
             return false;
         }
 
-        if (!this.files.length) {
+        if (!this.files.length && this.planMode === 'create') {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.attachments_error', 'Inserisci degli allegati'));
             return false;
         }

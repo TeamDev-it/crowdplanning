@@ -8,14 +8,17 @@
   overflow: hidden;
   width: 100%;
   max-height: 900px;
+  overflow-y: scroll;
 
   &.splitView {
     grid-template-columns: 6fr 4fr;
   }
 
   .title {
+    background-color: var(--ok-color);
     input {
       width: 100%;
+      color: var(--white);
     }
   }
 
@@ -27,6 +30,8 @@
     grid-column: 1/-1;
     min-height: 0;
     width: 100%;
+    height: min-content;
+    overflow-y: hidden;
 
     > .fullspace {
       flex: 1;

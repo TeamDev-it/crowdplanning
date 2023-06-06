@@ -9,6 +9,7 @@ import { CONFIGURATION } from "@/configuration";
 import { store } from "@/store";
 import { MessageService } from "vue-mf-module";
 import AttachmentsList from "../attachmentsList/attachmentsList.vue";
+import moment from "moment";
 
 @Component({
     components: {
@@ -24,13 +25,10 @@ export default class TaskSummary extends Vue {
     @Prop({ required: true })
     workspaceId!: string;
 
-    files: server.FileAttach[] = [];
     group: server.Group | null = null;
     addressLocation: string = '';
 
     public async mounted(): Promise<void> {
-        this.files = await attachmentService.getAttachments(`${this.plan.id}`, this.workspaceId)
-
         this.group = store.getters.crowdplanning.getGroupById(this.plan.groupId);
 
         if (this.plan.location)
@@ -41,7 +39,7 @@ export default class TaskSummary extends Vue {
         return `ti ti-${this.group?.iconCode}`;
     }
 
-    get taskDate(): string {
-        return `${this.plan.creationDate.getDate()}/${this.plan.creationDate.getMonth()}/${this.plan.creationDate.getFullYear()}`;
+    get formattedDate(): string {
+        return moment(this.plan.dueDate).format('D/MM/YYYY');
     }
 }
