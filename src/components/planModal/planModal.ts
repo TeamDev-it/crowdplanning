@@ -1,8 +1,7 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop } from "vue-property-decorator";
-import { IProjectableModel, MessageService } from "vue-mf-module";
-import SearchWidget from "../arcgisWidgets/search/search.vue";
+import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
 import dateTime from "../dateTime/dateTime.vue";
 import DatePickerVue from "v-calendar/src/components/DatePicker.vue";
 import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
@@ -16,7 +15,6 @@ import AttachmentsList from "../attachmentsList/attachmentsList.vue";
 
 @Component({
     components: {
-        SearchWidget,
         DatePickerVue,
         dateTime,
         DragAndDrop,
@@ -61,9 +59,20 @@ export default class PlanModal extends Vue {
     }
 
     get planIfExists() {
-        debugger
         if (this.value.data)
             return store.getters.crowdplanning.getPlanById(this.value.data);
+    }
+
+    get context(): string {
+        return CONFIGURATION.context;
+    }
+
+    get esriGeocodingAutocomplete() {
+        return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
+    }
+
+    get addAttachments() {
+        return CommonRegistry.Instance.getComponent('add-attachments');
     }
 
     fileRemoved(id: string) {

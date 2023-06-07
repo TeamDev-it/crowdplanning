@@ -30,7 +30,7 @@
         </div>
         <div class="area">
           <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-          <search-widget v-if="!loading" v-model="locationName" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></search-widget>
+          <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="locationName" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></component>
         </div>
         <div class="area">
           <small>{{ $t('plans.modal.cover-image', 'Immagine di copertina').toLocaleUpperCase() }}</small>
@@ -38,12 +38,6 @@
         </div>
       </header>
       <header class="map-settings">
-        <div class="area">
-          <small>{{ $t('plans.modal.map-type-label', 'Tipologia mappa').toUpperCase() }}</small>
-          <select v-model="task.mapType" @keydown.native.stop>
-            <option v-for="mapType in mapTypeFromConfiguration" :key="`${mapType.value}${mapType.labelKey}${mapType.labelText}`" :value="mapType.value">{{ $t(mapType.labelKey, mapType.labelText) }}</option>
-          </select>
-        </div>
         <div class="area">
           <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
           <input type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="$event => confirmVisibleLayer()" />
@@ -84,20 +78,10 @@
           </div>
         </div>
       </header>
-      <header class="drag-and-drop-container">
+      <header class="attachments-container">
         <div class="area fullspace">
           <small>{{ $t('plans.modal.add-images', 'Aggiungi immagini*').toUpperCase() }}</small>
-          <drag-and-drop
-            @keydown.native.stop
-            :files="images"
-            :fileTypes="'images'"
-            :customTextLocaleKey="'plans.modal.upload-images'"
-            :clickableTextLocaleKey="'plans.modal.upload-from-device'"
-            @removeFromImages="removeFromImages"
-            @removeFromFiles="removeFromFiles"
-            @addToImages="addToImages"
-            @addToFiles="addToFiles"
-          ></drag-and-drop>
+          <component ref="addImages" :is="addAttachments" :customTextLocaleKey="'plans.modal.upload-images'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
         </div>
         <div class="area fullspace">
           <small>{{ $t('plans.modal.add-attachments', 'Aggiungi allegati*').toUpperCase() }}</small>
@@ -172,6 +156,29 @@
     > .attachments {
       width: 100%;
       max-width: 100%;
+    }
+
+    .add-attachments {
+      max-height: 200px;
+
+      .media-gallery {
+        max-width: 100%;
+        overflow-x: hidden;
+        display: flex;
+
+        .image-container {
+          overflow-x: auto;
+          display: flex;
+          flex-flow: row;
+          gap: 0.5rem;
+          max-width: 50%;
+          flex-shrink: 1;
+
+          .preview {
+            height: fit-content;
+          }
+        }
+      }
     }
   }
 }
