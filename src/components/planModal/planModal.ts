@@ -1,5 +1,5 @@
 import Component from "vue-class-component";
-import Vue from "vue";
+import Vue, { ref } from "vue";
 import { Prop } from "vue-property-decorator";
 import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
 import dateTime from "../dateTime/dateTime.vue";
@@ -42,6 +42,9 @@ export default class PlanModal extends Vue {
 
     errors: { [id: string]: string } = {};
 
+    imageAttachmentComponent: any | null = null;
+    documentAttachmentComponent: any | null = null;
+
     get imageContentTypes(): string {
         return imagesContentTypes;
     }
@@ -82,6 +85,7 @@ export default class PlanModal extends Vue {
     }
 
     async mounted() {
+        debugger
         if (this.value.data) {
             this.planMode = "edit";
         }
@@ -104,6 +108,9 @@ export default class PlanModal extends Vue {
         if (this.value.data) {
             this.attachments = await attachmentService.getAttachments(`${this.task.id}`, this.task.workspaceId ?? '');
         }
+
+        this.imageAttachmentComponent = CommonRegistry.Instance.getComponent('add-attachments');
+        this.documentAttachmentComponent = CommonRegistry.Instance.getComponent('add-attachments');
 
         this.loading = false;
     }
@@ -199,23 +206,9 @@ export default class PlanModal extends Vue {
             }
         }
 
-        if (this.images.length) {
-            // upload images
-            try {
-                await attachmentService.saveAttachments(this.images, `${CONFIGURATION.context}-${result.id}`);
-            } catch (err) {
-                await this.rollbackTaskCreation(result.id);
-            }
-        }
+        await ((this.$refs.addImages) as any).submit(this.task.id);
 
-        if (this.files.length) {
-            // upload files
-            try {
-                await attachmentService.saveAttachments(this.files, `${CONFIGURATION.context}-${result.id}`);
-            } catch {
-                await this.rollbackTaskCreation(result.id);
-            }
-        }
+        await ((this.$refs.addDocuments) as any).submit(this.task.id);
 
         // Update plan with new properties
         await plansService.Set(this.task.groupId, result);

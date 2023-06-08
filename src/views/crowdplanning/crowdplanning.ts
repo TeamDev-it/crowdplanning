@@ -145,6 +145,6 @@ export default class Crowdplanning extends Vue {
     }
 
     async addTask(): Promise<void> {
-        await Projector.Instance.projectAsyncTo(PlanModal as never, { groups: this.groups });
+        await Projector.Instance.projectAsyncTo(PlanModal as never, '');
     }
 }

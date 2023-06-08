@@ -81,21 +81,11 @@
       <header class="attachments-container">
         <div class="area fullspace">
           <small>{{ $t('plans.modal.add-images', 'Aggiungi immagini*').toUpperCase() }}</small>
-          <component ref="addImages" :is="addAttachments" :customTextLocaleKey="'plans.modal.upload-images'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
+          <component ref="addImages" @keydown.native.stop v-if="imageAttachmentComponent" :is="imageAttachmentComponent" :customTextLocaleKey="'plans.modal.upload-images'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
         </div>
         <div class="area fullspace">
           <small>{{ $t('plans.modal.add-attachments', 'Aggiungi allegati*').toUpperCase() }}</small>
-          <drag-and-drop
-            @keydown.native.stop
-            :files="files"
-            :fileTypes="'documents'"
-            :customTextLocaleKey="'plans.modal.upload-files'"
-            :clickableTextLocaleKey="'plans.modal.upload-from-device'"
-            @removeFromImages="removeFromImages"
-            @removeFromFiles="removeFromFiles"
-            @addToImages="addToImages"
-            @addToFiles="addToFiles"
-          ></drag-and-drop>
+          <component ref="addDocuments" @keydown.native.stop v-if="documentAttachmentComponent" :is="documentAttachmentComponent" fileTypes="documents" :customTextLocaleKey="'plans.modal.upload-documents'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
         </div>
       </header>
       <header v-if="planMode === 'edit' && attachments.length">

@@ -27,6 +27,7 @@ export default class TaskDetail extends Vue {
 
     async mounted(): Promise<void> {
         this.files = await attachmentService.getAttachments(`${this.task.id}`, this.task.workspaceId ?? '');
+        debugger
     }
 
     get type(): string {

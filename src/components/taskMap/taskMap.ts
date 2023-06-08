@@ -3,6 +3,7 @@ import Vue from "vue";
 import { Prop, Watch } from "vue-property-decorator";
 import { HexToRGBA } from "@/utility/HexToRGBA";
 import { CommonRegistry } from "vue-mf-module";
+import { relativeTimeThreshold } from "moment";
 
 @Component
 export default class TaskMap extends Vue {
@@ -96,19 +97,20 @@ export default class TaskMap extends Vue {
                         task: t
                     }, t.location)));
         }
-    }
+   }
 
     private foreachTaskVisibleLayerGetMapLayers(): locations.MapLayer[] {
         const mapLayers: locations.MapLayer[] = [];
 
         for (const plan of this.tasks) {
-            mapLayers.push(...plan.visibleLayers.map(x => ({
-                dataType: 'PLANS',
-                visible: true,
-                symbols: {},
-                url: x,
-                type: "server",
-            } as locations.MapLayer)));
+            if (plan.visibleLayers)
+                mapLayers.push(...plan.visibleLayers.map(x => ({
+                    dataType: 'PLANS',
+                    visible: true,
+                    symbols: {},
+                    url: x,
+                    type: "server",
+                } as locations.MapLayer)));
         }
 
         return mapLayers;

@@ -29,6 +29,7 @@ export default class TaskSummary extends Vue {
     addressLocation: string = '';
 
     public async mounted(): Promise<void> {
+        debugger
         this.group = store.getters.crowdplanning.getGroupById(this.plan.groupId);
 
         if (this.plan.location)
