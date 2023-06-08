@@ -161,21 +161,29 @@
     .add-attachments {
       max-height: 200px;
 
-      .media-gallery {
-        max-width: 100%;
-        overflow-x: hidden;
-        display: flex;
-
-        .image-container {
-          overflow-x: auto;
+      .content {
+        max-height: 200px;
+        .media-gallery {
+          max-width: 100%;
           display: flex;
-          flex-flow: row;
-          gap: 0.5rem;
-          max-width: 50%;
-          flex-shrink: 1;
+          gap: .5rem;
 
-          .preview {
-            height: fit-content;
+
+          .image-container {
+            display: flex;
+            flex-flow: row;
+            gap: 0.5rem;
+            flex-shrink: 1;
+
+            .preview {
+              height: auto;
+              width: auto;
+
+              > img {
+                max-height: 100px;
+                width: auto;
+              }
+            }
           }
         }
       }
