@@ -7,7 +7,6 @@ type ScrollDirection = 'left' | 'right';
 export default class ScrollableContainer extends Vue {
     private scrollAmount = 0;
     private unitScrollAmount = 200;
-    componentKey = 0;
 
     scrollableContent = {} as HTMLDivElement;
     isRightScrollButtonVisible = false;

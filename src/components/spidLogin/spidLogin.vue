@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="text">
+    <div class="text" v-if="showText">
       {{ $t('plans.spid.log-in', 'Accedi per condividere la tua opinione!') }}
     </div>
     <div class="btn-container">

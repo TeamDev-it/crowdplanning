@@ -83,12 +83,19 @@ export default class Crowdplanning extends Vue {
     async mounted() {
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
 
+        if (!this.currentUser)
+            this.openAuthModal();
+
         await this.getData();
     }
 
     public rootGroupChanged(group: server.Group): void {
         this.plansGroupRoot = group;
         this.componentKey++;
+    }
+
+    private async openAuthModal(): Promise<void> {
+        await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/authModal/authModal.vue')) as any, {})
     }
 
     private async getData(): Promise<void> {
