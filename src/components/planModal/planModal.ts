@@ -42,9 +42,6 @@ export default class PlanModal extends Vue {
 
     errors: { [id: string]: string } = {};
 
-    imageAttachmentComponent: any | null = null;
-    documentAttachmentComponent: any | null = null;
-
     get imageContentTypes(): string {
         return imagesContentTypes;
     }
@@ -63,7 +60,7 @@ export default class PlanModal extends Vue {
 
     get planIfExists() {
         if (this.value.data)
-            return store.getters.crowdplanning.getPlanById(this.value.data);
+            return {...store.getters.crowdplanning.getPlanById(this.value.data)};
     }
 
     get context(): string {
@@ -74,7 +71,11 @@ export default class PlanModal extends Vue {
         return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
     }
 
-    get addAttachments() {
+    get imageAttachmentComponent() {
+        return CommonRegistry.Instance.getComponent('add-attachments');
+    }
+
+    get documentAttachmentComponent() {
         return CommonRegistry.Instance.getComponent('add-attachments');
     }
 
@@ -85,7 +86,6 @@ export default class PlanModal extends Vue {
     }
 
     async mounted() {
-        debugger
         if (this.value.data) {
             this.planMode = "edit";
         }
@@ -108,9 +108,6 @@ export default class PlanModal extends Vue {
         if (this.value.data) {
             this.attachments = await attachmentService.getAttachments(`${this.task.id}`, this.task.workspaceId ?? '');
         }
-
-        this.imageAttachmentComponent = CommonRegistry.Instance.getComponent('add-attachments');
-        this.documentAttachmentComponent = CommonRegistry.Instance.getComponent('add-attachments');
 
         this.loading = false;
     }
@@ -206,16 +203,20 @@ export default class PlanModal extends Vue {
             }
         }
 
-        await ((this.$refs.addImages) as any).submit(this.task.id);
+        await ((this.$refs.addImages) as any).submit(result.id);
 
-        await ((this.$refs.addDocuments) as any).submit(this.task.id);
+        await ((this.$refs.addDocuments) as any).submit(result.id);
 
         // Update plan with new properties
         await plansService.Set(this.task.groupId, result);
 
-        MessageService.Instance.send("PLANS_CREATED", result);
+        this.setPlan(result);
 
         this.close();
+    }
+
+    private setPlan(plan: server.Plan): void {
+        store.actions.crowdplanning.setPlan(plan);
     }
 
     private requiredFieldsSatisfied(): boolean {
@@ -236,16 +237,6 @@ export default class PlanModal extends Vue {
 
         if (!this.task.dueDate) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-            return false;
-        }
-
-        if (!this.images.length && this.planMode === 'create') {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.images_error', 'Inserisci delle immagini'));
-            return false;
-        }
-
-        if (!this.files.length && this.planMode === 'create') {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.attachments_error', 'Inserisci degli allegati'));
             return false;
         }
 

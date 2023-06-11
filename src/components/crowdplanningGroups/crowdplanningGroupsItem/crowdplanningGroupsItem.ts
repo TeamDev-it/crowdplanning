@@ -3,6 +3,7 @@ import Vue from "vue";
 import { Prop } from "vue-property-decorator";
 import groupModal from "@/components/groupModal/groupModal.vue";
 import { Projector } from "vue-mf-module";
+import { Icon } from "@/utility/Icon";
 
 @Component
 export default class CrowdplanningGroupsItem extends Vue {
@@ -13,7 +14,7 @@ export default class CrowdplanningGroupsItem extends Vue {
     selectedCategory!: server.Group | null;
 
     get iconCode(): string {
-        return `ti ti-${this.value.iconCode}`;
+        return Icon.getIconCode(this.value.iconCode);
     }
 
     public hasPermission(value: string): boolean {

@@ -4,6 +4,7 @@ import { Prop } from "vue-property-decorator";
 import { store } from "@/store";
 import { attachmentService } from "@/services/attachmentService";
 import { CONFIGURATION } from "@/configuration";
+import { Icon } from "@/utility/Icon";
 
 @Component
 export default class TaskCard extends Vue {
@@ -15,15 +16,22 @@ export default class TaskCard extends Vue {
 
     coverImageUri = '';
     loading = true;
+    group: server.Group | null = null;
+
+    get iconCode(): string {
+        return Icon.getIconCode(this.group?.iconCode ?? '');
+    }
 
     async mounted() {
         this.coverImageUri = this.getTaskImageUrl();
+
+        this.group = store.getters.crowdplanning.getGroupById(this.value.groupId);
 
         this.loading = false;
     }
 
     selectTask(): void {
-        store.actions.crowdplanning.setSelectedPlan(this.value);
+        store.actions.crowdplanning.setSelectedPlanId(this.value.id);
     }
 
     private getTaskImageUrl(): string {

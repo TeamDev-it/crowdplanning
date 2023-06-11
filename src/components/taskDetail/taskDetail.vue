@@ -3,6 +3,9 @@
     <div class="header">
       <div class="title">{{ task.title }}</div>
       <div class="commands">
+        <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
+          <i class="ti ti-trash"></i>
+        </div>
         <div class="edit" v-if="hasPermission('plans.canedit')" @click="edit">
           <i class="ti ti-pencil"></i>
         </div>

@@ -7,7 +7,7 @@ Vue.use(Vuex);
 export interface CrowdplanningStoreModel {
   selectedCategory: server.Group | null,
   searchedValue: string,
-  selectedPlan: server.Plan | null,
+  selectedPlanId: string | null,
   states: { [groupId: string]: server.State[] },
   groups: server.Group[],
   plans: server.Plan[],
@@ -17,19 +17,20 @@ export interface CrowdplanningStoreModel {
 export interface CrowdplanningStoreGetters {
   getSelectedCategory(): server.Group | null;
   getSearchedValue(): string;
-  getSelectedPlan(): string;
+  getSelectedPlanId(): string;
   getStates(groupId: string): server.State[];
   getGroups(): server.Group[];
   getGroupById(id: string): server.Group | null;
   getPlans(): server.Plan[];
   getPlanById(id: string): server.Plan;
+  getChildrenOfPlan(id: string): server.Plan[];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CrowdplanningStoreActions {
   setSelectedCategory(value: server.Group | null): void;
   setSearchedValue(value: string): void;
-  setSelectedPlan(value: server.Plan | null): void;
+  setSelectedPlanId(value: string | null): void;
   setStates(model: { groupId: string, states: server.State[] }): void;
   setState(model: { state: server.State, groupId: string }): void;
   setPlans(model: server.Plan[]): void;
@@ -46,7 +47,7 @@ export const crowdplanningStore = {
   state: {
     selectedCategory: null,
     searchedValue: '',
-    selectedPlan: null,
+    selectedPlanId: null,
     groups: [],
     states: {},
     plans: []
@@ -54,12 +55,13 @@ export const crowdplanningStore = {
   getters: {
     getSelectedCategory: (state) => () => state.selectedCategory,
     getSearchedValue: (state) => () => state.searchedValue,
-    getSelectedTask: (state) => () => state.selectedPlan,
+    getSelectedPlanId: (state) => () => state.selectedPlanId,
     getStates: (state) => (groupId: string) => state.states[groupId],
     getPlans: (state) => () => state.plans,
     getGroups: (state) => () => state.groups,
     getGroupById: (state) => (id: string) => state.groups.find(x => x.id === id),
-    getPlanById: (state) => (id: string) => state.plans.find(x => x.id === id)
+    getPlanById: (state) => (id: string) => state.plans.find(x => x.id === id),
+    getChildrenOfPlan: (state) => (id: string) => state.plans.filter(x => x.parentId === id)
   } as GetterTree<CrowdplanningStoreModel, CrowdplanningStoreModel>,
   mutations: {
     SET_SELECTED_CATEGORY(state: CrowdplanningStoreModel, model: server.Group) {
@@ -68,8 +70,8 @@ export const crowdplanningStore = {
     SET_SEARCHED_VALUE(state: CrowdplanningStoreModel, model: string) {
       state.searchedValue = model;
     },
-    SET_SELECTED_PLAN(state: CrowdplanningStoreModel, model: server.Plan) {
-      state.selectedPlan = model;
+    SET_SELECTED_PLAN_ID(state: CrowdplanningStoreModel, model: string) {
+      state.selectedPlanId = model;
     },
     SET_STATES(state: CrowdplanningStoreModel, model: { groupId: string, states: server.State[] }) {
       Vue.set(state.states, model.groupId, model.states);
@@ -97,7 +99,7 @@ export const crowdplanningStore = {
       const idx = state.groups.findIndex(x => x.id === model);
 
       if (idx !== -1)
-        state.groups = state.groups.splice(idx, 1);
+        state.groups.splice(idx, 1);
     },
     SET_GROUP(state: CrowdplanningStoreModel, model: server.Group) {
       const idx = state.groups.findIndex(x => x.id === model.id);
@@ -109,13 +111,16 @@ export const crowdplanningStore = {
       const idx = state.plans.findIndex(x => x.id === model);
 
       if (idx !== -1)
-        state.plans = state.plans.splice(idx, 1);
+        state.plans.splice(idx, 1);
     },
     SET_PLAN(state: CrowdplanningStoreModel, model: server.Plan) {
       const idx = state.plans.findIndex(x => x.id === model.id);
 
       if (idx !== -1)
-        state.plans = [...state.plans, state.plans[idx] = model];
+        state.plans = [...state.plans.splice(0, idx), model, ...state.plans.slice(idx + 1)];
+      else {
+        state.plans.push(model);
+      }
     }
   },
   actions: {
@@ -125,8 +130,8 @@ export const crowdplanningStore = {
     setSearchedValue(context, model: string): void {
       context.commit("SET_SEARCHED_VALUE", model);
     },
-    setSelectedPlan(context, model: server.Plan): void {
-      context.commit("SET_SELECTED_PLAN", model);
+    setSelectedPlanId(context, model: string): void {
+      context.commit("SET_SELECTED_PLAN_ID", model);
     },
     setStates(context, model: { groupId: string, states: server.State[] }): void {
       context.commit("SET_STATES", model);

@@ -31,7 +31,6 @@ import { Watch } from "vue-property-decorator";
 })
 export default class Crowdplanning extends Vue {
     plansGroupRoot: server.Group = {} as server.Group;
-    plans: server.Plan[] = [];
     currentUser: server.Myself | null = null;
     states: server.State[] = [];
     loading = true;
@@ -51,15 +50,23 @@ export default class Crowdplanning extends Vue {
         return store.state.crowdplanning.searchedValue
     }
 
+    get selectedTaskId(): string | null {
+        return store.state.crowdplanning.selectedPlanId;
+    }
+
     get selectedTask(): server.Plan | null {
-        return store.state.crowdplanning.selectedPlan;
+        return store.getters.crowdplanning.getPlanById(this.selectedTaskId!);
+    }
+
+    get plans(): server.Plan[] {
+        return store.getters.crowdplanning.getPlans();
     }
 
     get filteredPlans(): server.Plan[] {
         let result: server.Plan[] = cloneDeep(this.plans);
 
-        if (this.selectedTask) {
-            return this.plans.filter(x => x.id === this.selectedTask?.id);
+        if (this.selectedTaskId) {
+            return this.plans.filter(x => x.id === this.selectedTaskId);
         }
 
         if (this.selectedGroup) {
@@ -75,15 +82,8 @@ export default class Crowdplanning extends Vue {
 
     async mounted() {
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
-        MessageService.Instance.subscribe("PLANS_CREATED", this.plansCreated);
 
         await this.getData();
-    }
-
-    private plansCreated(plan: server.Plan): void {
-        store.actions.crowdplanning.setPlan(plan);
-
-        this.plans = store.getters.crowdplanning.getPlans();
     }
 
     public rootGroupChanged(group: server.Group): void {
@@ -111,9 +111,9 @@ export default class Crowdplanning extends Vue {
 
         if (this.plansGroupRoot?.id) {
             if (this.currentUser) {
-                this.plans = await plansService.getPlans();
+                await plansService.getPlans();
             } else {
-                this.plans = await plansService.getPublicPlans(this.workspaceId);
+                await plansService.getPublicPlans(this.workspaceId);
             }
         }
 

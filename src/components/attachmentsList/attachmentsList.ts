@@ -17,10 +17,10 @@ export default class AttachmentsList extends Vue {
     @Prop({ default: 'column' })
     orientation!: 'column' | 'row';
 
-    @Prop({default: false})
+    @Prop({ default: false })
     editable!: boolean;
 
-    @Prop({default: ''})
+    @Prop({ default: '' })
     planId!: string;
 
     mounted() {
@@ -58,7 +58,7 @@ export default class AttachmentsList extends Vue {
             await attachmentService.deleteAttachment(id, this.planId);
 
             this.$emit('fileRemoved', id);
-        } catch(_) {
+        } catch (_) {
             MessageService.Instance.send('ERROR', this.$t('plans.error-deleting-file', "Errore durante l'eliminazione del file"));
         }
     }

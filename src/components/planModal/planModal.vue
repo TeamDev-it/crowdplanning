@@ -81,17 +81,17 @@
       <header class="attachments-container">
         <div class="area fullspace">
           <small>{{ $t('plans.modal.add-images', 'Aggiungi immagini*').toUpperCase() }}</small>
-          <component ref="addImages" @keydown.native.stop v-if="imageAttachmentComponent" :is="imageAttachmentComponent" :customTextLocaleKey="'plans.modal.upload-images'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
+          <component ref="addImages" @keydown.native.stop :is="imageAttachmentComponent" :customTextLocaleKey="'plans.modal.upload-images'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
         </div>
         <div class="area fullspace">
           <small>{{ $t('plans.modal.add-attachments', 'Aggiungi allegati*').toUpperCase() }}</small>
-          <component ref="addDocuments" @keydown.native.stop v-if="documentAttachmentComponent" :is="documentAttachmentComponent" fileTypes="documents" :customTextLocaleKey="'plans.modal.upload-documents'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
+          <component ref="addDocuments" @keydown.native.stop :is="documentAttachmentComponent" fileTypes="documents" :customTextLocaleKey="'plans.modal.upload-documents'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
         </div>
       </header>
       <header v-if="planMode === 'edit' && attachments.length">
         <attachments-list :files="attachments" :workspaceId="task.workspaceId" :orientation="'row'" :planId="task.id" :editable="true" @fileRemoved="fileRemoved"></attachments-list>
       </header>
-      <header v-if="plans.length">
+      <header v-if="plans.length" class="cluster-section">
         <div class="area fullspace">
           <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto') }}</span>
           <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>

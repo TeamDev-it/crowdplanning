@@ -1,6 +1,9 @@
 <template>
   <div class="task-card" v-if="!loading">
     <div class="image" v-if="coverImageUri && value.hasCoverImage">
+      <div v-if="group" class="group-icon-card">
+        <i :class="iconCode"></i>
+      </div>
       <img :src="coverImageUri" :alt="$t('plans.cover-image', 'Immagine di copertina')" />
     </div>
     <div class="card-content">

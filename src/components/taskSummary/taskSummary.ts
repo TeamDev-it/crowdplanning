@@ -10,12 +10,13 @@ import { store } from "@/store";
 import { MessageService } from "vue-mf-module";
 import AttachmentsList from "../attachmentsList/attachmentsList.vue";
 import moment from "moment";
+import { Icon } from "@/utility/Icon";
 
 @Component({
     components: {
         FilesPreview,
         ImagesPreview,
-        AttachmentsList
+        AttachmentsList,
     }
 })
 export default class TaskSummary extends Vue {
@@ -29,7 +30,6 @@ export default class TaskSummary extends Vue {
     addressLocation: string = '';
 
     public async mounted(): Promise<void> {
-        debugger
         this.group = store.getters.crowdplanning.getGroupById(this.plan.groupId);
 
         if (this.plan.location)
@@ -37,7 +37,7 @@ export default class TaskSummary extends Vue {
     }
 
     iconCode(iconCode: string): string {
-        return `ti ti-${this.group?.iconCode}`;
+        return Icon.getIconCode(iconCode);
     }
 
     get formattedDate(): string {
