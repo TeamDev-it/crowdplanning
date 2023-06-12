@@ -23,8 +23,7 @@ export default class AttachmentsList extends Vue {
     @Prop({ default: '' })
     planId!: string;
 
-    mounted() {
-    }
+    mounted() {}
 
     get images(): server.FileAttach[] {
         return this.files.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));

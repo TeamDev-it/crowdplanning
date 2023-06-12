@@ -17,7 +17,12 @@
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
     <div class="content">
       <task-summary :plan="task" :workspaceId="task.workspaceId"></task-summary>
-      <attachments-list :files="files" :workspaceId="task.workspaceId ?? ''" :planId="task.id"></attachments-list>
+      <!-- <attachments-list v-if="files.length" :files="files" :workspaceId="task.workspaceId ?? ''" :planId="task.id"></attachments-list> -->
+      <div class="media" v-if="files.length">
+        <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
+        <component :is="mediaGallery" v-if="images.length" inputFileTypes="images" v-model="images" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+        <component :is="mediaGallery" v-if="documents.length" inputFileTypes="documents" v-model="documents" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+      </div>
       <citizen-interaction :id="task.id" :type="type"></citizen-interaction>
     </div>
   </div>
@@ -25,6 +30,23 @@
 
 <style lang="less" scoped>
 @import url(./taskDetail.less);
+</style>
+
+<style lang="less">
+.media {
+  .public-media-gallery {
+    .image-container {
+      .preview {
+        width: fit-content;
+        height: fit-content;
+        > img {
+          max-height: 150px;
+          max-width: 150px;
+        }
+      }
+    }
+  }
+}
 </style>
 
 <script lang="ts" src="./taskDetail.ts" />

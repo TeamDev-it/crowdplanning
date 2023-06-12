@@ -6,12 +6,13 @@ import TaskSummary from "../taskSummary/taskSummary.vue";
 import CitizenInteraction from "../citizenInteraction/citizenInteraction.vue";
 import { store } from "@/store";
 import { CONFIGURATION } from "@/configuration";
-import { MessageService, Projector } from "vue-mf-module";
+import { CommonRegistry, MessageService, Projector } from "vue-mf-module";
 import PlanModal from "../planModal/planModal.vue";
 import { attachmentService } from "@/services/attachmentService";
 import AttachmentsList from "../attachmentsList/attachmentsList.vue";
 import { kebabCase } from "lodash";
 import { plansService } from "@/services/plansService";
+import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 
 @Component({
     components: {
@@ -29,14 +30,20 @@ export default class TaskDetail extends Vue {
 
     async mounted(): Promise<void> {
         const whoAmI = await MessageService.Instance.ask("WHO_AM_I");
-        const context = `${CONFIGURATION.context}-${this.task.id}`;
 
         if (whoAmI) {
-            this.files = await MessageService.Instance.ask("GET_DATA", { context: context });
+            this.files = await MessageService.Instance.ask("GET_DATA", { context: `${CONFIGURATION.context}-${this.task.id}` });
         } else {
-            this.files = await MessageService.Instance.ask('GET_PUBLIC_DATA', { context: context, id: this.task.id, workspaceId: this.task.workspaceId });
+            this.files = await MessageService.Instance.ask('GET_PUBLIC_DATA', { context: CONFIGURATION.context, id: this.task.id, workspaceId: this.task.workspaceId });
         }
+    }
 
+    get images(): server.FileAttach[] {
+        return this.files.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
+    }
+
+    get documents(): server.FileAttach[] {
+        return this.files.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
     }
 
     get type(): string {
@@ -49,6 +56,10 @@ export default class TaskDetail extends Vue {
 
     get groups() {
         return store.getters.crowdplanning.getGroups;
+    }
+
+    get mediaGallery() {
+        return CommonRegistry.Instance.getComponent('public-media-gallery');
     }
 
     async remove(): Promise<void> {
