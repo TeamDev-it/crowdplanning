@@ -6,9 +6,8 @@ declare namespace server {
         parentGroupId: string;
         name: string;
         description: string;
-        taskType: string;
-        roles: string[];
-        visibleroles: string[];
         public: boolean;
+        workspaceId: string;
+        iconCode: string;
     }
 }

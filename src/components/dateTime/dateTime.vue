@@ -6,7 +6,6 @@
     </template>
     <template v-if="value">
       <time>{{ date(value) }}</time>
-      <time>{{ time(value) }}</time>
     </template>
     <svg width="100" viewBox="0 0 100 2" v-if="from">
       <rect :width="progress * 100" height="2" :style="{ fill: progressColor }" />

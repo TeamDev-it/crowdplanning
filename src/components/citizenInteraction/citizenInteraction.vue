@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="title">
-      {{ $t('plans.citizen.assess-proposal', 'Valuta la proposta').toUpperCase() }}
+      {{ $t('plans.citizen.assess-proposal', 'Valuta la proposta') }}
     </div>
     <spid-login v-if="!mySelf"></spid-login>
     <div class="rating" v-else>
