@@ -231,7 +231,6 @@ export default class PlanModal extends Vue {
     }
 
     public attachmentDeleted(file: server.FileAttach): void {
-        debugger
         const idx = this.attachments.findIndex(x => x.id === file.id);
 
         this.attachments.splice(idx, 1);
