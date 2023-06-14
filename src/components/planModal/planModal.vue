@@ -54,7 +54,7 @@
           <small>{{ $t('plans.modal.description', 'descrizione*').toUpperCase() }}</small>
           <content-editor v-if="!loading" v-model="task.description" @keydown.native.stop></content-editor>
         </div>
-        <div class="dates">
+        <div class="area dates">
           <div class="start-date">
             <small>{{ $t('plans.modal.start-date', 'data inizio').toUpperCase() }}</small>
             <div class="date-picker-container">
@@ -88,8 +88,9 @@
           <component ref="addDocuments" @keydown.native.stop :is="documentAttachmentComponent" fileTypes="documents" :customTextLocaleKey="'plans.modal.upload-documents'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
         </div>
       </header>
-      <header v-if="planMode === 'edit' && attachments.length">
-        <attachments-list :files="attachments" :workspaceId="task.workspaceId" :orientation="'row'" :planId="task.id" :editable="true" @fileRemoved="fileRemoved"></attachments-list>
+      <header class="in-memory-attachments" v-if="planMode === 'edit' && attachments.length">
+        <component :is="mediaGallery" v-if="filteredImages.length" inputFileTypes="images" :type="context" :value="filteredDocuments" :workspaceId="task.workspaceId" :id="task.id" @attachmentDeleted="attachmentDeleted"></component>
+        <component :is="mediaGallery" v-if="filteredDocuments.length" inputFileTypes="documents" :type="context" :value="filteredImages" :workspaceId="task.workspaceId" :id="task.id" @attachmentDeleted="attachmentDeleted"></component>
       </header>
       <header v-if="plans.length" class="cluster-section">
         <div class="area fullspace">
@@ -108,14 +109,14 @@
           ></autocomplete>
         </div>
       </header>
-      <header>
+      <header class="flags">
         <div class="area fullspace">
           <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
-          <toggle v-model="citizenCanSeeOthersComments" @keydown.native.stop />
+          <toggle v-model="task.citizensCanSeeOthersComments" @keydown.native.stop />
         </div>
         <div class="area fullspace">
           <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI') }}</span>
-          <toggle v-model="citizenCanSeeOthersRatings" @keydown.native.stop />
+          <toggle v-model="task.citizensCanSeeOthersRatings" @keydown.native.stop />
         </div>
       </header>
       <footer>
@@ -136,8 +137,18 @@
 
 <style lang="less">
 .date-picker-container {
+  time {
+    font-family: 'Open Sans';
+  }
+
   .datetime {
     height: 100%;
+  }
+}
+
+.content-editor-container {
+  .content-editor {
+    min-height: 0;
   }
 }
 
@@ -156,8 +167,7 @@
         .media-gallery {
           max-width: 100%;
           display: flex;
-          gap: .5rem;
-
+          gap: 0.5rem;
 
           .image-container {
             display: flex;
@@ -173,6 +183,21 @@
                 max-height: 100px;
                 width: auto;
               }
+            }
+          }
+        }
+      }
+    }
+
+    &.in-memory-attachments {
+      .public-media-gallery {
+        .image-container {
+          .preview {
+            height: auto;
+            width: auto;
+            > img {
+              max-width: 150px;
+              max-height: 150px;
             }
           }
         }

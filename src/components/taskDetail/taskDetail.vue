@@ -17,11 +17,12 @@
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
     <div class="content">
       <task-summary :plan="task" :workspaceId="task.workspaceId"></task-summary>
-      <!-- <attachments-list v-if="files.length" :files="files" :workspaceId="task.workspaceId ?? ''" :planId="task.id"></attachments-list> -->
       <div class="media" v-if="files.length">
         <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
-        <component :is="mediaGallery" v-if="images.length" inputFileTypes="images" v-model="images" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
-        <component :is="mediaGallery" v-if="documents.length" inputFileTypes="documents" v-model="documents" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+        <div class="media-gallery">
+          <component :is="mediaGallery" v-if="images.length" inputFileTypes="images" v-model="images" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+          <component :is="mediaGallery" v-if="documents.length" inputFileTypes="documents" v-model="documents" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+        </div>
       </div>
       <citizen-interaction :id="task.id" :type="type"></citizen-interaction>
     </div>
@@ -36,6 +37,7 @@
 .media {
   .public-media-gallery {
     .image-container {
+      max-width: 400px;
       .preview {
         width: fit-content;
         height: fit-content;

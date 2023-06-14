@@ -1,14 +1,11 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop } from "vue-property-decorator";
-import { attachmentService } from "@/services/attachmentService";
-import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import FilesPreview from "../file/filesPreview/filesPreview.vue";
 import ImagesPreview from "../file/imagesPreview/imagesPreview.vue";
 import { CONFIGURATION } from "@/configuration";
 import { store } from "@/store";
 import { MessageService } from "vue-mf-module";
-import AttachmentsList from "../attachmentsList/attachmentsList.vue";
 import moment from "moment";
 import { Icon } from "@/utility/Icon";
 
@@ -16,7 +13,6 @@ import { Icon } from "@/utility/Icon";
     components: {
         FilesPreview,
         ImagesPreview,
-        AttachmentsList,
     }
 })
 export default class TaskSummary extends Vue {

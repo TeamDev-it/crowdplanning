@@ -30,6 +30,10 @@ export default class CrowdplanningGroupList extends Vue {
         MessageService.Instance.send("OPEN_PLANS_STATES_MODAL", this.rootGroup);
     }
 
+    public hasPermission(value: string): boolean {
+        return this.$can(`PLANS.${value}`);
+    }
+
     public changedGroup(group: server.Group) {
         const idxChildrenGroup = this.rootGroup.children.findIndex((x) => x.id === group.id);
             

@@ -6,12 +6,10 @@ import dateTime from "../dateTime/dateTime.vue";
 import DatePickerVue from "v-calendar/src/components/DatePicker.vue";
 import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
 import { plansService } from "@/services/plansService";
-import { imagesContentTypes } from "@/@types/inputFileTypes";
+import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
-import { attachmentService } from "@/services/attachmentService";
-import AttachmentsList from "../attachmentsList/attachmentsList.vue";
 
 @Component({
     components: {
@@ -19,7 +17,6 @@ import AttachmentsList from "../attachmentsList/attachmentsList.vue";
         dateTime,
         DragAndDrop,
         Autocomplete,
-        AttachmentsList
     }
 })
 export default class PlanModal extends Vue {
@@ -27,7 +24,9 @@ export default class PlanModal extends Vue {
     value!: IProjectableModel<string>;
 
     task: server.Plan = {} as server.Plan;
+    // In memory files
     files: Array<File> = [];
+    // In memory images
     images: Array<File> = [];
     attachments: Array<server.FileAttach> = [];
     coverImage: File | null = null;
@@ -60,11 +59,19 @@ export default class PlanModal extends Vue {
 
     get planIfExists() {
         if (this.value.data)
-            return {...store.getters.crowdplanning.getPlanById(this.value.data)};
+            return { ...store.getters.crowdplanning.getPlanById(this.value.data) };
     }
 
     get context(): string {
         return CONFIGURATION.context;
+    }
+
+    get filteredImages(): server.FileAttach[] {
+        return this.attachments.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
+    }
+
+    get filteredDocuments(): server.FileAttach[] {
+        return this.attachments.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
     }
 
     get esriGeocodingAutocomplete() {
@@ -77,6 +84,10 @@ export default class PlanModal extends Vue {
 
     get documentAttachmentComponent() {
         return CommonRegistry.Instance.getComponent('add-attachments');
+    }
+
+    get mediaGallery() {
+        return CommonRegistry.Instance.getComponent('public-media-gallery');
     }
 
     fileRemoved(id: string) {
@@ -102,11 +113,15 @@ export default class PlanModal extends Vue {
             };
         }
 
+        if (this.task.parentId) {
+            this.hasClusterParent = true;
+        }
+
         if (this.task.location)
             this.locationName = await MessageService.Instance.ask('LOCATION_TO_ADDRESS', this.task.location);
 
         if (this.value.data) {
-            this.attachments = await attachmentService.getAttachments(`${this.task.id}`, this.task.workspaceId ?? '');
+            this.attachments = await MessageService.Instance.ask("GET_DATA", { context: `${CONFIGURATION.context}-${this.task.id}` });
         }
 
         this.loading = false;
@@ -196,7 +211,7 @@ export default class PlanModal extends Vue {
 
         if (this.coverImage) {
             try {
-                await attachmentService.saveFile(CONFIGURATION.context, `${CONFIGURATION.context}-${result.workspaceId}-${result.id}`, this.coverImage);
+                await MessageService.Instance.ask("SAVE_FILE", { context: CONFIGURATION.context, id: `${CONFIGURATION.context}-${result.workspaceId}-${result.id}` })
                 result.hasCoverImage = true;
             } catch (err) {
                 await this.rollbackTaskCreation(result.id);
@@ -213,6 +228,13 @@ export default class PlanModal extends Vue {
         this.setPlan(result);
 
         this.close();
+    }
+
+    public attachmentDeleted(file: server.FileAttach): void {
+        debugger
+        const idx = this.attachments.findIndex(x => x.id === file.id);
+
+        this.attachments.splice(idx, 1);
     }
 
     private setPlan(plan: server.Plan): void {

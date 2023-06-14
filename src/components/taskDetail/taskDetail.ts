@@ -8,8 +8,6 @@ import { store } from "@/store";
 import { CONFIGURATION } from "@/configuration";
 import { CommonRegistry, MessageService, Projector } from "vue-mf-module";
 import PlanModal from "../planModal/planModal.vue";
-import { attachmentService } from "@/services/attachmentService";
-import AttachmentsList from "../attachmentsList/attachmentsList.vue";
 import { kebabCase } from "lodash";
 import { plansService } from "@/services/plansService";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
@@ -19,7 +17,6 @@ import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileType
         TaskCard,
         TaskSummary,
         CitizenInteraction,
-        AttachmentsList
     }
 })
 export default class TaskDetail extends Vue {
@@ -66,14 +63,20 @@ export default class TaskDetail extends Vue {
         try {
             await plansService.deleteTask(this.task.id);
 
-            store.actions.crowdplanning.setSelectedPlanId(null);
-        } catch(err) {
+            this.clearTask();
+        } catch (err) {
             MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.plan-delete-error", "Errore durante l'eliminazione della categoria"));
         }
     }
 
     async edit(): Promise<void> {
-        await Projector.Instance.projectAsyncTo(PlanModal as never, this.task.id);
+        try {
+            await Projector.Instance.projectAsyncTo(PlanModal as never, this.task.id);
+        } catch (_) {
+
+        }
+
+        this.clearTask();
     }
 
     hasPermission(permission: string): boolean {

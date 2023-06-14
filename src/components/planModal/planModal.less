@@ -52,6 +52,21 @@
 
     &.cluster-section {
       overflow-y: visible;
+
+      .area {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        gap: 1rem;
+      }
+    }
+
+    &.flags {
+      .area {
+        display: grid;
+        grid-template-columns: 80% auto;
+        align-items: center;
+      }
     }
 
     &.archived {
@@ -124,9 +139,9 @@
 
         .content-editor-container {
           width: 100%;
-          max-height: 200px;
           display: flex;
           flex-direction: column;
+          max-height: 200px;
         }
       }
 
@@ -134,11 +149,16 @@
         flex: 1;
         height: 100%;
 
+        > div {
+          width: 100%;
+        }
+
         .date-picker-container {
-          border: 1px solid var(--grey-semidark2);
+          border: 1px solid var(--grey-semidark);
           border-radius: var(--border-radius);
           height: var(--input-big-height);
           width: 100%;
+          padding: 0 1rem;
         }
       }
     }
@@ -155,7 +175,7 @@
         margin-left: auto;
       }
 
-      > small {
+      small {
         letter-spacing: 1px;
       }
 

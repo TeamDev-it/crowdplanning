@@ -2,9 +2,9 @@ import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop } from "vue-property-decorator";
 import { store } from "@/store";
-import { attachmentService } from "@/services/attachmentService";
 import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
+import { MessageService } from "vue-mf-module";
 
 @Component
 export default class TaskCard extends Vue {
@@ -23,7 +23,7 @@ export default class TaskCard extends Vue {
     }
 
     async mounted() {
-        this.coverImageUri = this.getTaskImageUrl();
+        this.coverImageUri = await this.getTaskImageUrl();
 
         this.group = store.getters.crowdplanning.getGroupById(this.value.groupId);
 
@@ -34,9 +34,9 @@ export default class TaskCard extends Vue {
         store.actions.crowdplanning.setSelectedPlanId(this.value.id);
     }
 
-    private getTaskImageUrl(): string {
+    private async getTaskImageUrl(): Promise<string> {
         try {
-            return attachmentService.getFileUrl(CONFIGURATION.context, `${CONFIGURATION.context}-${this.value.workspaceId}-${this.value.id}`, this.value.workspaceId!);
+            return await MessageService.Instance.ask("GET_FILE_URL", CONFIGURATION.context, `${CONFIGURATION.context}-${this.value.workspaceId}-${this.value.id}`, this.value.workspaceId);
         } catch (err) {
             return '';
         }

@@ -105,7 +105,10 @@ export const crowdplanningStore = {
       const idx = state.groups.findIndex(x => x.id === model.id);
 
       if (idx !== -1)
-        state.groups = [...state.groups, state.groups[idx] = model];
+        state.groups[idx] = {...model};
+      else {
+        state.groups.push(model)
+      }
     },
     DELETE_PLAN(state: CrowdplanningStoreModel, model: string) {
       const idx = state.plans.findIndex(x => x.id === model);
@@ -153,6 +156,9 @@ export const crowdplanningStore = {
     },
     deleteGroup(context, model: string): void {
       context.commit("DELETE_GROUP", model);
+    },
+    setGroup(context, model: server.Group): void {
+      context.commit("SET_GROUP", model);
     }
   } as ActionTree<CrowdplanningStoreModel, unknown>
 };

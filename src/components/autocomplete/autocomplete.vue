@@ -6,7 +6,7 @@
         <input type="text" v-model.trim="searchedText" :placeholder="placeholderKey ? $t('placeholderKey', '') : ''" @input="onInputHandler" />
       </div>
     </header>
-    <article class="scrollable-y" v-if="filteredValues && filteredValues.length">
+    <article class="scrollable-y" v-if="filteredValues && filteredValues.length && suggestionOpen">
       <div clas="item" v-if="searchedText && suggestionOpen" v-for="(value, idx) in filteredValues" :key="idx" @click="onItemClickHandler(value)">{{ value[showThisPropertyAsItemName] }}</div>
     </article>
   </div>
