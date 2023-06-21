@@ -58,22 +58,22 @@
           <div class="start-date">
             <small>{{ $t('plans.modal.start-date', 'data inizio').toUpperCase() }}</small>
             <div class="date-picker-container">
-              <date-picker-vue v-model="task.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
+              <date-picker v-model="task.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
                 <template v-slot="{ inputEvents }">
                   <date-time :value="task.startDate" :events="inputEvents"></date-time>
                 </template>
-              </date-picker-vue>
+              </date-picker>
             </div>
           </div>
 
           <div class="due-date">
             <small>{{ $t('plans.modal.due-date', 'data fine').toUpperCase() }}</small>
             <div class="date-picker-container">
-              <date-picker-vue v-model="task.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
+              <date-picker v-model="task.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
                 <template v-slot="{ inputEvents }">
                   <date-time :value="task.dueDate" :events="inputEvents"></date-time>
                 </template>
-              </date-picker-vue>
+              </date-picker>
             </div>
           </div>
         </div>
