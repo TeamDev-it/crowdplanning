@@ -38,20 +38,20 @@ export default class dateTime extends Vue {
   date(value: any): string {
     const _now = moment(this.now);
     const _value = moment(new Date(value));
-    if (_now.year() == _value.year()) {
-      if (_now.month() == _value.month()) {
-        if (_now.format('DD') == _value.format('DD'))
-          return _value.format(`[${this.$t('date.today')}]`)
-        if (_now.add(1, 'day').format('DD') == _value.format('DD'))
-          return _value.format(`[${this.$t('date.tomorrow')}]`)
-        if (_now.add(-1, 'day').format('DD') == _value.format('DD'))
-          return _value.format(`[${this.$t('date.yesterday')}]`)
+    // if (_now.year() == _value.year()) {
+    //   if (_now.month() == _value.month()) {
+    //     if (_now.format('DD') == _value.format('DD'))
+    //       return _value.format(`[${this.$t('date.today')}]`)
+    //     if (_now.add(1, 'day').format('DD') == _value.format('DD'))
+    //       return _value.format(`[${this.$t('date.tomorrow')}]`)
+    //     if (_now.add(-1, 'day').format('DD') == _value.format('DD'))
+    //       return _value.format(`[${this.$t('date.yesterday')}]`)
 
-        return _value.format(`ddd DD`)
-      }
-      return _value.format(`DD MMM`)
-    }
-    return _value.format(`DD MMM YY`)
+    //     return _value.format(`ddd DD`)
+    //   }
+    //   return _value.format(`DD MMM`)
+    // }
+    return _value.format(`DD/MM/YYYY`)
   }
 
   get progress() {

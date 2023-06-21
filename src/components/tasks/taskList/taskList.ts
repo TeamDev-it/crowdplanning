@@ -10,5 +10,5 @@ import TaskCard from "../taskCard/taskCard.vue";
 })
 export default class TaskList extends Vue {
     @Prop({required: true})
-    tasks!: server.Task[];
+    tasks!: server.Plan[];
 }

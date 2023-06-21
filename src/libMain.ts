@@ -1,4 +1,4 @@
-import { ModuleInitializer, menuType } from "vue-mf-module";
+import { MessageService, ModuleInitializer, Projector, menuType } from "vue-mf-module";
 import { crowdplanningStore } from "./store";
 import { CONFIGURATION } from "./configuration";
 import { routes } from "./router";
@@ -22,6 +22,10 @@ export default ModuleInitializer({
         mainstore.registerModule(crowdplanningStore.PREFIX, crowdplanningStore);
 
         Object.assign(CONFIGURATION, configuration || {});
+
+        MessageService.Instance.subscribe("OPEN_PLANS_STATES_MODAL", (group: server.Group) => {
+            Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/statesModal/statesModal.vue')) as any, group)
+        });
     },
     routes
 });

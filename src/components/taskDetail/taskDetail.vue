@@ -1,16 +1,54 @@
 <template>
   <div v-if="task" class="detail-container">
-    <task-card :value="task" :showCommands="false"></task-card>
-    <task-summary :task="task"></task-summary>
-    <citizen-interaction :id="task.id" :type="task.group.taskType"></citizen-interaction>
-    <div class="close" @click="clearTask">
-      <i class="ti ti-x"></i>
+    <div class="header">
+      <div class="title">{{ task.title }}</div>
+      <div class="commands">
+        <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
+          <i class="ti ti-trash"></i>
+        </div>
+        <div class="edit" v-if="hasPermission('plans.canedit')" @click="edit">
+          <i class="ti ti-pencil"></i>
+        </div>
+        <div class="close" @click="clearTask">
+          <i class="ti ti-x"></i>
+        </div>
+      </div>
+    </div>
+    <!-- <task-card :value="task" :showCommands="false"></task-card> -->
+    <div class="content">
+      <task-summary :plan="task" :workspaceId="task.workspaceId"></task-summary>
+      <div class="media" v-if="files.length">
+        <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
+        <div class="media-gallery">
+          <component :is="mediaGallery" v-if="images.length" inputFileTypes="images" v-model="images" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+          <component :is="mediaGallery" v-if="documents.length" inputFileTypes="documents" v-model="documents" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+        </div>
+      </div>
+      <citizen-interaction :id="task.id" :type="type"></citizen-interaction>
     </div>
   </div>
 </template>
 
 <style lang="less" scoped>
 @import url(./taskDetail.less);
+</style>
+
+<style lang="less">
+.media {
+  .public-media-gallery {
+    .image-container {
+      max-width: 400px;
+      .preview {
+        width: fit-content;
+        height: fit-content;
+        > img {
+          max-height: 150px;
+          max-width: 150px;
+        }
+      }
+    }
+  }
+}
 </style>
 
 <script lang="ts" src="./taskDetail.ts" />

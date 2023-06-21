@@ -27,6 +27,24 @@ export default class CrowdplanningGroupList extends Vue {
     }
 
     openStatesModal(): void {
-        MessageService.Instance.send("OPEN_STATES_CONFIGURATION", this.rootGroup);
+        MessageService.Instance.send("OPEN_PLANS_STATES_MODAL", this.rootGroup);
+    }
+
+    public hasPermission(value: string): boolean {
+        return this.$can(`PLANS.${value}`);
+    }
+
+    public changedGroup(group: server.Group) {
+        const idxChildrenGroup = this.rootGroup.children.findIndex((x) => x.id === group.id);
+            
+        if (idxChildrenGroup !== -1) {
+            if ((group as any).deleted) {
+                this.rootGroup.children.splice(idxChildrenGroup, 1);
+            } else {
+                this.rootGroup.children[idxChildrenGroup] = group;
+            }
+
+            this.$emit("rootGroupChanged", this.rootGroup);
+        }
     }
 }

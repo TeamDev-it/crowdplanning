@@ -1,51 +1,42 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop } from "vue-property-decorator";
-import { attachmentService } from "@/services/attachmentService";
-import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import FilesPreview from "../file/filesPreview/filesPreview.vue";
 import ImagesPreview from "../file/imagesPreview/imagesPreview.vue";
+import { CONFIGURATION } from "@/configuration";
+import { store } from "@/store";
+import { MessageService } from "vue-mf-module";
+import moment from "moment";
+import { Icon } from "@/utility/Icon";
 
 @Component({
     components: {
         FilesPreview,
-        ImagesPreview
+        ImagesPreview,
     }
 })
 export default class TaskSummary extends Vue {
     @Prop()
-    task!: server.Task;
+    plan!: server.Plan;
 
-    files: server.FileAttach[] = [];
+    @Prop({ required: true })
+    workspaceId!: string;
+
+    group: server.Group | null = null;
+    addressLocation: string = '';
 
     public async mounted(): Promise<void> {
-        this.files = await attachmentService.getAttachments(`${this.task.id}`)
+        this.group = store.getters.crowdplanning.getGroupById(this.plan.groupId);
+
+        if (this.plan.location)
+            this.addressLocation = await MessageService.Instance.ask("LOCATION_TO_ADDRESS", this.plan.location);
     }
 
-    get images(): server.FileAttach[] {
-        return this.files.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
+    iconCode(iconCode: string): string {
+        return Icon.getIconCode(iconCode);
     }
 
-    get documents(): server.FileAttach[] {
-        return this.files.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
-    }
-
-    getImagePreview(file: server.FileAttach): string {
-        return attachmentService.getImagePreviewUri("PLANS", file.id);
-    }
-
-    async downloadDocument(doc: server.FileAttach): Promise<void> {
-        const uri: string = attachmentService.getFileUrl("PLANS", doc.id);
-
-        const a: HTMLAnchorElement = document.createElement("a");
-
-        a.setAttribute("href", uri);
-        a.setAttribute("target", "_blank");
-
-        a.click();
-    }
-
-    get taskDate(): string {
-        return `${this.task.creationDate.getDate()}/${this.task.creationDate.getMonth()}/${this.task.creationDate.getFullYear()}`;
+    get formattedDate(): string {
+        return moment(this.plan.dueDate).format('D/MM/YYYY');
     }
 }

@@ -1,20 +1,24 @@
 .modal.task {
   grid-template-rows: repeat(7, auto) 1fr auto !important;
   grid-template-columns: 1fr;
-  max-width: 60vw;
+  max-width: 40vw;
   padding: 0;
   gap: 0;
   height: 100%;
   overflow: hidden;
   width: 100%;
+  max-height: 900px;
+  overflow-y: scroll;
 
   &.splitView {
     grid-template-columns: 6fr 4fr;
   }
 
   .title {
+    background-color: var(--crowdplanning-primary-color);
     input {
       width: 100%;
+      color: var(--white);
     }
   }
 
@@ -26,16 +30,43 @@
     grid-column: 1/-1;
     min-height: 0;
     width: 100%;
-    overflow-x: auto;
+    height: min-content;
+    overflow-y: hidden;
 
     > .fullspace {
       flex: 1;
-      overflow: hidden;
       padding: 0.2rem;
     }
 
-    &.drag-and-drop-container {
-      display: flex;
+    &.attachments-container {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(0, 1fr);
+
+      .area {
+        .add-attachments {
+          width: calc(20vw - 3rem);
+        }
+      }
+    }
+
+    &.cluster-section {
+      overflow-y: visible;
+
+      .area {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        gap: 1rem;
+      }
+    }
+
+    &.flags {
+      .area {
+        display: grid;
+        grid-template-columns: 80% auto;
+        align-items: center;
+      }
     }
 
     &.archived {
@@ -59,6 +90,17 @@
     }
 
     &.status {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: flex-start;
+      justify-items: flex-start;
+      justify-content: flex-start;
+      overflow: visible;
+
+      > .area {
+        flex: 1;
+      }
+
       &.col-4 {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -68,12 +110,57 @@
           width: 80%;
         }
       }
+    }
 
-      display: flex;
-      flex-flow: row nowrap;
-      align-items: flex-start;
-      justify-items: flex-start;
+    &.map-settings {
       justify-content: flex-start;
+
+      .area {
+        flex: 1;
+      }
+
+      .layers {
+        max-height: 80px;
+        overflow-y: auto;
+
+        > div {
+          display: flex;
+          flex-direction: row;
+        }
+      }
+    }
+
+    &.editor {
+      max-width: 100%;
+      .area {
+        flex: 2;
+        overflow: hidden;
+        max-width: 100%;
+
+        .content-editor-container {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          max-height: 200px;
+        }
+      }
+
+      .dates {
+        flex: 1;
+        height: 100%;
+
+        > div {
+          width: 100%;
+        }
+
+        .date-picker-container {
+          border: 1px solid var(--grey-semidark);
+          border-radius: var(--border-radius);
+          height: var(--input-big-height);
+          width: 100%;
+          padding: 0 1rem;
+        }
+      }
     }
 
     .area {
@@ -86,6 +173,10 @@
 
       &.leftauto {
         margin-left: auto;
+      }
+
+      small {
+        letter-spacing: 1px;
       }
 
       time {
@@ -116,25 +207,11 @@
         }
       }
 
-      .date-picker-container {
-        border: 1px solid var(--grey-semidark2);
-      }
-    }
-
-    .editor {
-      width: 100%;
-      height: 200px;
-      overflow: hidden;
-      display: flex;
-      flex-flow: column;
-
-      .content-editor-container {
-        height: 100%;
-        overflow: hidden;
-
-        .content-editor {
-          min-height: calc(100% - 40px);
-        }
+      > input,
+      select {
+        border-radius: var(--border-radius);
+        height: var(--input-big-height);
+        width: 100%;
       }
     }
 
@@ -145,10 +222,6 @@
       align-items: center;
       border: 1px solid var(--grey-semidark2);
       cursor: pointer;
-    }
-
-    &.dates {
-      justify-content: flex-start;
     }
   }
 
@@ -168,7 +241,7 @@
     font-size: 1.2rem;
 
     > button {
-      border-radius: 0;
+      border-radius: var(--border-radius);
       background: none;
       border: none;
       color: var(--text-color);
