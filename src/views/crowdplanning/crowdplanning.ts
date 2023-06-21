@@ -99,7 +99,10 @@ export default class Crowdplanning extends Vue {
     }
 
     private async getData(): Promise<void> {
-        this.workspaceId = CONFIGURATION.domainWorkspaceMap.get(window.location.hostname) || "";
+        this.workspaceId = (await MessageService.Instance.ask("MY_WORKSPACE") as any)?.id ?? '';
+
+        if (!this.workspaceId)
+            this.workspaceId = (CONFIGURATION.domainWorkspaceMap as Map<string, string>).get(window.location.hostname) || "";
 
         if (!this.workspaceId) return;
 

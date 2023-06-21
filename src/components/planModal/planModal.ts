@@ -3,7 +3,7 @@ import Vue, { ref } from "vue";
 import { Prop } from "vue-property-decorator";
 import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
 import dateTime from "../dateTime/dateTime.vue";
-import DatePickerVue from "v-calendar/src/components/DatePicker.vue";
+import datePicker from "v-calendar/lib/components/date-picker.umd";
 import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
 import { plansService } from "@/services/plansService";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
@@ -13,7 +13,7 @@ import { store } from "@/store";
 
 @Component({
     components: {
-        DatePickerVue,
+        datePicker,
         dateTime,
         DragAndDrop,
         Autocomplete,
