@@ -148,7 +148,7 @@
 
 .content-editor-container {
   .content-editor {
-    min-height: 0;
+    max-height: 200px;
   }
 }
 
