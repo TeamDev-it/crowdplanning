@@ -106,7 +106,7 @@ export default class PlanModal extends Vue {
         } else {
             this.task = {
                 ...this.task,
-                groupId: '',
+                groupId: store.getters.crowdplanning.getSelectedCategory()?.id ?? '',
                 state: "Review",
                 visibleLayers: [],
                 mapType: this.task.mapType ? this.task.mapType : this.mapTypeFromConfiguration[0].value

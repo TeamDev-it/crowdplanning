@@ -18,44 +18,42 @@
         </button>
       </header>
 
-      <header class="status">
-        <div class="area">
-          <small>{{ $t('plans.modal.categoria', 'categoria*').toUpperCase() }}</small>
-          <select v-model="task.groupId" required @keydown.native.stop>
-            <option value="" disabled>{{ $t('plans.modal.select.default_option', "Seleziona un'opzione") }}</option>
-            <option v-for="group of groups" :key="group.id" :value="group.id">
-              {{ group.name.toUpperCase() }}
-            </option>
-          </select>
-        </div>
-        <div class="area">
-          <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-          <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="locationName" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></component>
-        </div>
-        <div class="area">
-          <small>{{ $t('plans.modal.cover-image', 'Immagine di copertina').toLocaleUpperCase() }}</small>
-          <input type="file" :accept="imageContentTypes" @change="$event => onChangeCoverImage($event)" :required="!task.hasCoverImage" @keydown.native.prevent />
-        </div>
-      </header>
-      <header class="map-settings">
-        <div class="area">
-          <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
-          <input type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="$event => confirmVisibleLayer()" />
-        </div>
-        <div class="area layers">
-          <div v-for="(layer, idx) in task.visibleLayers">
-            <i class="ti ti-x" @click="removeLayer(idx)"></i>
-            <p>{{ layer }}</p>
-          </div>
-        </div>
-      </header>
-      <header class="editor">
-        <div class="area">
-          <small>{{ $t('plans.modal.description', 'descrizione*').toUpperCase() }}</small>
-          <content-editor v-if="!loading" v-model="task.description" @keydown.native.stop></content-editor>
-        </div>
-        <div class="area dates">
-          <div class="start-date">
+      <section>
+        <header class="status">
+          <fieldset>
+            <small>{{ $t('plans.modal.categoria', 'categoria*').toUpperCase() }}</small>
+            <select v-model="task.groupId" required @keydown.native.stop>
+              <option value="" disabled>{{ $t('plans.modal.select.default_option', "Seleziona un'opzione") }}</option>
+              <option v-for="group of groups" :key="group.id" :value="group.id">
+                {{ group.name.toUpperCase() }}
+              </option>
+            </select>
+          </fieldset>
+          <fieldset>
+            <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
+            <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="locationName" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></component>
+          </fieldset>
+          <fieldset>
+            <small>{{ $t('plans.modal.cover-image', 'Immagine di copertina').toLocaleUpperCase() }}</small>
+            <input type="file" :accept="imageContentTypes" @change="$event => onChangeCoverImage($event)" :required="!task.hasCoverImage" @keydown.native.prevent />
+          </fieldset>
+        </header>
+
+        <header class="map-settings">
+          <fieldset>
+            <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
+            <input type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="$event => confirmVisibleLayer()" />
+          </fieldset>
+          <fieldset>
+            <div v-for="(layer, idx) in task.visibleLayers">
+              <i class="ti ti-x" @click="removeLayer(idx)"></i>
+              <p>{{ layer }}</p>
+            </div>
+          </fieldset>
+        </header>
+
+        <header class="date">
+          <fieldset>
             <small>{{ $t('plans.modal.start-date', 'data inizio').toUpperCase() }}</small>
             <div class="date-picker-container">
               <date-picker v-model="task.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
@@ -64,9 +62,9 @@
                 </template>
               </date-picker>
             </div>
-          </div>
+          </fieldset>
 
-          <div class="due-date">
+          <fieldset>
             <small>{{ $t('plans.modal.due-date', 'data fine').toUpperCase() }}</small>
             <div class="date-picker-container">
               <date-picker v-model="task.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
@@ -75,50 +73,49 @@
                 </template>
               </date-picker>
             </div>
+          </fieldset>
+        </header>
+
+        <header class="content-editor">
+          <div>
+            <small>{{ $t('plans.modal.description', 'descrizione*').toUpperCase() }}</small>
+            <content-editor v-if="!loading" v-model="task.description" @keydown.native.stop></content-editor>
           </div>
-        </div>
-      </header>
-      <header class="attachments-container">
-        <div class="area fullspace">
-          <small>{{ $t('plans.modal.add-images', 'Aggiungi immagini*').toUpperCase() }}</small>
-          <component ref="addImages" @keydown.native.stop :is="imageAttachmentComponent" :customTextLocaleKey="'plans.modal.upload-images'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
-        </div>
-        <div class="area fullspace">
-          <small>{{ $t('plans.modal.add-attachments', 'Aggiungi allegati*').toUpperCase() }}</small>
-          <component ref="addDocuments" @keydown.native.stop :is="documentAttachmentComponent" fileTypes="documents" :customTextLocaleKey="'plans.modal.upload-documents'" :clickableTextLocaleKey="'plans.modal.upload-from-device'" :context="context" />
-        </div>
-      </header>
-      <header class="in-memory-attachments" v-if="planMode === 'edit' && attachments.length">
-        <component :is="mediaGallery" v-if="filteredImages.length" inputFileTypes="images" :type="context" :value="filteredDocuments" :workspaceId="task.workspaceId" :id="task.id" @attachmentDeleted="attachmentDeleted"></component>
-        <component :is="mediaGallery" v-if="filteredDocuments.length" inputFileTypes="documents" :type="context" :value="filteredImages" :workspaceId="task.workspaceId" :id="task.id" @attachmentDeleted="attachmentDeleted"></component>
-      </header>
-      <header v-if="plans.length" class="cluster-section">
-        <div class="area fullspace">
-          <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto') }}</span>
-          <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
-        </div>
-        <div class="area fullspace" v-if="hasClusterParent">
-          <autocomplete
-            v-model="task.parentId"
-            :inputValues="plans"
-            :filterFunction="autocompleteFilterFunction"
-            :labelKey="'PLANS.modal.plan.autocomplete'"
-            :placeholderKey="'PLANS.modal.plan.autocomplete.placeholder'"
-            :showThisPropertyAsItemName="'title'"
-            @valueChanged="valueChanged"
-          ></autocomplete>
-        </div>
-      </header>
-      <header class="flags">
-        <div class="area fullspace">
+        </header>
+
+        <header>
+          <!-- component mediagallery -->
+        </header>
+
+        <header v-if="plans.length">
+          <div>
+            <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto') }}</span>
+            <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
+          </div>
+          <div v-if="hasClusterParent">
+            <autocomplete
+              v-model="task.parentId"
+              :inputValues="plans"
+              :filterFunction="autocompleteFilterFunction"
+              :labelKey="'PLANS.modal.plan.autocomplete'"
+              :placeholderKey="'PLANS.modal.plan.autocomplete.placeholder'"
+              :showThisPropertyAsItemName="'title'"
+              @valueChanged="valueChanged"
+            ></autocomplete>
+          </div>
+        </header>
+
+        <header class="toggle">
           <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
           <toggle v-model="task.citizensCanSeeOthersComments" @keydown.native.stop />
-        </div>
-        <div class="area fullspace">
+        </header>
+
+        <header class="toggle">
           <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI') }}</span>
           <toggle v-model="task.citizensCanSeeOthersRatings" @keydown.native.stop />
-        </div>
-      </header>
+        </header>
+      </section>
+
       <footer>
         <button class="success none" type="submit">
           <i class="ti ti-check" />
