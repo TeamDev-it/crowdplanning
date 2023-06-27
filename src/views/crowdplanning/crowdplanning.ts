@@ -129,6 +129,8 @@ export default class Crowdplanning extends Vue {
 
         this.states = await statesService.getStates(this.plansGroupRoot);
 
+        console.log("filtered plans", this.filteredPlans);
+
         this.loading = false;
     }
 

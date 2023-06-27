@@ -20,14 +20,13 @@ import { store } from "@/store";
     }
 })
 export default class PlanModal extends Vue {
+    public readonly coverMediaGalleryRef: string = 'cover-media-gallery';
+    public readonly mediaGalleryRef: string = 'media-gallery';
+
     @Prop({ required: true })
     value!: IProjectableModel<string>;
 
     task: server.Plan = {} as server.Plan;
-    // In memory files
-    files: Array<File> = [];
-    // In memory images
-    images: Array<File> = [];
     attachments: Array<server.FileAttach> = [];
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
@@ -78,16 +77,8 @@ export default class PlanModal extends Vue {
         return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
     }
 
-    get imageAttachmentComponent() {
-        return CommonRegistry.Instance.getComponent('add-attachments');
-    }
-
-    get documentAttachmentComponent() {
-        return CommonRegistry.Instance.getComponent('add-attachments');
-    }
-
     get mediaGallery() {
-        return CommonRegistry.Instance.getComponent('public-media-gallery');
+        return CommonRegistry.Instance.getComponent('media-gallery');
     }
 
     fileRemoved(id: string) {
@@ -143,34 +134,6 @@ export default class PlanModal extends Vue {
         }
     }
 
-    removeFromImages(value: File): void {
-        const idx = this.images.findIndex(x => x.name === value.name && x.size === value.size && x.type === value.type && x.lastModified === value.lastModified);
-
-        if (idx !== -1)
-            this.images.splice(idx, 1);
-    }
-
-    removeFromFiles(value: File): void {
-        const idx = this.files.findIndex(x => x.name === value.name && x.size === value.size && x.type === value.type && x.lastModified === value.lastModified);
-
-        if (idx !== -1)
-            this.files.splice(idx, 1);
-    }
-
-    addToImages(value: File): void {
-        const idx = this.images.findIndex(x => x.name === value.name && x.size === value.size && x.type === value.type && x.lastModified === value.lastModified);
-
-        if (idx === -1)
-            this.images.push(value);
-    }
-
-    addToFiles(value: File): void {
-        const idx = this.files.findIndex(x => x.name === value.name && x.size === value.size && x.type === value.type && x.lastModified === value.lastModified);
-
-        if (idx === -1)
-            this.files.push(value);
-    }
-
     onChangeCoverImage(event: InputEvent) {
         this.coverImage = (event.target as any).files[0];
     }
@@ -202,25 +165,32 @@ export default class PlanModal extends Vue {
             return;
         }
         // Save new task
-        const result: server.Plan | null = await plansService.Set(this.task.groupId, this.task);
+        let result: server.Plan | null = await plansService.Set(this.task.groupId, this.task);
 
         if (!result) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
         }
+        
+        // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
+        const coverImage: string[] = await (this.$refs[this.coverMediaGalleryRef] as any).save(result.id);
 
-        if (this.coverImage) {
-            try {
-                await MessageService.Instance.ask("SAVE_FILE", { context: CONFIGURATION.context, id: `${CONFIGURATION.context}-${result.workspaceId}-${result.id}` })
-                result.hasCoverImage = true;
-            } catch (err) {
-                await this.rollbackTaskCreation(result.id);
-            }
+        const sharableCoverImageUri = await this.askForSharedFile(coverImage[0]);
+
+        if (sharableCoverImageUri)
+            result.coverImageSharableUri = sharableCoverImageUri
+
+        const attachmentsIds: string[] = await (this.$refs[this.mediaGalleryRef] as any).save(result.id);
+
+        const sharableFileToken: string[] = [];
+
+        for (const attachmentId of attachmentsIds) {
+            const result = await this.askForSharedFile(attachmentId);
+
+            sharableFileToken.push(result);
         }
 
-        await ((this.$refs.addImages) as any).submit(result.id);
-
-        await ((this.$refs.addDocuments) as any).submit(result.id);
+        result.attachmentsSharableUri = [...sharableFileToken];
 
         // Update plan with new properties
         await plansService.Set(this.task.groupId, result);
@@ -262,6 +232,10 @@ export default class PlanModal extends Vue {
         }
 
         return true;
+    }
+
+    private async askForSharedFile(id: string): Promise<string> {
+        return await MessageService.Instance.ask("SHARE_FILE", id, CONFIGURATION.context);
     }
 
     private async rollbackTaskCreation(id: string): Promise<void> {

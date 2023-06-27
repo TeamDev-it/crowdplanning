@@ -2,17 +2,9 @@
   <form @submit.prevent="confirm" @keydown.enter="$event.preventDefault()">
     <div class="modal task">
       <header class="title">
-        <input
-          type="text"
-          @keydown.native.stop
-          :class="{ error: errors['title'] }"
-          :placeholder="$t('plans.title', 'Inserisci qui il titotlo')"
-          class="transparent title"
-          v-model="task.title"
-          maxlength="110"
-          required
-          v-validate="(errs, a) => setError('title', errs)"
-        />
+        <input type="text" @keydown.native.stop :class="{ error: errors['title'] }"
+          :placeholder="$t('plans.title', 'Inserisci qui il titotlo')" class="transparent title" v-model="task.title"
+          maxlength="110" required v-validate="(errs, a) => setError('title', errs)" />
         <button class="square none" @click="close()">
           <i class="ti ti-x"></i>
         </button>
@@ -31,25 +23,34 @@
           </fieldset>
           <fieldset>
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-            <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="locationName" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></component>
+            <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="locationName"
+              @locationSelected="locationSelected" @keydown.native.stop
+              @keydown.native.enter.prevent="$event => $event.preventDefault()"></component>
           </fieldset>
-          <fieldset>
-            <small>{{ $t('plans.modal.cover-image', 'Immagine di copertina').toLocaleUpperCase() }}</small>
-            <input type="file" :accept="imageContentTypes" @change="$event => onChangeCoverImage($event)" :required="!task.hasCoverImage" @keydown.native.prevent />
-          </fieldset>
+        </header>
+
+        <header class="cover-image">
+          <componenet :ref="coverMediaGalleryRef" :is="mediaGallery" :fileLimit="1"
+            :titleText="{ key: 'modal.cover-image', value: 'Immagine di copertina' }"
+            :subtitleText="{ key: 'modal.cover-image-description', value: `Visualizza l'immagine di copertina` }"
+            :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
+            :type="context"
+            ></componenet>
         </header>
 
         <header class="map-settings">
           <fieldset>
             <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
-            <input type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="$event => confirmVisibleLayer()" />
+            <input type="url" v-model="tmpVisibleLayer"
+              :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')"
+              @keydown.enter="$event => confirmVisibleLayer()" />
           </fieldset>
-          <fieldset>
+          <div>
             <div v-for="(layer, idx) in task.visibleLayers">
               <i class="ti ti-x" @click="removeLayer(idx)"></i>
               <p>{{ layer }}</p>
             </div>
-          </fieldset>
+          </div>
         </header>
 
         <header class="date">
@@ -83,35 +84,31 @@
           </div>
         </header>
 
-        <header>
-          <!-- component mediagallery -->
+        <header class="media">
+          <componenet :ref="mediaGalleryRef" :is="mediaGallery" :type="context"></componenet>
         </header>
 
-        <header v-if="plans.length">
-          <div>
-            <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto') }}</span>
+        <header v-if="plans.length" class="cluster">
+          <div class="column">
+            <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
             <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
           </div>
-          <div v-if="hasClusterParent">
-            <autocomplete
-              v-model="task.parentId"
-              :inputValues="plans"
-              :filterFunction="autocompleteFilterFunction"
-              :labelKey="'PLANS.modal.plan.autocomplete'"
-              :placeholderKey="'PLANS.modal.plan.autocomplete.placeholder'"
-              :showThisPropertyAsItemName="'title'"
-              @valueChanged="valueChanged"
-            ></autocomplete>
+          <div v-if="hasClusterParent" class="autocomplete">
+            <autocomplete v-model="task.parentId" :inputValues="plans" :filterFunction="autocompleteFilterFunction"
+              :labelKey="'PLANS.modal.plan.autocomplete'" :placeholderKey="'PLANS.modal.plan.autocomplete.placeholder'"
+              :showThisPropertyAsItemName="'title'" @valueChanged="valueChanged"></autocomplete>
           </div>
         </header>
 
         <header class="toggle">
-          <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
+          <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I
+                      COMMENTI ALTRUI').toUpperCase() }}</span>
           <toggle v-model="task.citizensCanSeeOthersComments" @keydown.native.stop />
         </header>
 
         <header class="toggle">
-          <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI') }}</span>
+          <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI
+                      ALTRUI').toUpperCase() }}</span>
           <toggle v-model="task.citizensCanSeeOthersRatings" @keydown.native.stop />
         </header>
       </section>
@@ -151,52 +148,12 @@
 
 .modal {
   header {
-    > .attachments {
-      width: 100%;
-      max-width: 100%;
-    }
-
-    .add-attachments {
-      max-height: 200px;
-
-      .content {
-        max-height: 200px;
-        .media-gallery {
-          max-width: 100%;
-          display: flex;
-          gap: 0.5rem;
-
-          .image-container {
-            display: flex;
-            flex-flow: row;
-            gap: 0.5rem;
-            flex-shrink: 1;
-
-            .preview {
-              height: auto;
-              width: auto;
-
-              > img {
-                max-height: 100px;
-                width: auto;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    &.in-memory-attachments {
-      .public-media-gallery {
-        .image-container {
-          .preview {
-            height: auto;
-            width: auto;
-            > img {
-              max-width: 150px;
-              max-height: 150px;
-            }
-          }
+    &.media, &.cover-image {
+      .media-gallery {
+        .add-attachments {
+          background-color: var(--grey-light);
+          padding: 1rem 0;
+          border-radius: var(--border-radius);
         }
       }
     }

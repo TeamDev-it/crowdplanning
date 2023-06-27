@@ -4,7 +4,7 @@
       <div v-if="group" class="group-icon-card">
         <i :class="iconCode"></i>
       </div>
-      <img :src="coverImageUri" :alt="$t('plans.cover-image', 'Immagine di copertina')" />
+      <component :is="imagePreview" />
     </div>
     <div class="card-content">
       <div class="task-data">

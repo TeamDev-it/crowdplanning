@@ -4,7 +4,7 @@ import { Prop } from "vue-property-decorator";
 import { store } from "@/store";
 import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
-import { MessageService } from "vue-mf-module";
+import { CommonRegistry, MessageService } from "vue-mf-module";
 
 @Component
 export default class TaskCard extends Vue {
@@ -20,6 +20,10 @@ export default class TaskCard extends Vue {
 
     get iconCode(): string {
         return Icon.getIconCode(this.group?.iconCode ?? '');
+    }
+
+    get imagePreview() {
+        return CommonRegistry.Instance.getComponent("image-preview")
     }
 
     async mounted() {
