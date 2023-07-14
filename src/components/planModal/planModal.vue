@@ -35,6 +35,7 @@
             :subtitleText="{ key: 'modal.cover-image-description', value: `Visualizza l'immagine di copertina` }"
             :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
             :type="context"
+            :inputFileTypes="'images'"
             ></componenet>
         </header>
 
@@ -101,14 +102,12 @@
         </header>
 
         <header class="toggle">
-          <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I
-                      COMMENTI ALTRUI').toUpperCase() }}</span>
+          <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
           <toggle v-model="task.citizensCanSeeOthersComments" @keydown.native.stop />
         </header>
 
         <header class="toggle">
-          <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI
-                      ALTRUI').toUpperCase() }}</span>
+          <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI').toUpperCase() }}</span>
           <toggle v-model="task.citizensCanSeeOthersRatings" @keydown.native.stop />
         </header>
       </section>

@@ -1,5 +1,5 @@
 import Component from "vue-class-component";
-import Vue, { ref } from "vue";
+import Vue from "vue";
 import { Prop } from "vue-property-decorator";
 import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
 import dateTime from "../dateTime/dateTime.vue";
@@ -27,7 +27,6 @@ export default class PlanModal extends Vue {
     value!: IProjectableModel<string>;
 
     task: server.Plan = {} as server.Plan;
-    attachments: Array<server.FileAttach> = [];
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
@@ -65,26 +64,12 @@ export default class PlanModal extends Vue {
         return CONFIGURATION.context;
     }
 
-    get filteredImages(): server.FileAttach[] {
-        return this.attachments.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
-    }
-
-    get filteredDocuments(): server.FileAttach[] {
-        return this.attachments.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
-    }
-
     get esriGeocodingAutocomplete() {
         return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
     }
 
     get mediaGallery() {
         return CommonRegistry.Instance.getComponent('media-gallery');
-    }
-
-    fileRemoved(id: string) {
-        const idx = this.attachments.findIndex(x => x.id === id);
-
-        this.attachments.splice(idx, 1);
     }
 
     async mounted() {
@@ -110,10 +95,6 @@ export default class PlanModal extends Vue {
 
         if (this.task.location)
             this.locationName = await MessageService.Instance.ask('LOCATION_TO_ADDRESS', this.task.location);
-
-        if (this.value.data) {
-            this.attachments = await MessageService.Instance.ask("GET_DATA", { context: `${CONFIGURATION.context}-${this.task.id}` });
-        }
 
         this.loading = false;
     }
@@ -165,7 +146,7 @@ export default class PlanModal extends Vue {
             return;
         }
         // Save new task
-        let result: server.Plan | null = await plansService.Set(this.task.groupId, this.task);
+        const result: server.Plan | null = await plansService.Set(this.task.groupId, this.task);
 
         if (!result) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
@@ -175,7 +156,9 @@ export default class PlanModal extends Vue {
         // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
         const coverImage: string[] = await (this.$refs[this.coverMediaGalleryRef] as any).save(result.id);
 
-        const sharableCoverImageUri = await this.askForSharedFile(coverImage[0]);
+        result.coverImageOriginalFileId = coverImage[0];
+
+        const sharableCoverImageUri = await this.askForSharedFile(coverImage[0], result.id);
 
         if (sharableCoverImageUri)
             result.coverImageSharableUri = sharableCoverImageUri
@@ -185,10 +168,12 @@ export default class PlanModal extends Vue {
         const sharableFileToken: string[] = [];
 
         for (const attachmentId of attachmentsIds) {
-            const result = await this.askForSharedFile(attachmentId);
+            const shared = await this.askForSharedFile(attachmentId, result.id);
 
-            sharableFileToken.push(result);
+            sharableFileToken.push(shared);
         }
+
+        result.attachmentsOriginalFileIds = [...attachmentsIds];
 
         result.attachmentsSharableUri = [...sharableFileToken];
 
@@ -198,12 +183,6 @@ export default class PlanModal extends Vue {
         this.setPlan(result);
 
         this.close();
-    }
-
-    public attachmentDeleted(file: server.FileAttach): void {
-        const idx = this.attachments.findIndex(x => x.id === file.id);
-
-        this.attachments.splice(idx, 1);
     }
 
     private setPlan(plan: server.Plan): void {
@@ -234,8 +213,8 @@ export default class PlanModal extends Vue {
         return true;
     }
 
-    private async askForSharedFile(id: string): Promise<string> {
-        return await MessageService.Instance.ask("SHARE_FILE", id, CONFIGURATION.context);
+    private async askForSharedFile(fileId: string, id: string): Promise<string> {
+        return await MessageService.Instance.ask("SHARE_FILE", fileId, `${CONFIGURATION.context}-${id}`);
     }
 
     private async rollbackTaskCreation(id: string): Promise<void> {

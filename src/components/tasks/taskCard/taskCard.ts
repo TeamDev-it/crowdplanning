@@ -5,6 +5,8 @@ import { store } from "@/store";
 import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
 import { CommonRegistry, MessageService } from "vue-mf-module";
+import { Buffer } from 'buffer';
+
 
 @Component
 export default class TaskCard extends Vue {
@@ -14,7 +16,7 @@ export default class TaskCard extends Vue {
     @Prop({ default: true })
     showCommands!: boolean;
 
-    coverImageUri = '';
+    coverImage: string | null = null;
     loading = true;
     group: server.Group | null = null;
 
@@ -27,7 +29,8 @@ export default class TaskCard extends Vue {
     }
 
     async mounted() {
-        this.coverImageUri = await this.getTaskImageUrl();
+        if (this.value.coverImageSharableUri)
+            this.coverImage = await this.getShared(this.value.coverImageSharableUri);
 
         this.group = store.getters.crowdplanning.getGroupById(this.value.groupId);
 
@@ -38,11 +41,15 @@ export default class TaskCard extends Vue {
         store.actions.crowdplanning.setSelectedPlanId(this.value.id);
     }
 
-    private async getTaskImageUrl(): Promise<string> {
-        try {
-            return await MessageService.Instance.ask("GET_FILE_URL", CONFIGURATION.context, `${CONFIGURATION.context}-${this.value.workspaceId}-${this.value.id}`, this.value.workspaceId);
-        } catch (err) {
-            return '';
-        }
+    private async getShared(token: string): Promise<string> {
+        return await MessageService.Instance.ask("GET_SHARED", token);
+    }
+
+    get CoverImage(): string | null {
+        if (!this.coverImage) return null;
+        
+        const buffer = Buffer.from(this.coverImage);
+        
+        return 'data:image/png;base64,' + buffer.toString('base64');
     }
 }

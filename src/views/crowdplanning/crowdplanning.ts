@@ -15,7 +15,6 @@ import { cloneDeep } from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { MessageService, Projector } from "vue-mf-module";
-import { Watch } from "vue-property-decorator";
 
 @Component({
     components: {

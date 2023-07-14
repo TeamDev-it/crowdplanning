@@ -25,6 +25,8 @@ declare namespace server {
         mapType: string;
         visibleLayers: Array<String>;
         coverImageSharableUri: string;
+        coverImageOriginalFileId: string;
+        attachmentsOriginalFileIds: string[];
         attachmentsSharableUri: string[];
         citizensCanSeeOthersComments: boolean;
         citizensCanSeeOthersRatings: boolean;
