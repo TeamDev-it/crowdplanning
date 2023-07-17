@@ -18,12 +18,5 @@ export const CONFIGURATION = {
     domainWorkspaceMap: new Map<string, string>([
         ["web.wise.town", "12345678-a111-b222-c333-123456789abd"],
         ["localhost", "12345678-a111-b222-c333-123456789abd"]
-    ]),
-    planMapType: [
-        { value: MapType.topographic, labelKey: 'plans.modal.maptype.topographic', labelText: 'Topografica' },
-        { value: MapType.imagery, labelKey: 'plans.modal.maptype.imagery', labelText: 'Imagery' },
-        { value: MapType.streets, labelKey: 'plans.modal.maptype.streets', labelText: "Streets" },
-        { value: MapType.streetsNight, labelKey: 'plans.modal.maptype.streets-night', labelText: "Streets night" },
-        { value: MapType.navigation, labelKey: 'plans.modal.maptype.navigation', labelText: "Navigation" }
-    ] as Array<{ value: string, labelKey: string, labelText: string }>
+    ])
 };

@@ -1,8 +1,6 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop } from "vue-property-decorator";
-import FilesPreview from "../file/filesPreview/filesPreview.vue";
-import ImagesPreview from "../file/imagesPreview/imagesPreview.vue";
 import { CONFIGURATION } from "@/configuration";
 import { store } from "@/store";
 import { MessageService } from "vue-mf-module";
@@ -10,10 +8,7 @@ import moment from "moment";
 import { Icon } from "@/utility/Icon";
 
 @Component({
-    components: {
-        FilesPreview,
-        ImagesPreview,
-    }
+    components: {}
 })
 export default class TaskSummary extends Vue {
     @Prop()

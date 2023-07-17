@@ -29,8 +29,8 @@ export default class TaskCard extends Vue {
     }
 
     async mounted() {
-        if (this.value.coverImageSharableUri)
-            this.coverImage = await this.getShared(this.value.coverImageSharableUri);
+        if (this.value.coverImageIds)
+            this.coverImage = await this.getShared(this.value.coverImageIds.value);
 
         this.group = store.getters.crowdplanning.getGroupById(this.value.groupId);
 

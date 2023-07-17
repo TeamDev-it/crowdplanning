@@ -4,7 +4,6 @@ import { Prop } from "vue-property-decorator";
 import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
 import dateTime from "../dateTime/dateTime.vue";
 import datePicker from "v-calendar/lib/components/date-picker.umd";
-import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
 import { plansService } from "@/services/plansService";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import { CONFIGURATION } from "@/configuration";
@@ -15,7 +14,6 @@ import { store } from "@/store";
     components: {
         datePicker,
         dateTime,
-        DragAndDrop,
         Autocomplete,
     }
 })
@@ -26,7 +24,8 @@ export default class PlanModal extends Vue {
     @Prop({ required: true })
     value!: IProjectableModel<string>;
 
-    task: server.Plan = {} as server.Plan;
+    task: server.Plan | null= null;
+    tmpTask: server.Plan | null = null;
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
@@ -41,10 +40,6 @@ export default class PlanModal extends Vue {
 
     get imageContentTypes(): string {
         return imagesContentTypes;
-    }
-
-    get mapTypeFromConfiguration(): Array<{ value: string, labelKey: string, labelText: string }> {
-        return CONFIGURATION.planMapType;
     }
 
     get plans(): server.Plan[] {
@@ -84,9 +79,8 @@ export default class PlanModal extends Vue {
                 ...this.task,
                 groupId: store.getters.crowdplanning.getSelectedCategory()?.id ?? '',
                 state: "Review",
-                visibleLayers: [],
-                mapType: this.task.mapType ? this.task.mapType : this.mapTypeFromConfiguration[0].value
-            };
+                visibleLayers: []
+            } as server.Plan;
         }
 
         if (this.task.parentId) {
@@ -104,7 +98,8 @@ export default class PlanModal extends Vue {
     }
 
     locationSelected(value: locations.Location) {
-        this.task.location = value;
+        if(this.task)
+            this.task.location = value;
     }
 
     close(): void {
@@ -122,67 +117,80 @@ export default class PlanModal extends Vue {
     public confirmVisibleLayer() {
         if (!this.tmpVisibleLayer) return;
 
-        this.task.visibleLayers.push(this.tmpVisibleLayer);
+        this.task?.visibleLayers.push(this.tmpVisibleLayer);
 
         this.tmpVisibleLayer = "";
     }
 
     public valueChanged(value: server.Plan): void {
-        this.task = { ...this.task, parentId: value.id };
+        this.task = { ...this.task, parentId: value.id } as server.Plan;
     }
 
     autocompleteFilterFunction(plans: server.Plan[], filteringValue: string): server.Plan[] {
         return plans.filter(x =>
-            x.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
+            x?.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
             x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
     }
 
     removeLayer(idx: number): void {
-        this.task.visibleLayers.splice(idx, 1);
+        this.task?.visibleLayers.splice(idx, 1);
     }
 
     async confirm(): Promise<void> {
         if (!this.requiredFieldsSatisfied()) {
             return;
         }
-        // Save new task
-        const result: server.Plan | null = await plansService.Set(this.task.groupId, this.task);
 
-        if (!result) {
+        if (this.task && !this.task?.id)
+        // Save new task
+            this.tmpTask = await plansService.Set(this.task.groupId, this.task);
+        else 
+        // Get already saved task (edit)
+            this.tmpTask = {...this.task} as server.Plan;
+
+        if (!this.tmpTask) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
         }
         
         // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-        const coverImage: string[] = await (this.$refs[this.coverMediaGalleryRef] as any).save(result.id);
+        await (this.$refs[this.coverMediaGalleryRef] as any).save(this.tmpTask.id);
 
-        result.coverImageOriginalFileId = coverImage[0];
+        await (this.$refs[this.mediaGalleryRef] as any).save(this.tmpTask.id);
 
-        const sharableCoverImageUri = await this.askForSharedFile(coverImage[0], result.id);
+        debugger
 
-        if (sharableCoverImageUri)
-            result.coverImageSharableUri = sharableCoverImageUri
-
-        const attachmentsIds: string[] = await (this.$refs[this.mediaGalleryRef] as any).save(result.id);
-
-        const sharableFileToken: string[] = [];
-
-        for (const attachmentId of attachmentsIds) {
-            const shared = await this.askForSharedFile(attachmentId, result.id);
-
-            sharableFileToken.push(shared);
-        }
-
-        result.attachmentsOriginalFileIds = [...attachmentsIds];
-
-        result.attachmentsSharableUri = [...sharableFileToken];
+        console.log("Result with all properties, before update", this.tmpTask);
 
         // Update plan with new properties
-        await plansService.Set(this.task.groupId, result);
+        await plansService.Set(this.task!.groupId, this.tmpTask);
 
-        this.setPlan(result);
+        this.setPlan(this.tmpTask);
 
         this.close();
+    }
+
+    async coverUploaded(ids: string[]): Promise<void> {
+        debugger
+        if (ids.length && this.tmpTask) {
+            const sharableCoverImageToken = await this.askForSharedFile(ids[0], this.tmpTask?.id)
+
+            this.tmpTask.coverImageIds = {key: ids[0], value: sharableCoverImageToken} as utility.KeyValue;
+        }
+    }
+
+    async filesUploaded(ids: string[]): Promise<void> {
+        if (ids.length && this.tmpTask) {
+            const attachmentsSharableIds: utility.KeyValue[] = [];
+
+            for (const attachmentId of ids) {
+                const shared = await this.askForSharedFile(attachmentId, this.tmpTask.id);
+
+                attachmentsSharableIds.push({key: attachmentId, value: shared} as utility.KeyValue);
+            }
+
+            this.tmpTask.attachmentsIds = [...attachmentsSharableIds];
+        }
     }
 
     private setPlan(plan: server.Plan): void {
@@ -190,22 +198,22 @@ export default class PlanModal extends Vue {
     }
 
     private requiredFieldsSatisfied(): boolean {
-        if (!this.task.location) {
+        if (!this.task?.location) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
             return false;
         }
 
-        if (!this.task.description) {
+        if (!this.task?.description) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
             return false;
         }
 
-        if (!this.task.startDate) {
+        if (!this.task?.startDate) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
             return false;
         }
 
-        if (!this.task.dueDate) {
+        if (!this.task?.dueDate) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
             return false;
         }

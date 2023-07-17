@@ -1,10 +1,18 @@
 <template>
   <form @submit.prevent="confirm" @keydown.enter="$event.preventDefault()">
-    <div class="modal task">
+    <div class="modal task" v-if="task">
       <header class="title">
-        <input type="text" @keydown.native.stop :class="{ error: errors['title'] }"
-          :placeholder="$t('plans.title', 'Inserisci qui il titotlo')" class="transparent title" v-model="task.title"
-          maxlength="110" required v-validate="(errs, a) => setError('title', errs)" />
+        <input
+          type="text"
+          @keydown.native.stop
+          :class="{ error: errors['title'] }"
+          :placeholder="$t('plans.title', 'Inserisci qui il titotlo')"
+          class="transparent title"
+          v-model="task.title"
+          maxlength="110"
+          required
+          v-validate="(errs, a) => setError('title', errs)"
+        />
         <button class="square none" @click="close()">
           <i class="ti ti-x"></i>
         </button>
@@ -23,28 +31,29 @@
           </fieldset>
           <fieldset>
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-            <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="locationName"
-              @locationSelected="locationSelected" @keydown.native.stop
-              @keydown.native.enter.prevent="$event => $event.preventDefault()"></component>
+            <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="locationName" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></component>
           </fieldset>
         </header>
 
-        <header class="cover-image">
-          <componenet :ref="coverMediaGalleryRef" :is="mediaGallery" :fileLimit="1"
+        <header class="cover-image" v-if="task">
+          <componenet
+            :ref="coverMediaGalleryRef"
+            :is="mediaGallery"
+            :fileLimit="1"
             :titleText="{ key: 'modal.cover-image', value: 'Immagine di copertina' }"
             :subtitleText="{ key: 'modal.cover-image-description', value: `Visualizza l'immagine di copertina` }"
             :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
-            :type="context"
+            :type="`${context}-COVER`"
             :inputFileTypes="'images'"
-            ></componenet>
+            :id="task.id ?? ''"
+            @filesUploaded="$event => coverUploaded($event)"
+          ></componenet>
         </header>
 
         <header class="map-settings">
           <fieldset>
             <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
-            <input type="url" v-model="tmpVisibleLayer"
-              :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')"
-              @keydown.enter="$event => confirmVisibleLayer()" />
+            <input type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="$event => confirmVisibleLayer()" />
           </fieldset>
           <div>
             <div v-for="(layer, idx) in task.visibleLayers">
@@ -85,8 +94,8 @@
           </div>
         </header>
 
-        <header class="media">
-          <componenet :ref="mediaGalleryRef" :is="mediaGallery" :type="context"></componenet>
+        <header class="media" v-if="task">
+          <componenet :ref="mediaGalleryRef" :is="mediaGallery" :type="context" :id="task.id ?? ''" @filesUploaded="$event => filesUploaded($event)"></componenet>
         </header>
 
         <header v-if="plans.length" class="cluster">
@@ -95,9 +104,15 @@
             <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
           </div>
           <div v-if="hasClusterParent" class="autocomplete">
-            <autocomplete v-model="task.parentId" :inputValues="plans" :filterFunction="autocompleteFilterFunction"
-              :labelKey="'PLANS.modal.plan.autocomplete'" :placeholderKey="'PLANS.modal.plan.autocomplete.placeholder'"
-              :showThisPropertyAsItemName="'title'" @valueChanged="valueChanged"></autocomplete>
+            <autocomplete
+              v-model="task.parentId"
+              :inputValues="plans"
+              :filterFunction="autocompleteFilterFunction"
+              :labelKey="'PLANS.modal.plan.autocomplete'"
+              :placeholderKey="'PLANS.modal.plan.autocomplete.placeholder'"
+              :showThisPropertyAsItemName="'title'"
+              @valueChanged="valueChanged"
+            ></autocomplete>
           </div>
         </header>
 
@@ -114,7 +129,7 @@
 
       <footer>
         <button class="success none" type="submit">
-          <i class="ti ti-check" />
+          <i class="ti ti-check"></i>
           {{ $t('plans.modal.confirm', 'Conferma') }}
         </button>
       </footer>
@@ -147,7 +162,8 @@
 
 .modal {
   header {
-    &.media, &.cover-image {
+    &.media,
+    &.cover-image {
       .media-gallery {
         .add-attachments {
           background-color: var(--grey-light);
