@@ -11,12 +11,14 @@ import PlanModal from "../planModal/planModal.vue";
 import { kebabCase } from "lodash";
 import { plansService } from "@/services/plansService";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
+import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
 
 @Component({
     components: {
         TaskCard,
         TaskSummary,
         CitizenInteraction,
+        ChildrenPlans
     }
 })
 export default class TaskDetail extends Vue {
@@ -43,8 +45,18 @@ export default class TaskDetail extends Vue {
         return this.files.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
     }
 
+    get sharedAttachments(): string[] {
+        return this.task.attachmentsIds
+            .filter(x => x.value)
+            .map(x => x.value);
+    }
+
     get type(): string {
         return CONFIGURATION.context;
+    }
+
+    get children(): server.Plan[] {
+        return store.getters.crowdplanning.getChildrenOfPlan(this.task.id);
     }
 
     clearTask(): void {
@@ -77,6 +89,10 @@ export default class TaskDetail extends Vue {
         }
 
         this.clearTask();
+    }
+
+    onBackClick() {
+        store.actions.crowdplanning.setSelectedPlanId(null);
     }
 
     hasPermission(permission: string): boolean {

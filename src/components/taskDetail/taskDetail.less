@@ -16,6 +16,15 @@
     color: var(--white);
     display: flex;
     flex-direction: row;
+    gap: 0.5rem;
+    padding-left: 0.5rem;
+
+    .back {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
 
     .title {
       flex: 1;
@@ -41,20 +50,20 @@
 
   .content {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr 1fr auto;
     gap: 1rem;
     margin: 0.5rem;
     box-sizing: border-box;
     overflow-y: hidden;
 
-    .media {
+    .second-column {
       background-color: var(--white);
       border-radius: var(--border-radius);
       padding: 0.5rem;
       display: grid;
+      grid-auto-rows: 1fr;
       gap: 0.5rem;
       overflow-y: auto;
-      max-width: 20vw;
 
       > span {
         font-size: var(--font-size-lg);

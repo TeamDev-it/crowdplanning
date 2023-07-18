@@ -1,6 +1,9 @@
 <template>
   <div v-if="task" class="detail-container">
     <div class="header">
+      <div class="back" @click="onBackClick">
+        <i class="ti ti-arrow-left"></i>
+      </div>
       <div class="title">{{ task.title }}</div>
       <div class="commands">
         <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
@@ -17,11 +20,16 @@
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
     <div class="content">
       <task-summary :plan="task" :workspaceId="task.workspaceId"></task-summary>
-      <div class="media" v-if="files.length">
-        <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
-        <div class="media-gallery">
-          <component :is="mediaGallery" v-if="images.length" inputFileTypes="images" v-model="images" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
-          <component :is="mediaGallery" v-if="documents.length" inputFileTypes="documents" v-model="documents" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+      <div class="second-column" v-if="task.attachmentsIds && task.attachmentsIds.length">
+        <div class="attachments">
+          <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
+          <div class="media-gallery">
+            <component :is="mediaGallery" v-if="images.length" inputFileTypes="images" v-model="images" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+            <component :is="mediaGallery" v-if="documents.length" inputFileTypes="documents" v-model="documents" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
+          </div>
+        </div>
+        <div class="children-plans" v-if="children.length">
+          <children-plans :children="children"></children-plans>
         </div>
       </div>
       <citizen-interaction :id="task.id" :type="type"></citizen-interaction>

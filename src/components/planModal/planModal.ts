@@ -25,7 +25,6 @@ export default class PlanModal extends Vue {
     value!: IProjectableModel<string>;
 
     task: server.Plan | null= null;
-    tmpTask: server.Plan | null = null;
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
@@ -143,53 +142,53 @@ export default class PlanModal extends Vue {
 
         if (this.task && !this.task?.id)
         // Save new task
-            this.tmpTask = await plansService.Set(this.task.groupId, this.task);
-        else 
-        // Get already saved task (edit)
-            this.tmpTask = {...this.task} as server.Plan;
+            this.task = await plansService.Set(this.task.groupId, this.task);
 
-        if (!this.tmpTask) {
+        if (!this.task) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
         }
         
         // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-        await (this.$refs[this.coverMediaGalleryRef] as any).save(this.tmpTask.id);
+        await (this.$refs[this.coverMediaGalleryRef] as any).save(this.task.id);
 
-        await (this.$refs[this.mediaGalleryRef] as any).save(this.tmpTask.id);
+        await (this.$refs[this.mediaGalleryRef] as any).save(this.task.id);
 
-        debugger
-
-        console.log("Result with all properties, before update", this.tmpTask);
+        console.log("Result with all properties, before update", this.task);
 
         // Update plan with new properties
-        await plansService.Set(this.task!.groupId, this.tmpTask);
+        await plansService.Set(this.task!.groupId, this.task);
 
-        this.setPlan(this.tmpTask);
+        this.setPlan(this.task);
 
         this.close();
     }
 
     async coverUploaded(ids: string[]): Promise<void> {
-        debugger
-        if (ids.length && this.tmpTask) {
-            const sharableCoverImageToken = await this.askForSharedFile(ids[0], this.tmpTask?.id)
+        if (ids.length && this.task) {
+            const sharableCoverImageToken = await this.askForSharedFile(ids[0], this.task.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
 
-            this.tmpTask.coverImageIds = {key: ids[0], value: sharableCoverImageToken} as utility.KeyValue;
+            this.task.coverImageIds = {key: ids[0], value: this.decodeSharable(sharableCoverImageToken)} as utility.KeyValue;
         }
     }
 
+    private decodeSharable(buffer: ArrayBuffer): string {
+        const textDecoder = new TextDecoder();
+
+        return textDecoder.decode(buffer);
+    }
+
     async filesUploaded(ids: string[]): Promise<void> {
-        if (ids.length && this.tmpTask) {
+        if (ids.length && this.task) {
             const attachmentsSharableIds: utility.KeyValue[] = [];
 
             for (const attachmentId of ids) {
-                const shared = await this.askForSharedFile(attachmentId, this.tmpTask.id);
+                const shared = await this.askForSharedFile(attachmentId, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
 
-                attachmentsSharableIds.push({key: attachmentId, value: shared} as utility.KeyValue);
+                attachmentsSharableIds.push({key: attachmentId, value: this.decodeSharable(shared)} as utility.KeyValue);
             }
 
-            this.tmpTask.attachmentsIds = [...attachmentsSharableIds];
+            this.task.attachmentsIds = [...attachmentsSharableIds];
         }
     }
 
@@ -221,8 +220,8 @@ export default class PlanModal extends Vue {
         return true;
     }
 
-    private async askForSharedFile(fileId: string, id: string): Promise<string> {
-        return await MessageService.Instance.ask("SHARE_FILE", fileId, `${CONFIGURATION.context}-${id}`);
+    private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
+        return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
     }
 
     private async rollbackTaskCreation(id: string): Promise<void> {

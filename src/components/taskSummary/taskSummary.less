@@ -1,10 +1,20 @@
 .summary-container {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
   background-color: var(--white);
   padding: 0.5rem;
   border-radius: var(--border-radius);
   overflow: auto;
+
+  .cover-image {
+    max-width: 100%;
+    max-height: 300px;
+
+    > img {
+      max-height: 100%;
+      max-width: 100%;
+    }
+  }
 
   header {
     margin: var(--spacer);

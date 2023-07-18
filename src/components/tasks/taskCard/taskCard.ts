@@ -5,9 +5,7 @@ import { store } from "@/store";
 import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
 import { CommonRegistry, MessageService } from "vue-mf-module";
-import { Buffer } from 'buffer';
-
-
+import { Shared } from "@/utility/Shared";
 @Component
 export default class TaskCard extends Vue {
     @Prop()
@@ -29,8 +27,8 @@ export default class TaskCard extends Vue {
     }
 
     async mounted() {
-        if (this.value.coverImageIds)
-            this.coverImage = await this.getShared(this.value.coverImageIds.value);
+        if (this.value.coverImageIds?.value)
+            this.coverImage = await Shared.getShared(this.value.coverImageIds.value);
 
         this.group = store.getters.crowdplanning.getGroupById(this.value.groupId);
 
@@ -41,15 +39,9 @@ export default class TaskCard extends Vue {
         store.actions.crowdplanning.setSelectedPlanId(this.value.id);
     }
 
-    private async getShared(token: string): Promise<string> {
-        return await MessageService.Instance.ask("GET_SHARED", token);
-    }
-
     get CoverImage(): string | null {
         if (!this.coverImage) return null;
         
-        const buffer = Buffer.from(this.coverImage);
-        
-        return 'data:image/png;base64,' + buffer.toString('base64');
+        return Shared.imageFromString(this.coverImage);
     }
 }

@@ -46,7 +46,7 @@
             :type="`${context}-COVER`"
             :inputFileTypes="'images'"
             :id="task.id ?? ''"
-            @filesUploaded="$event => coverUploaded($event)"
+            @filesUploaded="coverUploaded"
           ></componenet>
         </header>
 
@@ -95,7 +95,7 @@
         </header>
 
         <header class="media" v-if="task">
-          <componenet :ref="mediaGalleryRef" :is="mediaGallery" :type="context" :id="task.id ?? ''" @filesUploaded="$event => filesUploaded($event)"></componenet>
+          <componenet :ref="mediaGalleryRef" :is="mediaGallery" :type="context" :id="task.id ?? ''" @filesUploaded="filesUploaded"></componenet>
         </header>
 
         <header v-if="plans.length" class="cluster">

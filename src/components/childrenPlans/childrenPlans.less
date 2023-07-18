@@ -1,0 +1,39 @@
+.children-plans {
+  display: grid;
+  gap: 1rem;
+
+  .header {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    padding-left: 0.5rem;
+  }
+
+  .content {
+    .row {
+      border-bottom: 1px solid var(--grey-semidark);
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      padding-bottom: 0.5rem;
+
+      .name {
+        display: flex;
+        flex-flow: row;
+        gap: 1rem;
+        justify-content: flex-start;
+        align-items: center;
+
+        > i {
+          color: var(--crowdplanning-primary-color);
+        }
+      }
+
+      .location {
+        display: flex;
+        flex-flow: row;
+        gap: 1rem;
+        justify-content: flex-end;
+        align-items: center;
+      }
+    }
+  }
+}
