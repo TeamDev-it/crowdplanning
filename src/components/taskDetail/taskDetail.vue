@@ -20,19 +20,19 @@
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
     <div class="content">
       <task-summary :plan="task" :workspaceId="task.workspaceId"></task-summary>
-      <div class="second-column" v-if="task.attachmentsIds && task.attachmentsIds.length">
+      <div class="second-column" v-if="(task.attachmentsIds && task.attachmentsIds.length) || children.length">
         <div class="attachments">
           <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
-          <div class="media-gallery">
-            <component :is="mediaGallery" v-if="images.length" inputFileTypes="images" v-model="images" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
-            <component :is="mediaGallery" v-if="documents.length" inputFileTypes="documents" v-model="documents" :workspaceId="task.workspaceId" :id="task.id" :disabled="true"></component>
-          </div>
+          <component :is="sharedPreviewComponent" :shareds="task.attachmentsIds"></component>
         </div>
         <div class="children-plans" v-if="children.length">
           <children-plans :children="children"></children-plans>
         </div>
       </div>
-      <citizen-interaction :id="task.id" :type="type"></citizen-interaction>
+      <div class="third-column">
+        <task-map :group="selectedGroup ?? rootGroup"></task-map>
+        <citizen-interaction :id="task.id" :type="type"></citizen-interaction>
+      </div>
     </div>
   </div>
 </template>

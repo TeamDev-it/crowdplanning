@@ -10,11 +10,10 @@ export default class ChildrenPlans extends Vue {
     children!: server.Plan[];
 
     loading = true;
-
     planAddressDictionary: Map<string, string> = new Map<string, string>();
 
     public async mounted(): Promise<void> {
-        this.getAddressForEachChildren();
+        await this.getAddressForEachChildren();
 
         this.loading = false;
     }
@@ -28,8 +27,6 @@ export default class ChildrenPlans extends Vue {
     }
 
     public getAddressFromId(id: string): string {
-        console.log(this.planAddressDictionary)
-
         return (this.planAddressDictionary.has(id) ? this.planAddressDictionary.get(id) : '') ?? '';
     }
 

@@ -1,19 +1,21 @@
 .children-plans {
-  display: grid;
   gap: 1rem;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  max-height: 100%;
 
   .header {
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-lg);
-    padding-left: 0.5rem;
   }
 
   .content {
+    overflow: auto;
     .row {
       border-bottom: 1px solid var(--grey-semidark);
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      padding-bottom: 0.5rem;
+      padding: 0.5rem 0.5rem 0.5rem 0;
 
       .name {
         display: flex;
@@ -23,6 +25,7 @@
         align-items: center;
 
         > i {
+          cursor: pointer;
           color: var(--crowdplanning-primary-color);
         }
       }

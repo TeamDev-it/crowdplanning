@@ -42,7 +42,7 @@ export default class Crowdplanning extends Vue {
     }
 
     get selectedGroup(): server.Group | null {
-        return store.getters.crowdplanning.getSelectedCategory();
+        return store.getters.crowdplanning.getSelectedGroup();
     }
 
     get searchedValue(): string {
@@ -62,21 +62,7 @@ export default class Crowdplanning extends Vue {
     }
 
     get filteredPlans(): server.Plan[] {
-        let result: server.Plan[] = cloneDeep(this.plans);
-
-        if (this.selectedTaskId) {
-            return this.plans.filter(x => x.id === this.selectedTaskId);
-        }
-
-        if (this.selectedGroup) {
-            result = this.plans.filter(x => x.groupId === this.selectedGroup?.id);
-        }
-
-        if (this.searchedValue) {
-            result = result.filter(x => x.title?.includes(this.searchedValue) || x.description?.includes(this.searchedValue));
-        }
-
-        return result;
+        return store.getters.crowdplanning.getFilteredPlans();
     }
 
     async mounted() {

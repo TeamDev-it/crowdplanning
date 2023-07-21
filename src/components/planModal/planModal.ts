@@ -76,7 +76,7 @@ export default class PlanModal extends Vue {
         } else {
             this.task = {
                 ...this.task,
-                groupId: store.getters.crowdplanning.getSelectedCategory()?.id ?? '',
+                groupId: store.getters.crowdplanning.getSelectedGroup()?.id ?? '',
                 state: "Review",
                 visibleLayers: []
             } as server.Plan;
@@ -164,11 +164,43 @@ export default class PlanModal extends Vue {
         this.close();
     }
 
-    async coverUploaded(ids: string[]): Promise<void> {
-        if (ids.length && this.task) {
-            const sharableCoverImageToken = await this.askForSharedFile(ids[0], this.task.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+    async coverUploaded(file: server.FileAttach): Promise<void> {
+        if (file && this.task) {
+            const sharableCoverImageToken = await this.askForSharedFile(file.id, this.task.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
 
-            this.task.coverImageIds = {key: ids[0], value: this.decodeSharable(sharableCoverImageToken)} as utility.KeyValue;
+            this.task.coverImageIds = {originalFileId: file.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: file.contentType} as file.SharedRef;
+
+            if (this.task.id)
+                //update task 
+                await plansService.Set(this.task!.groupId, this.task);
+        }
+    }
+
+    async coverRemoved(file: server.FileAttach): Promise<void> {
+        if(this.task) {
+            this.task.coverImageIds = null;
+
+            if (this.task.id)
+                //update task 
+                await plansService.Set(this.task!.groupId, this.task);
+        }
+    }
+
+    async fileRemoved(file: string): Promise<void> {
+        if (this.task) {
+            const attachments = [...this.task.attachmentsIds];
+
+            const idx = this.task.attachmentsIds.findIndex(x => x.originalFileId === file);
+
+            if (idx !== -1) {
+                attachments.splice(idx, 1);
+            }
+
+            this.task.attachmentsIds = [...attachments];
+
+            if (this.task.id)
+                // update task
+                await plansService.Set(this.task!.groupId, this.task);
         }
     }
 
@@ -178,17 +210,23 @@ export default class PlanModal extends Vue {
         return textDecoder.decode(buffer);
     }
 
-    async filesUploaded(ids: string[]): Promise<void> {
-        if (ids.length && this.task) {
-            const attachmentsSharableIds: utility.KeyValue[] = [];
+    async filesUploaded(file: server.FileAttach): Promise<void> {
+        debugger
+        if (file && this.task) {
+            const attachmentsSharableIds: file.SharedRef[] = [...this.task.attachmentsIds] ?? [];
 
-            for (const attachmentId of ids) {
-                const shared = await this.askForSharedFile(attachmentId, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
+            const shared = await this.askForSharedFile(file.id, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
 
-                attachmentsSharableIds.push({key: attachmentId, value: this.decodeSharable(shared)} as utility.KeyValue);
-            }
+            console.log('content-type', file);
+
+            attachmentsSharableIds.push({originalFileId: file.id, sharedToken: this.decodeSharable(shared), contentType: file.contentType} as file.SharedRef);
+            
 
             this.task.attachmentsIds = [...attachmentsSharableIds];
+
+            if (this.task.id)
+                //update task
+                await plansService.Set(this.task!.groupId, this.task);
         }
     }
 

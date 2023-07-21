@@ -12,13 +12,15 @@ import { kebabCase } from "lodash";
 import { plansService } from "@/services/plansService";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
+import TaskMap from "../taskMap/taskMap.vue";
 
 @Component({
     components: {
         TaskCard,
         TaskSummary,
         CitizenInteraction,
-        ChildrenPlans
+        ChildrenPlans,
+        TaskMap
     }
 })
 export default class TaskDetail extends Vue {
@@ -37,6 +39,10 @@ export default class TaskDetail extends Vue {
         }
     }
 
+    get sharedPreviewComponent() {
+        return CommonRegistry.Instance.getComponent('shared-preview');
+    }
+
     get images(): server.FileAttach[] {
         return this.files.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
     }
@@ -45,18 +51,28 @@ export default class TaskDetail extends Vue {
         return this.files.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
     }
 
-    get sharedAttachments(): string[] {
-        return this.task.attachmentsIds
-            .filter(x => x.value)
-            .map(x => x.value);
-    }
-
     get type(): string {
         return CONFIGURATION.context;
     }
 
     get children(): server.Plan[] {
         return store.getters.crowdplanning.getChildrenOfPlan(this.task.id);
+    }
+
+    get selectedPlanId(): string {
+        return store.getters.crowdplanning.getSelectedPlanId();
+    }
+
+    get selectedGroup(): server.Group | null {
+        return store.getters.crowdplanning.getSelectedGroup();
+    }
+
+    get states(): server.State[] {
+        return store.getters.crowdplanning.getStates(store.getters.crowdplanning.getRootGroup()?.id!);
+    }
+
+    get rootGroup(): server.Group{
+        return store.getters.crowdplanning.getRootGroup();
     }
 
     clearTask(): void {

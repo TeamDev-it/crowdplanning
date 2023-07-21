@@ -47,6 +47,7 @@
             :inputFileTypes="'images'"
             :id="task.id ?? ''"
             @filesUploaded="coverUploaded"
+            @fileRemoved="coverRemoved"
           ></componenet>
         </header>
 
@@ -95,7 +96,7 @@
         </header>
 
         <header class="media" v-if="task">
-          <componenet :ref="mediaGalleryRef" :is="mediaGallery" :type="context" :id="task.id ?? ''" @filesUploaded="filesUploaded"></componenet>
+          <componenet :ref="mediaGalleryRef" :is="mediaGallery" :type="context" :id="task.id ?? ''" @filesUploaded="filesUploaded" @fileRemoved="fileRemoved"></componenet>
         </header>
 
         <header v-if="plans.length" class="cluster">
