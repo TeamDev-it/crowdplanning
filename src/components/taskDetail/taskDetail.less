@@ -83,6 +83,17 @@
         gap: @gap;
       }
 
+      .attachments {
+        overflow: hidden;
+        display: grid;
+        grid-auto-rows: auto 1fr;
+        gap: 1rem;
+
+        .image-container {
+          overflow-y: auto;
+        }
+      }
+
       .children-plans {
         overflow: hidden;
         box-sizing: border-box;

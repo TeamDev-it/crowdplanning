@@ -57,6 +57,17 @@
     }
   }
 }
+
+.second-column {
+  .attachments {
+    .image-container {
+      .preview {
+        width: 200px;
+        height: 150px;
+      }
+    }
+  }
+}
 </style>
 
 <script lang="ts" src="./taskDetail.ts" />
