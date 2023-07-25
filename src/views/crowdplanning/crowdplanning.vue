@@ -19,7 +19,7 @@
         </scrollableContainer>
       </div>
       <div class="task-detail" v-if="selectedTaskId">
-        <task-detail :task="selectedTask"> </task-detail>
+        <task-detail></task-detail>
       </div>
       <div class="map" v-if="!selectedTaskId">
         <task-map v-if="(selectedGroup || plansGroupRoot) && states.length" :group="selectedGroup ?? plansGroupRoot"></task-map>

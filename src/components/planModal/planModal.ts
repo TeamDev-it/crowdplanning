@@ -24,7 +24,7 @@ export default class PlanModal extends Vue {
     @Prop({ required: true })
     value!: IProjectableModel<string>;
 
-    task: server.Plan | null= null;
+    task: server.Plan | null = null;
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
@@ -97,7 +97,7 @@ export default class PlanModal extends Vue {
     }
 
     locationSelected(value: locations.Location) {
-        if(this.task)
+        if (this.task)
             this.task.location = value;
     }
 
@@ -141,20 +141,18 @@ export default class PlanModal extends Vue {
         }
 
         if (this.task && !this.task?.id)
-        // Save new task
+            // Save new task
             this.task = await plansService.Set(this.task.groupId, this.task);
 
         if (!this.task) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
         }
-        
+
         // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
         await (this.$refs[this.coverMediaGalleryRef] as any).save(this.task.id);
 
         await (this.$refs[this.mediaGalleryRef] as any).save(this.task.id);
-
-        console.log("Result with all properties, before update", this.task);
 
         // Update plan with new properties
         await plansService.Set(this.task!.groupId, this.task);
@@ -164,11 +162,18 @@ export default class PlanModal extends Vue {
         this.close();
     }
 
-    async coverUploaded(file: server.FileAttach): Promise<void> {
+    async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
         if (file && this.task) {
-            const sharableCoverImageToken = await this.askForSharedFile(file.id, this.task.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+            let cover = null;
+            if (Array.isArray(file)) {
+                cover = file[0];
+            } else {
+                cover = file;
+            }
 
-            this.task.coverImageIds = {originalFileId: file.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: file.contentType} as file.SharedRef;
+            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.task.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+
+            this.task.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 
             if (this.task.id)
                 //update task 
@@ -177,7 +182,7 @@ export default class PlanModal extends Vue {
     }
 
     async coverRemoved(file: server.FileAttach): Promise<void> {
-        if(this.task) {
+        if (this.task) {
             this.task.coverImageIds = null;
 
             if (this.task.id)
@@ -210,17 +215,24 @@ export default class PlanModal extends Vue {
         return textDecoder.decode(buffer);
     }
 
-    async filesUploaded(file: server.FileAttach): Promise<void> {
-        debugger
+    async filesUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
         if (file && this.task) {
-            const attachmentsSharableIds: file.SharedRef[] = [...this.task.attachmentsIds] ?? [];
+            let attachmentsSharableIds: file.SharedRef[] = [];
 
-            const shared = await this.askForSharedFile(file.id, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
+            if (this.task.attachmentsIds !== null)
+                attachmentsSharableIds = [...this.task.attachmentsIds];
 
-            console.log('content-type', file);
+            if (Array.isArray(file)) {
+                for (const f of file) {
+                    const shared = await this.askForSharedFile(f.id, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
 
-            attachmentsSharableIds.push({originalFileId: file.id, sharedToken: this.decodeSharable(shared), contentType: file.contentType} as file.SharedRef);
-            
+                    attachmentsSharableIds.push({ originalFileId: f.id, sharedToken: this.decodeSharable(shared), contentType: f.contentType } as file.SharedRef);
+                }
+            } else {
+                const shared = await this.askForSharedFile(file.id, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
+
+                attachmentsSharableIds.push({ originalFileId: file.id, sharedToken: this.decodeSharable(shared), contentType: file.contentType } as file.SharedRef);
+            }
 
             this.task.attachmentsIds = [...attachmentsSharableIds];
 

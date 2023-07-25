@@ -53,7 +53,8 @@
 
   .content {
     display: grid;
-    grid-template-columns: 1fr 1fr 25%;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr 1fr 25%;
     gap: 1rem;
     margin: @gap;
     box-sizing: border-box;

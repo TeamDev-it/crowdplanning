@@ -23,8 +23,8 @@ export default class TaskSummary extends Vue {
     coverImage: string | null = null;
 
     public async mounted(): Promise<void> {
-        if (this.plan.coverImageIds?.value)
-            this.coverImage = await Shared.getShared(this.plan.coverImageIds.value);
+        if (this.plan.coverImageIds?.sharedToken)
+            this.coverImage = await Shared.getShared(this.plan.coverImageIds.sharedToken);
 
         this.group = store.getters.crowdplanning.getGroupById(this.plan.groupId);
 

@@ -19,19 +19,19 @@
     </div>
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
     <div class="content">
-      <task-summary :plan="task" :workspaceId="task.workspaceId"></task-summary>
+      <task-summary :plan="task" :key="`summary-${selectedPlanId}`" :workspaceId="task.workspaceId"></task-summary>
       <div class="second-column" v-if="(task.attachmentsIds && task.attachmentsIds.length) || children.length">
         <div class="attachments">
           <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
-          <component :is="sharedPreviewComponent" :shareds="task.attachmentsIds"></component>
+          <component :key="`attachments-${selectedPlanId}`" :is="sharedPreviewComponent" :shareds="task.attachmentsIds"></component>
         </div>
-        <div class="children-plans" v-if="children.length">
+        <div class="children-plans" :key="`children-${selectedPlanId}`" v-if="children.length">
           <children-plans :children="children"></children-plans>
         </div>
       </div>
       <div class="third-column">
-        <task-map :group="selectedGroup ?? rootGroup"></task-map>
-        <citizen-interaction :id="task.id" :type="type"></citizen-interaction>
+        <task-map :key="`map-${selectedPlanId}`" :group="selectedGroup ?? rootGroup"></task-map>
+        <citizen-interaction :key="`interaction-${selectedPlanId}`" :id="task.id" :type="type"></citizen-interaction>
       </div>
     </div>
   </div>
@@ -62,8 +62,12 @@
   .attachments {
     .image-container {
       .preview {
-        width: 200px;
-        height: 150px;
+        min-width: 200px;
+        min-height: 150px;
+        max-height: 250px;
+        max-width: 300px;
+        height: auto;
+        width: auto;
       }
     }
   }

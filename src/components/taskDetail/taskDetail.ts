@@ -24,31 +24,12 @@ import TaskMap from "../taskMap/taskMap.vue";
     }
 })
 export default class TaskDetail extends Vue {
-    @Prop({ required: true })
-    task!: server.Plan;
-
-    files: server.FileAttach[] = [];
-
-    async mounted(): Promise<void> {
-        const whoAmI = await MessageService.Instance.ask("WHO_AM_I");
-
-        if (whoAmI) {
-            this.files = await MessageService.Instance.ask("GET_DATA", { context: `${CONFIGURATION.context}-${this.task.id}` });
-        } else {
-            this.files = await MessageService.Instance.ask('GET_PUBLIC_DATA', { context: CONFIGURATION.context, id: this.task.id, workspaceId: this.task.workspaceId });
-        }
+    get task() {
+        return store.getters.crowdplanning.getPlanById(this.selectedPlanId);
     }
 
     get sharedPreviewComponent() {
         return CommonRegistry.Instance.getComponent('shared-preview');
-    }
-
-    get images(): server.FileAttach[] {
-        return this.files.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
-    }
-
-    get documents(): server.FileAttach[] {
-        return this.files.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
     }
 
     get type(): string {
@@ -56,7 +37,7 @@ export default class TaskDetail extends Vue {
     }
 
     get children(): server.Plan[] {
-        return store.getters.crowdplanning.getChildrenOfPlan(this.task.id);
+        return store.getters.crowdplanning.getChildrenOfPlan(this.selectedPlanId);
     }
 
     get selectedPlanId(): string {
