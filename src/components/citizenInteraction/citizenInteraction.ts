@@ -1,13 +1,12 @@
 import Component from "vue-class-component";
 import Vue from "vue";
-import { CommonRegistry, Inject, MessageService } from "vue-mf-module";
+import { CommonRegistry, MessageService } from "vue-mf-module";
 import SpidLogin from "../spidLogin/spidLogin.vue";
 import { Prop } from "vue-property-decorator";
 
 @Component({
     components: {
         SpidLogin,
-        Inject
     }
 })
 export default class CitizenInteraction extends Vue {

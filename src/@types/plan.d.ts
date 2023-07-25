@@ -24,7 +24,8 @@ declare namespace server {
         planType: PlanType;
         mapType: string;
         visibleLayers: Array<String>;
-        hasCoverImage: boolean;
+        coverImageIds: file.SharedRef | null;
+        attachmentsIds: Array<file.SharedRef>;
         citizensCanSeeOthersComments: boolean;
         citizensCanSeeOthersRatings: boolean;
     }

@@ -4,24 +4,25 @@ import { Prop, Watch } from "vue-property-decorator";
 import { HexToRGBA } from "@/utility/HexToRGBA";
 import { CommonRegistry } from "vue-mf-module";
 import { relativeTimeThreshold } from "moment";
+import { store } from "@/store";
 
 @Component
 export default class TaskMap extends Vue {
     @Prop()
     group!: server.Group;
 
-    @Prop({ default: [] })
-    states!: server.State[];
-
-    @Prop({ default: [] })
-    tasks!: server.Plan[];
-
     @Prop({ default: null })
     center!: number[] | null;
-
+ 
+    states: server.State[] = [];
+    tasks: server.Plan[] = [];
     datas: Array<locations.Location> = [];
 
     async mounted(): Promise<void> {
+        this.states = store.getters.crowdplanning.getStates(this.group.id);
+
+        this.tasks = store.getters.crowdplanning.getFilteredPlans();
+
         await this.getData();
     }
 
