@@ -11,11 +11,8 @@
     </div>
     <spid-login v-if="!mySelf"></spid-login>
     <div class="command">
-      <button class="success">{{ $t('plan.citizen-comment.leave-comment', 'Lascia un commento') }}</button>
+      <button class="success" @click="() => $emit('openCommentSection')">{{ $t('plan.citizen-comment.leave-comment', 'Lascia un commento') }}</button>
     </div>
-    <!-- <div class="rating" v-else>
-      <inject class="discussion components" name="discussion-room" group="generic" :type="type" :id="id"></inject>
-    </div> -->
   </div>
 </template>
 <style lang="less" scoped>

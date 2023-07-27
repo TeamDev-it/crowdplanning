@@ -30,8 +30,23 @@
         </div>
       </div>
       <div class="third-column">
-        <task-map :key="`map-${selectedPlanId}`" :group="selectedGroup ?? rootGroup"></task-map>
-        <citizen-interaction :key="`interaction-${selectedPlanId}`" :id="task.id" :type="type"></citizen-interaction>
+        <div v-if="commentSectionOpened" class="comments-section">
+          <div class="command" @click="closeCommentsSection">
+            <i class="ti ti-x"></i>
+          </div>
+          <inject
+            class="discussion components"
+            name="discussion-room"
+            group="generic"
+            :type="type"
+            :id="selectedPlanId"
+            :titlePlaceholder="{ key: 'plans.comments.title', value: 'Commenti' }"
+            :textPlaceholder="{ key: 'plans.comments.text', value: 'Utilizza questo spazio per commentare la proposta.' }"
+          >
+          </inject>
+        </div>
+        <task-map :key="`map-${selectedPlanId}`" :group="selectedGroup ?? rootGroup" v-else></task-map>
+        <citizen-interaction :key="`interaction-${selectedPlanId}`" :id="task.id" :type="type" @openCommentSection="openCommentSection"></citizen-interaction>
       </div>
     </div>
   </div>
