@@ -114,6 +114,23 @@
         padding: @padding;
       }
 
+      .comments-section {
+        display: grid;
+        grid-auto-flow: row;
+        grid-auto-rows: auto 1fr;
+
+        .command {
+          cursor: pointer;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+        }
+
+        .discussion {
+          height: 100%;
+        }
+      }
+
       > span {
         font-size: var(--font-size-lg);
         font-weight: var(--font-weight-bold);

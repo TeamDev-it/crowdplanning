@@ -24,6 +24,8 @@ import TaskMap from "../taskMap/taskMap.vue";
     }
 })
 export default class TaskDetail extends Vue {
+    commentSectionOpened = false;
+
     get task() {
         return store.getters.crowdplanning.getPlanById(this.selectedPlanId);
     }
@@ -88,6 +90,14 @@ export default class TaskDetail extends Vue {
         this.clearTask();
     }
 
+    openCommentSection(): void {
+        this.commentSectionOpened = true;
+    }
+
+    closeCommentsSection(): void {
+        this.commentSectionOpened = false;
+    }
+ 
     onBackClick() {
         store.actions.crowdplanning.setSelectedPlanId(null);
     }
