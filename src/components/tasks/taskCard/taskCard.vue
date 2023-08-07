@@ -1,18 +1,17 @@
 <template>
   <div class="task-card" v-if="!loading">
-    <div class="image" v-if="coverImageUri && value.hasCoverImage">
+    <div class="image" v-if="coverImage && CoverImage">
       <div v-if="group" class="group-icon-card">
         <i :class="iconCode"></i>
       </div>
-      <img :src="coverImageUri" :alt="$t('plans.cover-image', 'Immagine di copertina')" />
+      <img :src="CoverImage" />
     </div>
     <div class="card-content">
       <div class="task-data">
         <div class="title">
           <span v-if="value.title">{{ value.title.toUpperCase() }}</span>
         </div>
-        <div class="description" v-if="value.description" v-html="value.description">
-        </div>
+        <div class="description" v-if="value.description" v-html="value.description"></div>
       </div>
       <div class="commands" v-if="showCommands">
         <div class="go-detail colrow">

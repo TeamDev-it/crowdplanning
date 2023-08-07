@@ -23,7 +23,7 @@ export default class CrowdplanningGroupList extends Vue {
     }
 
     get selectedCategory(): server.Group | null {
-        return store.getters.crowdplanning.getSelectedCategory();
+        return store.getters.crowdplanning.getSelectedGroup();
     }
 
     openStatesModal(): void {

@@ -1,10 +1,9 @@
 import Component from "vue-class-component";
-import Vue, { ref } from "vue";
+import Vue from "vue";
 import { Prop } from "vue-property-decorator";
 import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
 import dateTime from "../dateTime/dateTime.vue";
 import datePicker from "v-calendar/lib/components/date-picker.umd";
-import DragAndDrop from "../file/dragAndDrop/dragAndDrop.vue";
 import { plansService } from "@/services/plansService";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import { CONFIGURATION } from "@/configuration";
@@ -15,20 +14,17 @@ import { store } from "@/store";
     components: {
         datePicker,
         dateTime,
-        DragAndDrop,
         Autocomplete,
     }
 })
 export default class PlanModal extends Vue {
+    public readonly coverMediaGalleryRef: string = 'cover-media-gallery';
+    public readonly mediaGalleryRef: string = 'media-gallery';
+
     @Prop({ required: true })
     value!: IProjectableModel<string>;
 
-    task: server.Plan = {} as server.Plan;
-    // In memory files
-    files: Array<File> = [];
-    // In memory images
-    images: Array<File> = [];
-    attachments: Array<server.FileAttach> = [];
+    task: server.Plan | null = null;
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
@@ -43,10 +39,6 @@ export default class PlanModal extends Vue {
 
     get imageContentTypes(): string {
         return imagesContentTypes;
-    }
-
-    get mapTypeFromConfiguration(): Array<{ value: string, labelKey: string, labelText: string }> {
-        return CONFIGURATION.planMapType;
     }
 
     get plans(): server.Plan[] {
@@ -66,34 +58,12 @@ export default class PlanModal extends Vue {
         return CONFIGURATION.context;
     }
 
-    get filteredImages(): server.FileAttach[] {
-        return this.attachments.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
-    }
-
-    get filteredDocuments(): server.FileAttach[] {
-        return this.attachments.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
-    }
-
     get esriGeocodingAutocomplete() {
         return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
     }
 
-    get imageAttachmentComponent() {
-        return CommonRegistry.Instance.getComponent('add-attachments');
-    }
-
-    get documentAttachmentComponent() {
-        return CommonRegistry.Instance.getComponent('add-attachments');
-    }
-
     get mediaGallery() {
-        return CommonRegistry.Instance.getComponent('public-media-gallery');
-    }
-
-    fileRemoved(id: string) {
-        const idx = this.attachments.findIndex(x => x.id === id);
-
-        this.attachments.splice(idx, 1);
+        return CommonRegistry.Instance.getComponent('media-gallery');
     }
 
     async mounted() {
@@ -106,11 +76,10 @@ export default class PlanModal extends Vue {
         } else {
             this.task = {
                 ...this.task,
-                groupId: '',
+                groupId: store.getters.crowdplanning.getSelectedGroup()?.id ?? '',
                 state: "Review",
-                visibleLayers: [],
-                mapType: this.task.mapType ? this.task.mapType : this.mapTypeFromConfiguration[0].value
-            };
+                visibleLayers: []
+            } as server.Plan;
         }
 
         if (this.task.parentId) {
@@ -120,10 +89,6 @@ export default class PlanModal extends Vue {
         if (this.task.location)
             this.locationName = await MessageService.Instance.ask('LOCATION_TO_ADDRESS', this.task.location);
 
-        if (this.value.data) {
-            this.attachments = await MessageService.Instance.ask("GET_DATA", { context: `${CONFIGURATION.context}-${this.task.id}` });
-        }
-
         this.loading = false;
     }
 
@@ -132,7 +97,8 @@ export default class PlanModal extends Vue {
     }
 
     locationSelected(value: locations.Location) {
-        this.task.location = value;
+        if (this.task)
+            this.task.location = value;
     }
 
     close(): void {
@@ -143,34 +109,6 @@ export default class PlanModal extends Vue {
         }
     }
 
-    removeFromImages(value: File): void {
-        const idx = this.images.findIndex(x => x.name === value.name && x.size === value.size && x.type === value.type && x.lastModified === value.lastModified);
-
-        if (idx !== -1)
-            this.images.splice(idx, 1);
-    }
-
-    removeFromFiles(value: File): void {
-        const idx = this.files.findIndex(x => x.name === value.name && x.size === value.size && x.type === value.type && x.lastModified === value.lastModified);
-
-        if (idx !== -1)
-            this.files.splice(idx, 1);
-    }
-
-    addToImages(value: File): void {
-        const idx = this.images.findIndex(x => x.name === value.name && x.size === value.size && x.type === value.type && x.lastModified === value.lastModified);
-
-        if (idx === -1)
-            this.images.push(value);
-    }
-
-    addToFiles(value: File): void {
-        const idx = this.files.findIndex(x => x.name === value.name && x.size === value.size && x.type === value.type && x.lastModified === value.lastModified);
-
-        if (idx === -1)
-            this.files.push(value);
-    }
-
     onChangeCoverImage(event: InputEvent) {
         this.coverImage = (event.target as any).files[0];
     }
@@ -178,62 +116,130 @@ export default class PlanModal extends Vue {
     public confirmVisibleLayer() {
         if (!this.tmpVisibleLayer) return;
 
-        this.task.visibleLayers.push(this.tmpVisibleLayer);
+        this.task?.visibleLayers.push(this.tmpVisibleLayer);
 
         this.tmpVisibleLayer = "";
     }
 
     public valueChanged(value: server.Plan): void {
-        this.task = { ...this.task, parentId: value.id };
+        this.task = { ...this.task, parentId: value.id } as server.Plan;
     }
 
     autocompleteFilterFunction(plans: server.Plan[], filteringValue: string): server.Plan[] {
         return plans.filter(x =>
-            x.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
+            x?.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
             x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
     }
 
     removeLayer(idx: number): void {
-        this.task.visibleLayers.splice(idx, 1);
+        this.task?.visibleLayers.splice(idx, 1);
     }
 
     async confirm(): Promise<void> {
         if (!this.requiredFieldsSatisfied()) {
             return;
         }
-        // Save new task
-        const result: server.Plan | null = await plansService.Set(this.task.groupId, this.task);
 
-        if (!result) {
+        if (this.task && !this.task?.id)
+            // Save new task
+            this.task = await plansService.Set(this.task.groupId, this.task);
+
+        if (!this.task) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
         }
 
-        if (this.coverImage) {
-            try {
-                await MessageService.Instance.ask("SAVE_FILE", { context: CONFIGURATION.context, id: `${CONFIGURATION.context}-${result.workspaceId}-${result.id}` })
-                result.hasCoverImage = true;
-            } catch (err) {
-                await this.rollbackTaskCreation(result.id);
-            }
-        }
+        // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
+        await (this.$refs[this.coverMediaGalleryRef] as any).save(this.task.id);
 
-        await ((this.$refs.addImages) as any).submit(result.id);
-
-        await ((this.$refs.addDocuments) as any).submit(result.id);
+        await (this.$refs[this.mediaGalleryRef] as any).save(this.task.id);
 
         // Update plan with new properties
-        await plansService.Set(this.task.groupId, result);
+        await plansService.Set(this.task!.groupId, this.task);
 
-        this.setPlan(result);
+        this.setPlan(this.task);
 
         this.close();
     }
 
-    public attachmentDeleted(file: server.FileAttach): void {
-        const idx = this.attachments.findIndex(x => x.id === file.id);
+    async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
+        if (file && this.task) {
+            let cover = null;
+            if (Array.isArray(file)) {
+                cover = file[0];
+            } else {
+                cover = file;
+            }
 
-        this.attachments.splice(idx, 1);
+            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.task.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+
+            this.task.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
+
+            if (this.task.id)
+                //update task 
+                await plansService.Set(this.task!.groupId, this.task);
+        }
+    }
+
+    async coverRemoved(file: server.FileAttach): Promise<void> {
+        if (this.task) {
+            this.task.coverImageIds = null;
+
+            if (this.task.id)
+                //update task 
+                await plansService.Set(this.task!.groupId, this.task);
+        }
+    }
+
+    async fileRemoved(file: string): Promise<void> {
+        if (this.task) {
+            const attachments = [...this.task.attachmentsIds];
+
+            const idx = this.task.attachmentsIds.findIndex(x => x.originalFileId === file);
+
+            if (idx !== -1) {
+                attachments.splice(idx, 1);
+            }
+
+            this.task.attachmentsIds = [...attachments];
+
+            if (this.task.id)
+                // update task
+                await plansService.Set(this.task!.groupId, this.task);
+        }
+    }
+
+    private decodeSharable(buffer: ArrayBuffer): string {
+        const textDecoder = new TextDecoder();
+
+        return textDecoder.decode(buffer);
+    }
+
+    async filesUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
+        if (file && this.task) {
+            let attachmentsSharableIds: file.SharedRef[] = [];
+
+            if (this.task.attachmentsIds !== null)
+                attachmentsSharableIds = [...this.task.attachmentsIds];
+
+            if (Array.isArray(file)) {
+                for (const f of file) {
+                    const shared = await this.askForSharedFile(f.id, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
+
+                    attachmentsSharableIds.push({ originalFileId: f.id, sharedToken: this.decodeSharable(shared), contentType: f.contentType } as file.SharedRef);
+                }
+            } else {
+                const shared = await this.askForSharedFile(file.id, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
+
+                attachmentsSharableIds.push({ originalFileId: file.id, sharedToken: this.decodeSharable(shared), contentType: file.contentType } as file.SharedRef);
+            }
+
+            this.task.attachmentsIds = [...attachmentsSharableIds];
+
+            if (this.task.id)
+                //update task
+                await plansService.Set(this.task!.groupId, this.task);
+        }
     }
 
     private setPlan(plan: server.Plan): void {
@@ -241,27 +247,31 @@ export default class PlanModal extends Vue {
     }
 
     private requiredFieldsSatisfied(): boolean {
-        if (!this.task.location) {
+        if (!this.task?.location) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
             return false;
         }
 
-        if (!this.task.description) {
+        if (!this.task?.description) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
             return false;
         }
 
-        if (!this.task.startDate) {
+        if (!this.task?.startDate) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
             return false;
         }
 
-        if (!this.task.dueDate) {
+        if (!this.task?.dueDate) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
             return false;
         }
 
         return true;
+    }
+
+    private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
+        return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
     }
 
     private async rollbackTaskCreation(id: string): Promise<void> {

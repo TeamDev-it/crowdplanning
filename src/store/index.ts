@@ -1,11 +1,12 @@
 import Vuex, { ActionTree, GetterTree, Store } from 'vuex'
 import { CreateTypedStoreProxy } from 'vuex-typed-store'
 import Vue from "vue";
+import { cloneDeep } from 'lodash';
 Vue.use(Vuex);
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CrowdplanningStoreModel {
-  selectedCategory: server.Group | null,
+  selectedGroup: server.Group | null,
   searchedValue: string,
   selectedPlanId: string | null,
   states: { [groupId: string]: server.State[] },
@@ -15,13 +16,15 @@ export interface CrowdplanningStoreModel {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CrowdplanningStoreGetters {
-  getSelectedCategory(): server.Group | null;
+  getSelectedGroup(): server.Group | null;
   getSearchedValue(): string;
   getSelectedPlanId(): string;
   getStates(groupId: string): server.State[];
   getGroups(): server.Group[];
   getGroupById(id: string): server.Group | null;
+  getRootGroup(): server.Group;
   getPlans(): server.Plan[];
+  getFilteredPlans(): server.Plan[];
   getPlanById(id: string): server.Plan;
   getChildrenOfPlan(id: string): server.Plan[];
 }
@@ -45,27 +48,45 @@ export const crowdplanningStore = {
   PREFIX: "crowdplanning",
   namespaced: true,
   state: {
-    selectedCategory: null,
+    selectedGroup: null,
     searchedValue: '',
     selectedPlanId: null,
     groups: [],
     states: {},
-    plans: []
+    plans: []   
   } as CrowdplanningStoreModel,
   getters: {
-    getSelectedCategory: (state) => () => state.selectedCategory,
+    getSelectedGroup: (state) => () => state.selectedGroup,
     getSearchedValue: (state) => () => state.searchedValue,
     getSelectedPlanId: (state) => () => state.selectedPlanId,
     getStates: (state) => (groupId: string) => state.states[groupId],
     getPlans: (state) => () => state.plans,
+    getFilteredPlans: (state) => () => {
+      let result: server.Plan[] = cloneDeep(state.plans);
+
+        if (state.selectedPlanId) {
+            return state.plans.filter(x => x.id === state.selectedPlanId);
+        }
+
+        if (state.selectedGroup) {
+            result = state.plans.filter(x => x.groupId === state.selectedGroup?.id);
+        }
+
+        if (state.searchedValue) {
+            result = result.filter(x => x.title?.includes(state.searchedValue) || x.description?.includes(state.searchedValue));
+        }
+
+        return result;
+    },
     getGroups: (state) => () => state.groups,
     getGroupById: (state) => (id: string) => state.groups.find(x => x.id === id),
+    getRootGroup: (state) => () => state.groups.filter(x => !x.parentGroupId)[0],
     getPlanById: (state) => (id: string) => state.plans.find(x => x.id === id),
     getChildrenOfPlan: (state) => (id: string) => state.plans.filter(x => x.parentId === id)
   } as GetterTree<CrowdplanningStoreModel, CrowdplanningStoreModel>,
   mutations: {
     SET_SELECTED_CATEGORY(state: CrowdplanningStoreModel, model: server.Group) {
-      state.selectedCategory = model;
+      state.selectedGroup = model;
     },
     SET_SEARCHED_VALUE(state: CrowdplanningStoreModel, model: string) {
       state.searchedValue = model;
