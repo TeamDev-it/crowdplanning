@@ -8,7 +8,7 @@
   min-width: 1024px;
   max-width: 1024px;
 
-  >header {
+  > header {
     grid-column: 1/-1;
     grid-row: 1;
     display: flex;
@@ -22,7 +22,7 @@
     }
   }
 
-  >footer {
+  > footer {
     grid-column: 1/-1;
     grid-row: 4;
     justify-content: flex-end;
@@ -38,7 +38,7 @@
     }
   }
 
-  >section {
+  > section {
     height: calc(100% - 1rem);
     width: calc(100% - 1rem);
     grid-column: 1;
@@ -49,7 +49,7 @@
     margin: 0.5rem;
     overflow-y: auto;
 
-    >header {
+    > header {
       display: flex;
       flex-flow: row nowrap;
       justify-content: space-between;
@@ -66,8 +66,21 @@
         flex-shrink: 0;
         grid-row-gap: 2rem;
 
-        >fieldset {
-          >select {
+        .position {
+          position: relative;
+
+          > small {
+            z-index: 100;
+            position: absolute;
+            top: -8px;
+            left: 5px;
+            background-color: var(--white);
+            padding: 0 0.5rem;
+          }
+        }
+
+        > fieldset {
+          > select {
             width: 100%;
           }
         }
@@ -116,7 +129,7 @@
     }
   }
 
-  >hr {
+  > hr {
     width: 90%;
     height: 1px;
     border: none;

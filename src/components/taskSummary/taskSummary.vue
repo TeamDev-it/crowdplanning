@@ -9,9 +9,9 @@
         <span>{{ formattedDate }}</span>
       </div>
 
-      <div v-if="plan.location" class="location">
+      <div v-if="plan.location && plan.locationName" class="location">
         <i class="ti ti-map-pin"></i>
-        <span>{{ addressLocation }}</span>
+        <span>{{ plan.locationName }}</span>
       </div>
 
       <div v-if="group" class="group">

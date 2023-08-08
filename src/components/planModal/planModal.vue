@@ -29,10 +29,10 @@
               </option>
             </select>
           </fieldset>
-          <fieldset>
+          <div class="position">
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-            <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="locationName" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></component>
-          </fieldset>
+            <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="task.locationName" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event => $event.preventDefault()"></component>
+          </div>
         </header>
 
         <header class="cover-image" v-if="task">

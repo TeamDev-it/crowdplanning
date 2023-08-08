@@ -18,6 +18,7 @@ declare namespace server {
         group: Group;
         assignedTo: TaskUser[];
         location?: locations.Location;
+        locationName: string;
         workspaceId?: string;
         subtaskCount?: { type: string, count: number }[];
         isClusterRoot: boolean;
