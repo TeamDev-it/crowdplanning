@@ -19,17 +19,13 @@ export default class TaskSummary extends Vue {
     workspaceId!: string;
 
     group: server.Group | null = null;
-    addressLocation: string = '';
     coverImage: string | null = null;
 
-    public async mounted(): Promise<void> {
+    public async mounted(): Promise<void> {        
         if (this.plan.coverImageIds?.sharedToken)
             this.coverImage = await Shared.getShared(this.plan.coverImageIds.sharedToken);
 
         this.group = store.getters.crowdplanning.getGroupById(this.plan.groupId);
-
-        if (this.plan.location)
-            this.addressLocation = await MessageService.Instance.ask("LOCATION_TO_ADDRESS", this.plan.location);
     }
 
     iconCode(iconCode: string): string {

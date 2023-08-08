@@ -30,7 +30,6 @@ export default class PlanModal extends Vue {
     citizenCanSeeOthersComments = false;
     tmpVisibleLayer = "";
     hasClusterParent = false;
-    locationName: string = '';
     planMode: planMode = "create";
 
     loading = true;
@@ -86,9 +85,6 @@ export default class PlanModal extends Vue {
             this.hasClusterParent = true;
         }
 
-        if (this.task.location)
-            this.locationName = await MessageService.Instance.ask('LOCATION_TO_ADDRESS', this.task.location);
-
         this.loading = false;
     }
 
@@ -96,9 +92,12 @@ export default class PlanModal extends Vue {
         Vue.set(this.errors, id, value);
     }
 
-    locationSelected(value: locations.Location) {
-        if (this.task)
+    locationSelected(value: locations.Location & { name: string }) {
+        console.log('location selected', value);
+        if (this.task) {
             this.task.location = value;
+            this.task.locationName = value.name;
+        }
     }
 
     close(): void {
