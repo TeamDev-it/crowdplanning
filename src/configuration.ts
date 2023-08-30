@@ -7,7 +7,7 @@ class MapType {
 }
 
 export const CONFIGURATION = {
-    PlansServiceUri: "http://localhost:5000/crowdplanning",
+    PlansServiceUri: "https://api.staging.wise.town/crowdplanning",
     priorities: [{ id: 5, name: 'priority.emergency', icon: '', color: '#c62828' },
     { id: 4, name: 'priority.very-hight', icon: '', color: '#ef5350' },
     { id: 3, name: 'priority.hight', icon: '', color: '#FFB300' },
