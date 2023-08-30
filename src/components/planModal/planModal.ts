@@ -93,7 +93,6 @@ export default class PlanModal extends Vue {
     }
 
     locationSelected(value: locations.Location & { name: string }) {
-        console.log('location selected', value);
         if (this.task) {
             this.task.location = value;
             this.task.locationName = value.name;
