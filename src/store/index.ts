@@ -53,7 +53,7 @@ export const crowdplanningStore = {
     selectedPlanId: null,
     groups: [],
     states: {},
-    plans: []   
+    plans: []
   } as CrowdplanningStoreModel,
   getters: {
     getSelectedGroup: (state) => () => state.selectedGroup,
@@ -64,19 +64,19 @@ export const crowdplanningStore = {
     getFilteredPlans: (state) => () => {
       let result: server.Plan[] = cloneDeep(state.plans);
 
-        if (state.selectedPlanId) {
-            return state.plans.filter(x => x.id === state.selectedPlanId);
-        }
+      if (state.selectedPlanId) {
+        return state.plans.filter(x => x.id === state.selectedPlanId);
+      }
 
-        if (state.selectedGroup) {
-            result = state.plans.filter(x => x.groupId === state.selectedGroup?.id);
-        }
+      if (state.selectedGroup) {
+        result = state.plans.filter(x => x.groupId === state.selectedGroup?.id);
+      }
 
-        if (state.searchedValue) {
-            result = result.filter(x => x.title?.includes(state.searchedValue) || x.description?.includes(state.searchedValue));
-        }
+      if (state.searchedValue) {
+        result = result.filter(x => x.title?.includes(state.searchedValue) || x.description?.includes(state.searchedValue));
+      }
 
-        return result;
+      return result;
     },
     getGroups: (state) => () => state.groups,
     getGroupById: (state) => (id: string) => state.groups.find(x => x.id === id),
@@ -126,7 +126,7 @@ export const crowdplanningStore = {
       const idx = state.groups.findIndex(x => x.id === model.id);
 
       if (idx !== -1)
-        state.groups[idx] = {...model};
+        state.groups[idx] = { ...model };
       else {
         state.groups.push(model)
       }
@@ -140,8 +140,13 @@ export const crowdplanningStore = {
     SET_PLAN(state: CrowdplanningStoreModel, model: server.Plan) {
       const idx = state.plans.findIndex(x => x.id === model.id);
 
-      if (idx !== -1)
-        state.plans = [...state.plans.splice(0, idx), model, ...state.plans.slice(idx + 1)];
+      if (idx !== -1) {
+        const updatedPlans = [...state.plans];
+
+        updatedPlans[idx] = model;
+
+        state.plans = updatedPlans;
+      }
       else {
         state.plans.push(model);
       }
