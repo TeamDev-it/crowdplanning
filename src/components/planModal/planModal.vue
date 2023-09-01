@@ -68,7 +68,7 @@
           <fieldset>
             <small>{{ $t('plans.modal.start-date', 'data inizio').toUpperCase() }}</small>
             <div class="date-picker-container">
-              <date-picker v-model="task.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
+              <date-picker v-model="task.startDate" @keydown.native.stop mode="dateTime" is24hr required>
                 <template v-slot="{ inputEvents }">
                   <date-time :value="task.startDate" :events="inputEvents"></date-time>
                 </template>
@@ -79,7 +79,7 @@
           <fieldset>
             <small>{{ $t('plans.modal.due-date', 'data fine').toUpperCase() }}</small>
             <div class="date-picker-container">
-              <date-picker v-model="task.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
+              <date-picker v-model="task.dueDate" @keydown.native.stop mode="dateTime" is24hr>
                 <template v-slot="{ inputEvents }">
                   <date-time :value="task.dueDate" :events="inputEvents"></date-time>
                 </template>
