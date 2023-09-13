@@ -35,8 +35,6 @@ export default class Crowdplanning extends Vue {
     loading = true;
     workspaceId = "";
 
-    componentKey: number = 0;
-
     get groups(): server.Group[] {
         return this.plansGroupRoot?.children ?? [];
     }
@@ -72,11 +70,6 @@ export default class Crowdplanning extends Vue {
             this.openAuthModal();
 
         await this.getData();
-    }
-
-    public rootGroupChanged(group: server.Group): void {
-        this.plansGroupRoot = group;
-        this.componentKey++;
     }
 
     private async openAuthModal(): Promise<void> {
@@ -119,26 +112,18 @@ export default class Crowdplanning extends Vue {
         this.loading = false;
     }
 
-    hasPermission(permission: string): boolean {
-        return this.$can(`${CONFIGURATION.context}.${permission}`);
+    public rootGroupChanged(group: server.Group): void {
+        this.plansGroupRoot = group;
     }
 
-    async createGroup(): Promise<void> {
-        const g = {} as server.Group;
+    public groupCreated(group: server.Group): void {
+        const groups = this.plansGroupRoot.children;
+        groups.push(group);
+        this.plansGroupRoot.children = groups;
+    }
 
-        g.parentGroupId = this.plansGroupRoot?.id ?? "";
-
-        if (!this.plansGroupRoot || !this.plansGroupRoot.id) return;
-
-        const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
-
-        if (result) {
-            this.plansGroupRoot?.children.push(result);
-            this.componentKey++;
-        } else {
-            // error message
-            MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.group-create-error", "Errore durante la creazione della categoria"));
-        }
+    hasPermission(permission: string): boolean {
+        return this.$can(`${CONFIGURATION.context}.${permission}`);
     }
 
     async addTask(): Promise<void> {

@@ -2,11 +2,11 @@
   <div class="group-list">
     <div class="item" @click="$event => (selectedCategory = null)" :class="{ active: !selectedCategory }">
       <span class="text">{{ $t('plans.groups.see_all', 'vedi tutto').toUpperCase() }}</span>
-      <span class="icon" v-if="hasPermission('states.canedit') || hasPermission('states.cancreate')" @click="openStatesModal">
-        <i class="ti ti-dots"></i>
+      <span class="icon" v-if="currentUser && hasPermission('groups.cancreate')" @click="createGroup">
+        <i class="ti ti-plus"></i>
       </span>
     </div>
-    <crowdplanning-groups-item v-for="group in groups" :key="group.id" :value="group" :selectedCategory="selectedCategory" @click.native="_$event => (selectedCategory = group)" @changedGroup="changedGroup" />
+    <crowdplanning-groups-item v-for="group in rootGroup.children" :key="group.id" :value="group" :selectedCategory="selectedCategory" @click.native="$event => (selectedCategory = group)" @changedGroup="changedGroup" />
   </div>
 </template>
 

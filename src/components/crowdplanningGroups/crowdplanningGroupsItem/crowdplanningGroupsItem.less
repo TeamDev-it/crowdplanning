@@ -1,17 +1,18 @@
 .item {
   display: flex;
+  flex-flow: row;
   align-items: center;
-  justify-content: center !important;
+  justify-content: space-between;
   gap: 0.5rem;
-  max-width: 270px;
-  width: 270px;
+  max-width: 227px;
+  width: 227px;
   height: 55px;
   background-color: var(--white);
   border-radius: var(--border-radius);
 
   .group-detail {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     gap: 0.5rem;
   }
@@ -31,7 +32,7 @@
 }
 
 .item:hover {
-  justify-content: space-evenly !important;
+  //justify-content: space-evenly !important;
 
   .commands {
     display: inline;
