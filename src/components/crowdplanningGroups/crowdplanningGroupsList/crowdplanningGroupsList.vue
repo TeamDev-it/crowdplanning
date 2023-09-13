@@ -2,7 +2,7 @@
   <div class="group-list">
     <div class="item" @click="$event => (selectedCategory = null)" :class="{ active: !selectedCategory }">
       <span class="text">{{ $t('plans.groups.see_all', 'vedi tutto').toUpperCase() }}</span>
-      <span class="icon" v-if="currentUser && hasPermission('groups.cancreate')" @click="createGroup">
+      <span class="icon" v-if="hasPermission('groups.cancreate')" @click="createGroup">
         <i class="ti ti-plus"></i>
       </span>
     </div>

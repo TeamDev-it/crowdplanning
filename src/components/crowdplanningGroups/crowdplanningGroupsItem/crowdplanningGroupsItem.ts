@@ -24,7 +24,6 @@ export default class CrowdplanningGroupsItem extends Vue {
     public async edit(): Promise<void> {
         const updatedGroup = await Projector.Instance.projectAsyncTo(groupModal as never, this.value);
         
-        debugger
         if (updatedGroup) {
             this.$emit("changedGroup", updatedGroup);
         }

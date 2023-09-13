@@ -35,9 +35,7 @@ export default class Crowdplanning extends Vue {
     loading = true;
     workspaceId = "";
 
-    get groups(): server.Group[] {
-        return this.plansGroupRoot?.children ?? [];
-    }
+    componentKey = 0;
 
     get selectedGroup(): server.Group | null {
         return store.getters.crowdplanning.getSelectedGroup();
@@ -107,19 +105,13 @@ export default class Crowdplanning extends Vue {
 
         this.states = await statesService.getStates(this.plansGroupRoot);
 
-        console.log("filtered plans", this.filteredPlans);
 
         this.loading = false;
     }
 
     public rootGroupChanged(group: server.Group): void {
         this.plansGroupRoot = group;
-    }
-
-    public groupCreated(group: server.Group): void {
-        const groups = this.plansGroupRoot.children;
-        groups.push(group);
-        this.plansGroupRoot.children = groups;
+        this.componentKey++;
     }
 
     hasPermission(permission: string): boolean {

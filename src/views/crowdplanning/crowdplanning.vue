@@ -5,12 +5,12 @@
     <div class="crowdplanning-content" :class="{ 'plan-selected': selectedTask }" v-if="!loading">
       <div class="groups" v-if="!selectedTask">
         <!-- <scrollable-container> -->
-        <crowdplanning-group-list v-if="plansGroupRoot && plansGroupRoot.id" :rootGroup="plansGroupRoot" @rootGroupChanged="rootGroupChanged" @groupCreated="groupCreated"></crowdplanning-group-list>
+        <crowdplanning-group-list :key="componentKey" v-if="plansGroupRoot && plansGroupRoot.id" :rootGroup="plansGroupRoot" @rootGroupChanged="rootGroupChanged"></crowdplanning-group-list>
         <!-- </scrollable-container> -->
         
       </div>
       <div class="task_and_map">
-        <div class="tasks" v-if="filteredPlans && filteredPlans.length && !selectedTask && groups.length">
+        <div class="tasks" v-if="filteredPlans && filteredPlans.length && !selectedTask">
           <scrollableContainer>
             <task-list :tasks="filteredPlans"></task-list>
           </scrollableContainer>
