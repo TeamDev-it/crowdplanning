@@ -14,26 +14,33 @@
     background-color: var(--white);
   }
 
+  &.plan-selected{
+    display: flex;
+
+    header{
+      display: none;
+    }
+
+    .crowdplanning-content {
+      display: block;
+      .task-and-map{
+        display: flex;
+        padding: 0;
+        height: 100%;
+        //grid-template-rows: 60px 1fr;
+      }
+    }
+   }
+
   .crowdplanning-content {
     //padding: 1rem 0;
     overflow: hidden;
-    gap: 1rem;
     height: 100%;
     display: grid;
     grid-template-columns: 260px 1fr;
 
-    //   &.plan-selected {
-    //     grid-template-rows: 1fr;
-    //   }
-
-    //   .tasks {
-    //     overflow-x: hidden;
-    //   }
-
     .groups {
-     
       height: 100%;
-     
       gap: 1rem;
       letter-spacing: 1px;
       background-color: #ecf4fc;
@@ -44,21 +51,12 @@
       }
     }
 
-    //   .task-detail {
-    //     display: grid;
-    //     overflow: hidden;
-    //     box-sizing: border-box;
-    //   }
+   .task-and-map{
+    display: grid;
+    grid-template-rows: auto 1fr;
+    padding: 1rem 2rem 1.5rem 1rem;
+   }
 
-    //   .map {
-    //     display: flex;
-    //     flex: 1;
-    //     overflow: hidden;
-
-    //     .task-map {
-    //       display: flex;
-    //       flex: 1;
-    //     }
-    //   }
+  
   }
 }

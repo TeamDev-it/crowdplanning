@@ -5,7 +5,7 @@
       <span class="text">{{ value.name }}</span>
     </div>
     <div v-if="hasPermission('groups.canedit')" class="commands">
-      <i class="ti ti-pencil" @click="edit" />
+      <i class="ti ti-pencil" @click.stop="edit" />
     </div>
   </div>
 </template>

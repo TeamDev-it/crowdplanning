@@ -1,15 +1,15 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div id="crowdplanning">
+  <div id="crowdplanning" :class="{ 'plan-selected': selectedTask }">
     <crowdplanning-header :currentUser="currentUser" @addTask="addTask()" />
-    <div class="crowdplanning-content" :class="{ 'plan-selected': selectedTask }" v-if="!loading">
+    <div class="crowdplanning-content" v-if="!loading">
       <div class="groups" v-if="!selectedTask">
         <!-- <scrollable-container> -->
         <crowdplanning-group-list :key="componentKey" v-if="plansGroupRoot && plansGroupRoot.id" :rootGroup="plansGroupRoot" @rootGroupChanged="rootGroupChanged"></crowdplanning-group-list>
         <!-- </scrollable-container> -->
         
       </div>
-      <div class="task_and_map">
+      <div class="task-and-map">
         <div class="tasks" v-if="filteredPlans && filteredPlans.length && !selectedTask">
           <scrollableContainer>
             <task-list :tasks="filteredPlans"></task-list>

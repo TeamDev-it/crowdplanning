@@ -5,7 +5,7 @@
         <i class="ti ti-arrow-left"></i>
       </div>
       <div class="title">{{ task.title }}</div>
-      <div class="commands">
+      <!-- <div class="commands">
         <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </div>
@@ -15,20 +15,23 @@
         <div class="close" @click="clearTask">
           <i class="ti ti-x"></i>
         </div>
-      </div>
+      </div> -->
     </div>
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
+
     <div class="content">
-      <task-summary :plan="task" :key="`summary-${selectedPlanId}`" :workspaceId="task.workspaceId"></task-summary>
-      <div class="second-column" v-if="(task.attachmentsIds && task.attachmentsIds.length) || children.length">
-        <div class="attachments">
-          <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
-          <component :key="`attachments-${selectedPlanId}`" :is="sharedPreviewComponent" :shareds="task.attachmentsIds"></component>
-        </div>
-        <div class="children-plans" :key="`children-${selectedPlanId}`" v-if="children.length">
-          <children-plans :children="children"></children-plans>
-        </div>
+      <div>
+        <task-summary :plan="task" :key="`summary-${selectedPlanId}`" :workspaceId="task.workspaceId"></task-summary>
       </div>
+      <div class="second-column" v-if="(task.attachmentsIds && task.attachmentsIds.length) || children.length">
+          <div class="attachments">
+            <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
+            <component :key="`attachments-${selectedPlanId}`" :is="sharedPreviewComponent" :shareds="task.attachmentsIds"></component>
+          </div>
+          <div class="children-plans" :key="`children-${selectedPlanId}`" v-if="children.length">
+            <children-plans :children="children"></children-plans>
+          </div>
+        </div>
       <div class="third-column">
         <div v-if="commentSectionOpened" class="comments-section">
           <div class="command" @click="closeCommentsSection">
