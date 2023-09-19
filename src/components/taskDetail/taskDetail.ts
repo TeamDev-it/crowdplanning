@@ -24,6 +24,9 @@ import TaskMap from "../taskMap/taskMap.vue";
     }
 })
 export default class TaskDetail extends Vue {
+
+    
+
     commentSectionOpened = false;
 
     get task() {
@@ -68,6 +71,10 @@ export default class TaskDetail extends Vue {
 
     get mediaGallery() {
         return CommonRegistry.Instance.getComponent('public-media-gallery');
+    }
+
+    get discussionRoom() {
+        return CommonRegistry.Instance.getComponent('discussion-room-crowd')
     }
 
     async remove(): Promise<void> {

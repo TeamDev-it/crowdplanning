@@ -1,10 +1,11 @@
 .scrollable-container {
   display: flex;
   align-items: center;
-  justify-content: center;
+  //justify-content: center;
   height: fit-content;
   padding: .5rem;
-  overflow: hidden;
+  overflow-x: auto;
+  margin-bottom: 0.5rem;
 
   .scroll {
     cursor: pointer;
@@ -13,12 +14,12 @@
   .scrollable-content {
     display: flex;
     flex: 1;
-    overflow-x: auto;
+    //overflow-x: auto;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* F */
   }
 
-  .scrollable-content::-webkit-scrollbar {
-    display: none;
-  }
+  // .scrollable-content::-webkit-scrollbar {
+  //   display: none;
+  // }
 }

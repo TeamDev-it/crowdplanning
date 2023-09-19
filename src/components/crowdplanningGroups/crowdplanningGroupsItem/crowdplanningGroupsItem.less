@@ -6,6 +6,7 @@
   gap: 0.5rem;
   max-width: 227px;
   width: 227px;
+  min-height: 40px;
   height: 40px;
   background-color: var(--white);
   border-radius: var(--border-radius);
@@ -15,6 +16,11 @@
     justify-content: flex-start;
     align-items: center;
     gap: 0.5rem;
+
+    .detail-cont{
+      display:flex;
+      flex-flow: column;
+    }
   }
 
   .commands {
@@ -22,8 +28,8 @@
   }
 
   .text {
-    text-transform: uppercase;
-    width: 150px;
+    //text-transform: uppercase;
+    width: 140px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -37,7 +43,7 @@
 
 .item:hover {
   .text {
-    width: 130px !important;
+    width: 140px !important;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

@@ -20,10 +20,10 @@
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
 
     <div class="content">
-      <div>
+      <div class="task-summary-cont">
         <task-summary :plan="task" :key="`summary-${selectedPlanId}`" :workspaceId="task.workspaceId"></task-summary>
       </div>
-      <div class="second-column" v-if="(task.attachmentsIds && task.attachmentsIds.length) || children.length">
+      <!-- <div class="second-column" v-if="(task.attachmentsIds && task.attachmentsIds.length) || children.length">
           <div class="attachments">
             <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
             <component :key="`attachments-${selectedPlanId}`" :is="sharedPreviewComponent" :shareds="task.attachmentsIds"></component>
@@ -31,25 +31,26 @@
           <div class="children-plans" :key="`children-${selectedPlanId}`" v-if="children.length">
             <children-plans :children="children"></children-plans>
           </div>
-        </div>
+        </div> -->
       <div class="third-column">
-        <div v-if="commentSectionOpened" class="comments-section">
-          <div class="command" @click="closeCommentsSection">
+        <div class="comments-section" >
+          <!-- <div class="command" @click="closeCommentsSection">
             <i class="ti ti-x"></i>
-          </div>
-          <inject
-            class="discussion components"
-            name="discussion-room"
-            group="generic"
+          </div> -->
+          
+
+          <component
+            :is="discussionRoom"
             :type="type"
             :id="selectedPlanId"
             :titlePlaceholder="{ key: 'plans.comments.title', value: 'Commenti' }"
             :textPlaceholder="{ key: 'plans.comments.text', value: 'Utilizza questo spazio per commentare la proposta.' }"
+            :showCommentsCount="true" 
           >
-          </inject>
+          </component>
         </div>
-        <task-map :key="`map-${selectedPlanId}`" :group="selectedGroup ?? rootGroup" v-else></task-map>
-        <citizen-interaction :key="`interaction-${selectedPlanId}`" :id="task.id" :type="type" @openCommentSection="openCommentSection"></citizen-interaction>
+        <!-- <task-map :key="`map-${selectedPlanId}`" :group="selectedGroup ?? rootGroup" v-else></task-map> -->
+        <!-- <citizen-interaction :key="`interaction-${selectedPlanId}`" :id="task.id" :type="type" @openCommentSection="openCommentSection"></citizen-interaction> -->
       </div>
     </div>
   </div>
@@ -90,6 +91,26 @@
     }
   }
 }
+
+// .comments-section {
+//   .discussion {
+//     height: 100%;
+//     .discussion-room {
+//       margin: 0 !important;
+//       .count {
+//         color: #4b4847;
+//         font-family: Open Sans;
+//         font-size: 18px;
+//         font-style: normal;
+//         font-weight: 600;
+//         line-height: 24.788px; /* 137.71% */
+//       }
+//       .description {
+//         display: none;
+//       }
+//     }
+//   }
+// }
 </style>
 
 <script lang="ts" src="./taskDetail.ts" />

@@ -121,4 +121,10 @@ export default class Crowdplanning extends Vue {
     async addTask(): Promise<void> {
         await Projector.Instance.projectAsyncTo(PlanModal as never, '');
     }
+
+    toggleMap: boolean = true
+    changeView() {
+       let tm = this.toggleMap
+       this.toggleMap = !tm
+    }
 }

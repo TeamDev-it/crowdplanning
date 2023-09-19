@@ -21,7 +21,7 @@
       </div>
     </div>
     <article>
-      <div class="title">{{ $t('plan.summary.description-label', 'Descrizione') }}</div>
+      <!-- <div class="title">{{ $t('plan.summary.description-label', 'Descrizione') }}</div> -->
       <div class="description" v-html="plan.description"></div>
     </article>
   </div>

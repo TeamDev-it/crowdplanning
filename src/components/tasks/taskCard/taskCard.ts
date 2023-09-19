@@ -14,7 +14,7 @@ export default class TaskCard extends Vue {
     @Prop({ default: true })
     showCommands!: boolean;
 
-    coverImage: string | null = null;
+    coverImage: string | "src\assets\images\placeholder-img.png" = null;
     loading = true;
     group: server.Group | null = null;
 
@@ -39,8 +39,8 @@ export default class TaskCard extends Vue {
         store.actions.crowdplanning.setSelectedPlanId(this.value.id);
     }
 
-    get CoverImage(): string | null {
-        if (!this.coverImage) return null;
+    get CoverImage(): string {
+        if (!this.coverImage) return  "src\assets\images\placeholder-img.png";
         
         return Shared.imageFromString(this.coverImage);
     }

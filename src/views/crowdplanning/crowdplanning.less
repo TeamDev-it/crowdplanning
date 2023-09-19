@@ -14,23 +14,26 @@
     background-color: var(--white);
   }
 
-  &.plan-selected{
-    display: flex;
+  &.plan-selected {
+    grid-template-rows: 1fr;
 
-    header{
+    header {
       display: none;
     }
 
     .crowdplanning-content {
       display: block;
-      .task-and-map{
+      .task-and-map {
         display: flex;
         padding: 0;
         height: 100%;
-        //grid-template-rows: 60px 1fr;
+
+        .task-detail {
+          width: 100%;
+        }
       }
     }
-   }
+  }
 
   .crowdplanning-content {
     //padding: 1rem 0;
@@ -40,10 +43,8 @@
     grid-template-columns: 260px 1fr;
 
     .groups {
-      height: 100%;
-      gap: 1rem;
-      letter-spacing: 1px;
       background-color: #ecf4fc;
+      overflow: hidden;
       .btn {
         display: flex;
         justify-content: center;
@@ -51,12 +52,33 @@
       }
     }
 
-   .task-and-map{
-    display: grid;
-    grid-template-rows: auto 1fr;
-    padding: 1rem 2rem 1.5rem 1rem;
-   }
+    .task-and-map {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      padding: 1rem 2rem 1.5rem 1rem;
+      overflow: hidden;
 
-  
+      &.noMap{
+
+        .map{
+          display: none;
+         }
+
+        .tasks{
+          overflow-y: auto;
+        }
+      }
+
+      .tasks {
+        overflow: hidden;
+
+        // .noMap{
+        //   overflow-y: auto;
+        // }
+      }
+
+      
+       
+    }
   }
 }
