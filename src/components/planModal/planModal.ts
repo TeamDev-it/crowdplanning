@@ -5,10 +5,8 @@ import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module
 import dateTime from "../dateTime/dateTime.vue";
 // import datePicker from "v-calendar/lib/components/date-picker.umd";
 import { plansService } from "@/services/plansService";
-import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
-import { store } from "@/store";
 
 @Component({
     components: {
@@ -22,14 +20,14 @@ export default class PlanModal extends Vue {
     public readonly mediaGalleryRef: string = 'media-gallery';
 
 
-@Prop({required: true})
-selectedPlan!: server.Plan | null;
+    @Prop({ required: true })
+    selectedPlan!: server.Plan | null;
 
-get workspaceId() {
-    return this.selectedPlan!.workspaceId
-}
+    get workspaceId() {
+        return this.selectedPlan!.workspaceId
+    }
 
-    groups: server.Group |null = null;
+    groups: server.Group | null = null;
     plan: server.Plan | null = null;
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
@@ -67,13 +65,13 @@ get workspaceId() {
         return CONFIGURATION.context;
     }
 
-     get esriGeocodingAutocomplete() {
-         return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
-     }
+    get esriGeocodingAutocomplete() {
+        return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
+    }
 
-     get mediaGallery() {
-         return CommonRegistry.Instance.getComponent('media-gallery');
-     }
+    get mediaGallery() {
+        return CommonRegistry.Instance.getComponent('media-gallery');
+    }
 
     // async mounted() {
     //     if (this.value.data) {
@@ -183,7 +181,7 @@ get workspaceId() {
         }
     }
 
- async coverRemoved(file: server.FileAttach): Promise<void> {
+    async coverRemoved(file: server.FileAttach): Promise<void> {
         if (this.plan) {
             this.plan.coverImageIds = null;
 
@@ -193,23 +191,23 @@ get workspaceId() {
         }
     }
 
-//     async fileRemoved(file: string): Promise<void> {
-//         if (this.plan) {
-//             const attachments = [...this.plan.attachmentsIds];
+    //     async fileRemoved(file: string): Promise<void> {
+    //         if (this.plan) {
+    //             const attachments = [...this.plan.attachmentsIds];
 
-//             const idx = this.plan.attachmentsIds.findIndex(x => x.originalFileId === file);
+    //             const idx = this.plan.attachmentsIds.findIndex(x => x.originalFileId === file);
 
-//             if (idx !== -1) {
-//                 attachments.splice(idx, 1);
-//             }
+    //             if (idx !== -1) {
+    //                 attachments.splice(idx, 1);
+    //             }
 
-//             this.plan.attachmentsIds = [...attachments];
+    //             this.plan.attachmentsIds = [...attachments];
 
-//             if (this.plan.id)
-//                 // update plan
-//                 await plansService.Set(this.plan!.groupId, this.plan);
-//         }
-//     }
+    //             if (this.plan.id)
+    //                 // update plan
+    //                 await plansService.Set(this.plan!.groupId, this.plan);
+    //         }
+    //     }
 
     private decodeSharable(buffer: ArrayBuffer): string {
         const textDecoder = new TextDecoder();
@@ -244,41 +242,41 @@ get workspaceId() {
         }
     }
 
-//     private setPlan(plan: server.Plan): void {
-//         store.actions.crowdplanning.setPlan(plan);
-//     }
+    //     private setPlan(plan: server.Plan): void {
+    //         store.actions.crowdplanning.setPlan(plan);
+    //     }
 
-//     private requiredFieldsSatisfied(): boolean {
-//         if (!this.plan?.location) {
-//             MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
-//             return false;
-//         }
+    //     private requiredFieldsSatisfied(): boolean {
+    //         if (!this.plan?.location) {
+    //             MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
+    //             return false;
+    //         }
 
-//         if (!this.plan?.description) {
-//             MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-//             return false;
-//         }
+    //         if (!this.plan?.description) {
+    //             MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
+    //             return false;
+    //         }
 
-//         if (!this.plan?.startDate) {
-//             MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-//             return false;
-//         }
+    //         if (!this.plan?.startDate) {
+    //             MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
+    //             return false;
+    //         }
 
-//         if (!this.plan?.dueDate) {
-//             MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-//             return false;
-//         }
+    //         if (!this.plan?.dueDate) {
+    //             MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
+    //             return false;
+    //         }
 
-//         return true;
-//     }
+    //         return true;
+    //     }
 
     private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
         return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
     }
 
-//     private async rollbackplanCreation(id: string): Promise<void> {
-//         await plansService.deleteplan(id);
+    //     private async rollbackplanCreation(id: string): Promise<void> {
+    //         await plansService.deleteplan(id);
 
-//         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
-//     }
+    //         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
+    //     }
 }
