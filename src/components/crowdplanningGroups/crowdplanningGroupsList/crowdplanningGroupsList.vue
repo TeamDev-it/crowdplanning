@@ -6,7 +6,7 @@
         <i class="ti ti-plus"></i>
       </span>
     </div>
-    <crowdplanning-groups-item v-for="group in rootGroup.children" :key="group.id" :value="group" :selectedCategory="selectedCategory" @click.native="$event => (selectedCategory = group)" @changedGroup="changedGroup" />
+    <crowdplanning-groups-item v-for="group in rootGroup.children" :key="group.id" :value="group" :selectedCategory="selectedCategory" @selectedCategory="setSelectedCategory()" @changedGroup="changedGroup" />
   </div>
 </template>
 

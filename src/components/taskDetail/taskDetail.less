@@ -22,6 +22,7 @@
     gap: @gap;
     padding-left: 1rem;
     padding-right: 1rem;
+    align-items: center;
 
     .back {
       display: flex;
@@ -41,13 +42,27 @@
     .commands {
       display: flex;
       flex-flow: row;
-      gap: 1rem;
-      margin-right: @gap;
+      margin-right: 2.5rem;
 
-      > div {
+      .like {
         display: flex;
         align-items: center;
         cursor: pointer;
+        gap: 8px;
+        padding: 10px;
+        background-color: white;
+        border-radius: 5px;
+        transition: 0.3s;
+
+        &.liked{
+          background-color: rgb(233, 69, 69);
+        color: white;
+        }
+      }
+
+      .like:hover{
+        background-color: rgb(233, 69, 69);
+        color: white;
       }
     }
   }
@@ -62,8 +77,7 @@
     box-sizing: border-box;
     overflow: hidden;
 
-
-    .task-summary-cont{
+    .task-summary-cont {
       overflow-y: auto;
       max-height: 100%;
     }
@@ -119,7 +133,7 @@
       > div {
         // background-color: var(--white);
         // border-radius: var(--border-radius);
-        padding: 0 1rem ;
+        padding: 0 1rem;
       }
 
       .comments-section {
@@ -134,8 +148,6 @@
           justify-content: flex-end;
           align-items: center;
         }
-
-        
       }
 
       > span {

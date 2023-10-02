@@ -1,6 +1,158 @@
 <template>
-  <form @submit.prevent="confirm" @keydown.enter="$event.preventDefault()">
-    <div class="modal task" v-if="task">
+  <div class="detail-container">
+    <div class="header">
+      <div class="back" @click="back">
+        <i class="ti ti-arrow-left"></i>
+      </div>
+      <div class="title">{{ $t('taskDetail.publish.title', 'Inserisci nuovo post') }}</div>
+      <div class="commands">
+        <button class="publish" @click="" disabled>
+          <i class="ti ti-brand-open-source"></i>
+          <span class="text">{{ $t('taskDetail.publish', 'Pubblica') }} </span>
+        </button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="task-summary-cont">
+        <div class="summary-container">
+          <header>
+            <input class="title" type="text" placeholder="Inserisci titolo del post" />
+          </header>
+          <div class="cover-image">
+            <componenet
+              :ref="coverMediaGalleryRef"
+              :is="mediaGallery"
+              :fileLimit="1"
+              :titleText="{ key: 'modal.cover-image-addPlan', value: ` ` }"
+              :subtitleText="{ key: 'modal.cover-image-description-addPlan', value: ` ` }"
+              :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
+              :type="`${context}-COVER`"
+              :inputFileTypes="'images'"
+              :id="selectedPlan ?? ''"
+              @filesUploaded="coverUploaded"
+              @fileRemoved="coverRemoved"
+              style="background-color: #e5e5e5; height: 100%; display: grid"
+            ></componenet>
+          </div>
+          <div class="info-case"></div>
+          <article>
+            <div class="description">
+              <header class="content-editor">
+                <div class="cont">
+                  <content-editor v-model="plan" @keydown.native.stop style="width: 100%; height: 100%"></content-editor>
+                </div>
+              </header>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="third-column">
+        <div class="fieldsets">
+          <fieldset class="category">
+            <small>{{ $t('plans.modal.categoria', 'categoria*') }}</small>
+            <select v-model="plan?.groupId" required @keydown.native.stop>
+              <option value="" disabled>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
+              <option v-for="group in groups" :key="group" :value="group">
+                {{ group.toString.name.toUpperCase() }}
+              </option>
+            </select>
+          </fieldset>
+          <fieldset class="position">
+            <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
+            <!-- <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="plan?.location" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component> -->
+          </fieldset>
+          <fieldset>
+            <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
+            <input type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="confirmVisibleLayer()" />
+          </fieldset>
+        </div>
+        <!-- <div class="">
+          <fieldset>
+            <small>{{ $t('plans.modal.categoria', 'categoria*').toUpperCase() }}</small>
+            <select v-model="plan?.groupId" required @keydown.native.stop>
+              <option value="" disabled>{{ $t('plans.modal.select.default_option', "Seleziona un'opzione") }}</option>
+              <option v-for="group in groups" :key="group" :value="group">
+                {{ group.toString.name.toUpperCase() }}
+              </option>
+            </select>
+          </fieldset>
+
+          <div class="position">
+            <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
+            <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="plan?.location" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
+          </div>
+
+          <header class="map-settings">
+            <fieldset>
+              <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
+              <input type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="confirmVisibleLayer()" />
+            </fieldset>
+            <div>
+              <div v-for="(layer, idx) in plan?.visibleLayers">
+                <p>{{ layer }}</p>
+              </div>
+            </div>
+          </header>
+
+          <header class="date">
+            <fieldset>
+              <small>{{ $t('plans.modal.start-date', 'data inizio').toUpperCase() }}</small>
+              <div class="date-picker-container">
+                <date-picker v-model="plan?.startDate" @keydown.native.stop mode="dateTime" is24hr required>
+                  <template v-slot="{ inputEvents }">
+                    <date-time :value="plan?.startDate" :events="inputEvents"></date-time>
+                  </template>
+                </date-picker>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <small>{{ $t('plans.modal.due-date', 'data fine').toUpperCase() }}</small>
+              <div class="date-picker-container">
+                <date-picker v-model="plan?.dueDate" @keydown.native.stop mode="dateTime" is24hr>
+                  <template v-slot="{ inputEvents }">
+                    <date-time :value="plan?.dueDate" :events="inputEvents"></date-time>
+                  </template>
+                </date-picker>
+              </div>
+            </fieldset>
+          </header>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</template>
+
+<!--  -->
+<!-- info case -->
+<!--  -->
+<!-- <div class="date info" @click="">
+              <i class="ti ti-calendar"></i>
+              <span>{{ $t('planModal.dueTime', 'Data scadenza') }}</span>
+              <div class="date-picker-container">
+                <date-picker @keydown.native.stop mode="dateTime" is24hr>
+                  <template v-slot="{ inputEvents }">
+                    <date-time :events="inputEvents"></date-time>
+                  </template>
+                </date-picker>
+              </div>
+            </div>
+
+            <div class="location info">
+              <i class="ti ti-map-pin"></i>
+              <span class="text">{{ $t('planModal.location', 'Indirizzo') }}</span>
+              <component :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.native.stop></component>
+            </div>
+
+            <div class="group info">
+              <i v-if="!groups" class="ti ti-category"></i>
+              <i v-else :class="iconCode(group.iconCode)"></i>
+              <span class="text">{{ $t('planModal.group', 'Categoria') }}</span>
+            </div> -->
+
+<!-- <template>
+    <div class="task" v-if="task" @submit.prevent="confirm" @keydown.enter="$event.preventDefault()">
       <header class="title">
         <input
           type="text"
@@ -135,8 +287,8 @@
         </button>
       </footer>
     </div>
-  </form>
-</template>
+ 
+</template> -->
 
 <script lang="ts" src="./planModal.ts" />
 
@@ -155,11 +307,11 @@
   }
 }
 
-.content-editor-container {
-  .content-editor {
-    max-height: 200px;
-  }
-}
+// .content-editor-container {
+//   .content-editor {
+
+//   }
+// }
 
 .modal {
   header {

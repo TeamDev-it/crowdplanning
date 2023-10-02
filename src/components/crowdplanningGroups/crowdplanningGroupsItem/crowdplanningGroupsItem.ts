@@ -28,4 +28,9 @@ export default class CrowdplanningGroupsItem extends Vue {
             this.$emit("changedGroup", updatedGroup);
         }
     }
+
+    setSelectedCategory() {
+        this.$emit('selectedCategory', this.selectedCategory)
+    }
+
 }

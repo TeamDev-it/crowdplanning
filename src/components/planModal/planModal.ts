@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Prop } from "vue-property-decorator";
 import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
 import dateTime from "../dateTime/dateTime.vue";
-import datePicker from "v-calendar/lib/components/date-picker.umd";
+// import datePicker from "v-calendar/lib/components/date-picker.umd";
 import { plansService } from "@/services/plansService";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import { CONFIGURATION } from "@/configuration";
@@ -12,7 +12,7 @@ import { store } from "@/store";
 
 @Component({
     components: {
-        datePicker,
+        // datePicker,
         dateTime,
         Autocomplete,
     }
@@ -21,10 +21,16 @@ export default class PlanModal extends Vue {
     public readonly coverMediaGalleryRef: string = 'cover-media-gallery';
     public readonly mediaGalleryRef: string = 'media-gallery';
 
-    @Prop({ required: true })
-    value!: IProjectableModel<string>;
 
-    task: server.Plan | null = null;
+@Prop({required: true})
+selectedPlan!: server.Plan | null;
+
+get workspaceId() {
+    return this.selectedPlan!.workspaceId
+}
+
+    groups: server.Group |null = null;
+    plan: server.Plan | null = null;
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
@@ -36,132 +42,130 @@ export default class PlanModal extends Vue {
 
     errors: { [id: string]: string } = {};
 
-    get imageContentTypes(): string {
-        return imagesContentTypes;
+    back() {
+        this.$emit('goback')
     }
 
-    get plans(): server.Plan[] {
-        return store.getters.crowdplanning.getPlans();
-    }
+    //  get imageContentTypes(): string {
+    //      return imagesContentTypes;
+    //  }
 
-    get groups(): server.Group[] {
-        return store.getters.crowdplanning.getGroups().filter(x => x.parentGroupId);
-    }
+    // get plans(): server.Plan[] {
+    //     return store.getters.crowdplanning.getPlans();
+    // }
 
-    get planIfExists() {
-        if (this.value.data)
-            return { ...store.getters.crowdplanning.getPlanById(this.value.data) };
-    }
+    // get groups(): server.Group[] {
+    //      ;
+    // }
+
+    // get planIfExists() {
+    //     if (this.value.data)
+    //         return { ...store.getters.crowdplanning.getPlanById(this.value.data) };
+    // }
 
     get context(): string {
         return CONFIGURATION.context;
     }
 
-    get esriGeocodingAutocomplete() {
-        return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
-    }
+     get esriGeocodingAutocomplete() {
+         return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
+     }
 
-    get mediaGallery() {
-        return CommonRegistry.Instance.getComponent('media-gallery');
-    }
+     get mediaGallery() {
+         return CommonRegistry.Instance.getComponent('media-gallery');
+     }
 
-    async mounted() {
-        if (this.value.data) {
-            this.planMode = "edit";
-        }
+    // async mounted() {
+    //     if (this.value.data) {
+    //         this.planMode = "edit";
+    //     }
 
-        if (this.value?.data) {
-            this.task = this.planIfExists ?? {} as server.Plan;
-        } else {
-            this.task = {
-                ...this.task,
-                groupId: store.getters.crowdplanning.getSelectedGroup()?.id ?? '',
-                state: "Review",
-                visibleLayers: []
-            } as server.Plan;
-        }
+    //     if (this.value?.data) {
+    //         this.plan = this.planIfExists ?? {} as server.Plan;
+    //     } else {
+    //         this.plan = {
+    //             ...this.plan,
+    //             groupId: store.getters.crowdplanning.getSelectedGroup()?.id ?? '',
+    //             state: "Review",
+    //             visibleLayers: []
+    //         } as server.Plan;
+    //     }
 
-        if (this.task.parentId) {
-            this.hasClusterParent = true;
-        }
+    //     if (this.plan.parentId) {
+    //         this.hasClusterParent = true;
+    //     }
 
-        this.loading = false;
-    }
+    //     this.loading = false;
+    // }
 
-    setError(id: string, value: string) {
-        Vue.set(this.errors, id, value);
-    }
+    // setError(id: string, value: string) {
+    //     Vue.set(this.errors, id, value);
+    // }
 
     locationSelected(value: locations.Location & { name: string }) {
-        if (this.task) {
-            this.task.location = value;
-            this.task.locationName = value.name;
+        if (this.plan) {
+            this.plan.location = value;
+            this.plan.locationName = value.name;
         }
     }
 
-    close(): void {
-        try {
-            this.value?.reject();
-        } catch (err) {
-            //
-        }
-    }
 
-    onChangeCoverImage(event: InputEvent) {
-        this.coverImage = (event.target as any).files[0];
-    }
+
+    // onChangeCoverImage(event: InputEvent) {
+    //     this.coverImage = (event.target as any).files[0];
+    // }
 
     public confirmVisibleLayer() {
         if (!this.tmpVisibleLayer) return;
 
-        this.task?.visibleLayers.push(this.tmpVisibleLayer);
+        this.plan?.visibleLayers.push(this.tmpVisibleLayer);
 
         this.tmpVisibleLayer = "";
     }
 
-    public valueChanged(value: server.Plan): void {
-        this.task = { ...this.task, parentId: value.id } as server.Plan;
-    }
+    // public valueChanged(value: server.Plan): void {
+    //     this.plan = { ...this.plan, parentId: value.id } as server.Plan;
+    // }
 
-    autocompleteFilterFunction(plans: server.Plan[], filteringValue: string): server.Plan[] {
-        return plans.filter(x =>
-            x?.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
-            x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
-    }
+    // autocompleteFilterFunction(plans: server.Plan[], filteringValue: string): server.Plan[] {
+    //     return plans.filter(x =>
+    //         x?.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
+    //         x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
+    // }
 
-    removeLayer(idx: number): void {
-        this.task?.visibleLayers.splice(idx, 1);
-    }
+    // removeLayer(idx: number): void {
+    //     this.plan?.visibleLayers.splice(idx, 1);
+    // }
 
-    async confirm(): Promise<void> {
-        if (!this.requiredFieldsSatisfied()) {
-            return;
-        }
+    // async confirm(): Promise<void> {
+    //     if (!this.requiredFieldsSatisfied()) {
+    //         return;
+    //     }
 
-        if (this.task && !this.task?.id)
-            // Save new task
-            this.task = await plansService.Set(this.task.groupId, this.task);
+    //     if (this.plan && !this.plan?.id)
+    //         // Save new plan
+    //         this.plan = await plansService.Set(this.plan.groupId, this.plan);
 
-        if (!this.task) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
-            return;
-        }
+    //     if (!this.plan) {
+    //         MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
+    //         return;
+    //     }
 
-        // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-        await (this.$refs[this.coverMediaGalleryRef] as any).save(this.task.id);
+    //     // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
+    //     await (this.$refs[this.coverMediaGalleryRef] as any).save(this.plan.id);
 
-        await (this.$refs[this.mediaGalleryRef] as any).save(this.task.id);
+    //     await (this.$refs[this.mediaGalleryRef] as any).save(this.plan.id);
 
-        // Update plan with new properties
-        await plansService.Set(this.task!.groupId, this.task);
+    //     // Update plan with new properties
+    //     await plansService.Set(this.plan!.groupId, this.plan);
 
-        this.setPlan(this.task);
+    //     this.setPlan(this.plan);
 
-        this.close();
-    }
+    //     this.close();
+    // }
 
     async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
-        if (file && this.task) {
+        if (file && this.plan) {
             let cover = null;
             if (Array.isArray(file)) {
                 cover = file[0];
@@ -169,43 +173,43 @@ export default class PlanModal extends Vue {
                 cover = file;
             }
 
-            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.task.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
 
-            this.task.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
+            this.plan.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 
-            if (this.task.id)
-                //update task 
-                await plansService.Set(this.task!.groupId, this.task);
+            if (this.plan.id)
+                //update plan
+                await plansService.Set(this.plan!.groupId, this.plan);
         }
     }
 
-    async coverRemoved(file: server.FileAttach): Promise<void> {
-        if (this.task) {
-            this.task.coverImageIds = null;
+ async coverRemoved(file: server.FileAttach): Promise<void> {
+        if (this.plan) {
+            this.plan.coverImageIds = null;
 
-            if (this.task.id)
-                //update task 
-                await plansService.Set(this.task!.groupId, this.task);
+            if (this.plan.id)
+                //update plan
+                await plansService.Set(this.plan!.groupId, this.plan);
         }
     }
 
-    async fileRemoved(file: string): Promise<void> {
-        if (this.task) {
-            const attachments = [...this.task.attachmentsIds];
+//     async fileRemoved(file: string): Promise<void> {
+//         if (this.plan) {
+//             const attachments = [...this.plan.attachmentsIds];
 
-            const idx = this.task.attachmentsIds.findIndex(x => x.originalFileId === file);
+//             const idx = this.plan.attachmentsIds.findIndex(x => x.originalFileId === file);
 
-            if (idx !== -1) {
-                attachments.splice(idx, 1);
-            }
+//             if (idx !== -1) {
+//                 attachments.splice(idx, 1);
+//             }
 
-            this.task.attachmentsIds = [...attachments];
+//             this.plan.attachmentsIds = [...attachments];
 
-            if (this.task.id)
-                // update task
-                await plansService.Set(this.task!.groupId, this.task);
-        }
-    }
+//             if (this.plan.id)
+//                 // update plan
+//                 await plansService.Set(this.plan!.groupId, this.plan);
+//         }
+//     }
 
     private decodeSharable(buffer: ArrayBuffer): string {
         const textDecoder = new TextDecoder();
@@ -214,67 +218,67 @@ export default class PlanModal extends Vue {
     }
 
     async filesUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
-        if (file && this.task) {
+        if (file && this.plan) {
             let attachmentsSharableIds: file.SharedRef[] = [];
 
-            if (this.task.attachmentsIds !== null)
-                attachmentsSharableIds = [...this.task.attachmentsIds];
+            if (this.plan.attachmentsIds !== null)
+                attachmentsSharableIds = [...this.plan.attachmentsIds];
 
             if (Array.isArray(file)) {
                 for (const f of file) {
-                    const shared = await this.askForSharedFile(f.id, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
+                    const shared = await this.askForSharedFile(f.id, this.plan.id, CONFIGURATION.context) as unknown as ArrayBuffer;
 
                     attachmentsSharableIds.push({ originalFileId: f.id, sharedToken: this.decodeSharable(shared), contentType: f.contentType } as file.SharedRef);
                 }
             } else {
-                const shared = await this.askForSharedFile(file.id, this.task.id, CONFIGURATION.context) as unknown as ArrayBuffer;
+                const shared = await this.askForSharedFile(file.id, this.plan.id, CONFIGURATION.context) as unknown as ArrayBuffer;
 
                 attachmentsSharableIds.push({ originalFileId: file.id, sharedToken: this.decodeSharable(shared), contentType: file.contentType } as file.SharedRef);
             }
 
-            this.task.attachmentsIds = [...attachmentsSharableIds];
+            this.plan.attachmentsIds = [...attachmentsSharableIds];
 
-            if (this.task.id)
-                //update task
-                await plansService.Set(this.task!.groupId, this.task);
+            if (this.plan.id)
+                //update plan
+                await plansService.Set(this.plan!.groupId, this.plan);
         }
     }
 
-    private setPlan(plan: server.Plan): void {
-        store.actions.crowdplanning.setPlan(plan);
-    }
+//     private setPlan(plan: server.Plan): void {
+//         store.actions.crowdplanning.setPlan(plan);
+//     }
 
-    private requiredFieldsSatisfied(): boolean {
-        if (!this.task?.location) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
-            return false;
-        }
+//     private requiredFieldsSatisfied(): boolean {
+//         if (!this.plan?.location) {
+//             MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
+//             return false;
+//         }
 
-        if (!this.task?.description) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-            return false;
-        }
+//         if (!this.plan?.description) {
+//             MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
+//             return false;
+//         }
 
-        if (!this.task?.startDate) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-            return false;
-        }
+//         if (!this.plan?.startDate) {
+//             MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
+//             return false;
+//         }
 
-        if (!this.task?.dueDate) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-            return false;
-        }
+//         if (!this.plan?.dueDate) {
+//             MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
+//             return false;
+//         }
 
-        return true;
-    }
+//         return true;
+//     }
 
     private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
         return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
     }
 
-    private async rollbackTaskCreation(id: string): Promise<void> {
-        await plansService.deleteTask(id);
+//     private async rollbackplanCreation(id: string): Promise<void> {
+//         await plansService.deleteplan(id);
 
-        MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
-    }
+//         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
+//     }
 }

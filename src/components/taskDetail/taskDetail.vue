@@ -1,12 +1,18 @@
 <template>
-  <div v-if="task" class="detail-container">
+  <div class="detail-container">
     <div class="header">
-      <div class="back" @click="onBackClick">
+      <div class="back" @click="back">
         <i class="ti ti-arrow-left"></i>
       </div>
-      <div class="title">{{ task.title }}</div>
-      <!-- <div class="commands">
-        <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
+      <div class="title">{{ selectedPlanTitle }}</div>
+      
+
+      <div class="commands">
+        <div class="like" @click="addLike" :class="{liked : liked}">
+          <i class="ti ti-heart"></i>
+          <span class="text">{{ $t('taskDetail.giveVote', 'Mi piace') }}</span>
+        </div>
+        <!-- <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </div>
         <div class="edit" v-if="hasPermission('plans.canedit')" @click="edit">
@@ -14,14 +20,14 @@
         </div>
         <div class="close" @click="clearTask">
           <i class="ti ti-x"></i>
-        </div>
-      </div> -->
+        </div>  -->
+      </div> 
     </div>
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
 
     <div class="content">
       <div class="task-summary-cont">
-        <task-summary :plan="task" :key="`summary-${selectedPlanId}`" :workspaceId="task.workspaceId"></task-summary>
+        <task-summary :plan="selectedPlan" :key="`summary-${plan}`" :workspaceId="workspaceId" :likes="count"></task-summary>
       </div>
       <!-- <div class="second-column" v-if="(task.attachmentsIds && task.attachmentsIds.length) || children.length">
           <div class="attachments">
@@ -42,7 +48,7 @@
           <component
             :is="discussionRoom"
             :type="type"
-            :id="selectedPlanId"
+            :id="plan"
             :titlePlaceholder="{ key: 'plans.comments.title', value: 'Commenti' }"
             :textPlaceholder="{ key: 'plans.comments.text', value: 'Utilizza questo spazio per commentare la proposta.' }"
             :showCommentsCount="true" 

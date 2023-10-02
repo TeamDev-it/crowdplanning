@@ -14,9 +14,14 @@ export default class TaskCard extends Vue {
     @Prop({ default: true })
     showCommands!: boolean;
 
-    coverImage: string | "src\assets\images\placeholder-img.png" = null;
+    @Prop({required: true})
+    selectedTask!: server.Plan
+
+    coverImage: string | null = null;
     loading = true;
     group: server.Group | null = null;
+
+
 
     get iconCode(): string {
         return Icon.getIconCode(this.group?.iconCode ?? '');
@@ -35,13 +40,12 @@ export default class TaskCard extends Vue {
         this.loading = false;
     }
 
-    selectTask(): void {
-        store.actions.crowdplanning.setSelectedPlanId(this.value.id);
+    selectPlan() {
+        this.$emit('selectPlan', this.value)
     }
 
-    get CoverImage(): string {
-        if (!this.coverImage) return  "src\assets\images\placeholder-img.png";
-        
+     get CoverImage(): string | null {
+        if (!this.coverImage) return '';
         return Shared.imageFromString(this.coverImage);
     }
 }

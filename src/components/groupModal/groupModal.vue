@@ -20,7 +20,7 @@
       <div class="area">
         <small class="title">{{ $t(`plan.group.create.description`, 'descrizione') }}</small>
         <!-- <input class="description" v-model="value.data.description" :placeholder="$t('plan.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')" /> -->
-        <textarea class="description" name="" id="" cols="30" rows="3" :placeholder="$t('plan.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')"></textarea>
+        <textarea class="description" v-model="value.data.description" name="" id="" cols="30" rows="3" :placeholder="$t('plan.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')"></textarea>
       </div>
       <template v-if="!value.data.default">
         <div class="area wToggle">

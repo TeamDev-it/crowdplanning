@@ -25,6 +25,27 @@
     }
   }
 
+  .info-case{
+    flex-flow: row;
+    display: flex;
+    justify-content: space-around;
+
+    .info{
+      display:flex;
+      align-items: center;
+      flex-flow: row;
+      gap: 5px;
+
+      span{
+        margin-bottom: -3px;
+
+        &.votes{
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+
   header {
     //margin: var(--spacer);
     display: flex;

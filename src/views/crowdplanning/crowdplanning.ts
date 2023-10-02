@@ -29,37 +29,31 @@ import { MessageService, Projector } from "vue-mf-module";
     name: "crowdplanning-component"
 })
 export default class Crowdplanning extends Vue {
+    selectedPlan: server.Plan | null = null;
+    selectedGroup: server.Group | null = null;
     plansGroupRoot: server.Group = {} as server.Group;
     currentUser: server.Myself | null = null;
     states: server.State[] = [];
     loading = true;
     workspaceId = "";
 
-    componentKey = 0;
+    value!: server.Plan;
 
-    get selectedGroup(): server.Group | null {
-        return store.getters.crowdplanning.getSelectedGroup();
-    }
+    componentKey = 0;
 
     get searchedValue(): string {
         return store.state.crowdplanning.searchedValue
     }
 
-    get selectedTaskId(): string | null {
-        return store.getters.crowdplanning.getSelectedPlanId();
-    }
-
-    get selectedTask(): server.Plan | null {
-        return store.getters.crowdplanning.getPlanById(this.selectedTaskId!);
-    }
+    // addTask() {
+    //     store.actions.crowdplanning.setSelectedPlanId(this.value);
+    //     console.log(this.value)
+    // }
 
     get plans(): server.Plan[] {
         return store.getters.crowdplanning.getPlans();
     }
 
-    get filteredPlans(): server.Plan[] {
-        return store.getters.crowdplanning.getFilteredPlans();
-    }
 
     async mounted() {
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
@@ -118,13 +112,47 @@ export default class Crowdplanning extends Vue {
         return this.$can(`${CONFIGURATION.context}.${permission}`);
     }
 
-    async addTask(): Promise<void> {
-        await Projector.Instance.projectAsyncTo(PlanModal as never, '');
+    addPlanSec: boolean = false
+    addPlan() {
+     let ap = this.addPlanSec
+     this.addPlanSec = !ap 
     }
 
     toggleMap: boolean = true
     changeView() {
        let tm = this.toggleMap
        this.toggleMap = !tm
+    }
+    
+
+    get filteredPlans() {
+        let result: server.Plan[] = cloneDeep(store.getters.crowdplanning.getPlans());
+  
+        if (this.selectedPlan) {
+          return result.filter(x => x.id === this.selectedPlan?.id);
+        }
+  
+        if (this.selectedGroup) {
+          result = result.filter(x => x.groupId === this.selectedGroup?.id);
+        }
+  
+        if (this.searchedValue) {
+          result = result.filter(x => x.title?.includes(this.searchedValue) || x.description?.includes(this.searchedValue));
+        }
+  
+        return result;
+    }
+
+    setSelectedGroup(value: server.Group | null) {
+        this.selectedGroup = value
+    }
+
+    setSelectedPlan(value: server.Plan | null) {
+        this.selectedPlan = value
+    }
+
+    goBack() {
+        this.selectedPlan = null;
+        this.addPlanSec = false;
     }
 }

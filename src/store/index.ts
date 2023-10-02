@@ -6,9 +6,9 @@ Vue.use(Vuex);
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CrowdplanningStoreModel {
-  selectedGroup: server.Group | null,
+  // selectedGroup: server.Group | null,
   searchedValue: string,
-  selectedPlanId: string | null,
+  // selectedPlanId: string | null,
   states: { [groupId: string]: server.State[] },
   groups: server.Group[],
   plans: server.Plan[],
@@ -16,24 +16,21 @@ export interface CrowdplanningStoreModel {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CrowdplanningStoreGetters {
-  getSelectedGroup(): server.Group | null;
   getSearchedValue(): string;
-  getSelectedPlanId(): string;
   getStates(groupId: string): server.State[];
   getGroups(): server.Group[];
   getGroupById(id: string): server.Group | null;
   getRootGroup(): server.Group;
   getPlans(): server.Plan[];
-  getFilteredPlans(): server.Plan[];
   getPlanById(id: string): server.Plan;
   getChildrenOfPlan(id: string): server.Plan[];
+  //  getSelectedGroup(): server.Group | null;
+  //  getSelectedPlanId(): string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CrowdplanningStoreActions {
-  setSelectedCategory(value: server.Group | null): void;
   setSearchedValue(value: string): void;
-  setSelectedPlanId(value: string | null): void;
   setStates(model: { groupId: string, states: server.State[] }): void;
   setState(model: { state: server.State, groupId: string }): void;
   setPlans(model: server.Plan[]): void;
@@ -42,42 +39,25 @@ export interface CrowdplanningStoreActions {
   deletePlan(model: string): void;
   setPlan(model: server.Plan): void;
   setGroup(model: server.Group): void;
+  //  setSelectedPlanId(value: string | null): void;
+  //  setSelectedCategory(value: server.Group | null): void;
 }
 
 export const crowdplanningStore = {
   PREFIX: "crowdplanning",
   namespaced: true,
   state: {
-    selectedGroup: null,
+    //  selectedGroup: null,
     searchedValue: '',
-    selectedPlanId: null,
+    //  selectedPlanId: null,
     groups: [],
     states: {},
     plans: []
   } as CrowdplanningStoreModel,
   getters: {
-    getSelectedGroup: (state) => () => state.selectedGroup,
     getSearchedValue: (state) => () => state.searchedValue,
-    getSelectedPlanId: (state) => () => state.selectedPlanId,
     getStates: (state) => (groupId: string) => state.states[groupId],
     getPlans: (state) => () => state.plans,
-    getFilteredPlans: (state) => () => {
-      let result: server.Plan[] = cloneDeep(state.plans);
-
-      if (state.selectedPlanId) {
-        return state.plans.filter(x => x.id === state.selectedPlanId);
-      }
-
-      if (state.selectedGroup) {
-        result = state.plans.filter(x => x.groupId === state.selectedGroup?.id);
-      }
-
-      if (state.searchedValue) {
-        result = result.filter(x => x.title?.includes(state.searchedValue) || x.description?.includes(state.searchedValue));
-      }
-
-      return result;
-    },
     getGroups: (state) => () => state.groups,
     getGroupById: (state) => (id: string) => state.groups.find(x => x.id === id),
     getRootGroup: (state) => () => state.groups.filter(x => !x.parentGroupId)[0],
@@ -85,15 +65,10 @@ export const crowdplanningStore = {
     getChildrenOfPlan: (state) => (id: string) => state.plans.filter(x => x.parentId === id)
   } as GetterTree<CrowdplanningStoreModel, CrowdplanningStoreModel>,
   mutations: {
-    SET_SELECTED_CATEGORY(state: CrowdplanningStoreModel, model: server.Group) {
-      state.selectedGroup = model;
-    },
     SET_SEARCHED_VALUE(state: CrowdplanningStoreModel, model: string) {
       state.searchedValue = model;
     },
-    SET_SELECTED_PLAN_ID(state: CrowdplanningStoreModel, model: string) {
-      state.selectedPlanId = model;
-    },
+
     SET_STATES(state: CrowdplanningStoreModel, model: { groupId: string, states: server.State[] }) {
       Vue.set(state.states, model.groupId, model.states);
     },
@@ -153,15 +128,11 @@ export const crowdplanningStore = {
     }
   },
   actions: {
-    setSelectedCategory(context, model: server.Group): void {
-      context.commit("SET_SELECTED_CATEGORY", model);
-    },
+
     setSearchedValue(context, model: string): void {
       context.commit("SET_SEARCHED_VALUE", model);
     },
-    setSelectedPlanId(context, model: string): void {
-      context.commit("SET_SELECTED_PLAN_ID", model);
-    },
+
     setStates(context, model: { groupId: string, states: server.State[] }): void {
       context.commit("SET_STATES", model);
     },

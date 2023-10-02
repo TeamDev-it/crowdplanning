@@ -4,20 +4,25 @@
     <div class="cover-image" v-if="CoverImage">
       <img :src="CoverImage" />
     </div>
-    <div>
-      <div class="date">
+    <div class="info-case">
+      <div class="date info">
         <i class="ti ti-calendar"></i>
         <span>{{ formattedDate }}</span>
       </div>
 
-      <div v-if="plan.location && plan.locationName" class="location">
+      <div v-if="plan.location" class="location info">
         <i class="ti ti-map-pin"></i>
         <span>{{ plan.locationName }}</span>
       </div>
 
-      <div v-if="group" class="group">
-        <i :class="iconCode(group?.iconCode ?? '')"></i>
-        <span class="text">{{ group?.name }}</span>
+      <div v-if="group" class="group info">
+        <i :class="iconCode(group.iconCode ?? '')"></i>
+        <span class="text">{{ group.name }}</span>
+      </div>
+
+      <div class="info">
+        <i class="ti ti-heart"></i>
+        <span class="text votes">{{ likes }} {{ $t('taskSummary.votes', 'voti') }}</span>
       </div>
     </div>
     <article>

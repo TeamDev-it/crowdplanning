@@ -20,15 +20,15 @@ export default class CrowdplanningGroupList extends Vue {
     states: server.State[] = [];
     loading = true;
 
+    @Prop({ required: true})
+    selectedCategory!: server.Group | null;
+
     @Prop({ required: true })
     rootGroup!: server.Group;
 
-    set selectedCategory(value: server.Group | null) {
-        store.actions.crowdplanning.setSelectedCategory(value);
-    }
-
-    get selectedCategory(): server.Group | null {
-        return store.getters.crowdplanning.getSelectedGroup();
+    setSelectedCategory() {
+        // store.actions.crowdplanning.setSelectedCategory(value);
+        this.$emit('selectedCategory', this.selectedCategory)
     }
 
     get groups(): server.Group[] {
@@ -67,9 +67,7 @@ export default class CrowdplanningGroupList extends Vue {
         await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/authModal/authModal.vue')) as any, {})
     }
 
-    get filteredPlans(): server.Plan[] {
-        return store.getters.crowdplanning.getFilteredPlans();
-    }
+   
 
     async createGroup(): Promise<void> {
         const g = {} as server.Group;

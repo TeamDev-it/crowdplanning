@@ -13,6 +13,9 @@ import { Shared } from "@/utility/Shared";
 })
 export default class TaskSummary extends Vue {
     @Prop()
+    likes: number = 0;
+
+    @Prop()
     plan!: server.Plan;
 
     @Prop({ required: true })
