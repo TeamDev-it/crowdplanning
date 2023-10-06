@@ -1,7 +1,8 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import { store } from "@/store";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
+import { ValidateDirective } from "vue-mf-module";
 
 @Component({})
 export default class CrowdplanningHeader extends Vue {
@@ -22,5 +23,23 @@ export default class CrowdplanningHeader extends Vue {
 
     async addTask(): Promise<void> {
         this.$emit("addTask");
+    }
+
+    seeMap: boolean = true
+    @Watch("seeMap")
+    changeView() {
+        this.$emit("changeView")
+    }
+
+    expiredPrj: boolean = true
+    @Watch("expiredPrj")
+    async noExpiredPrj() {
+        this.$emit("expiredPrj");
+    }
+
+    showListOpened: boolean = false
+    toggleOpened() {
+        let v = this.showListOpened;
+        this.showListOpened = !v;
     }
 }

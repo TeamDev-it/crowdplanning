@@ -4,7 +4,7 @@
       {{ $t('plans.spid.log-in', 'Accedi per condividere la tua opinione!') }}
     </div>
     <div class="btn-container">
-      <div class="button" @click="askLogin"></div>
+      <button class="log-button" @click="askLogin">{{ $t('plans.spid.log-in.button', 'Accedi a wisetown').toUpperCase() }}</button>
     </div>
   </div>
 </template>

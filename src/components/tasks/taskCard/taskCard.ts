@@ -6,6 +6,7 @@ import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 import { Shared } from "@/utility/Shared";
+import { plansService } from "@/services/plansService";
 @Component
 export default class TaskCard extends Vue {
     @Prop()
@@ -14,9 +15,18 @@ export default class TaskCard extends Vue {
     @Prop({ default: true })
     showCommands!: boolean;
 
+    @Prop({required: true})
+    selectedTask!: server.Plan
+
     coverImage: string | null = null;
     loading = true;
     group: server.Group | null = null;
+
+    // async delete() {
+    //     await plansService.deleteTask
+    // }
+
+
 
     get iconCode(): string {
         return Icon.getIconCode(this.group?.iconCode ?? '');
@@ -35,13 +45,12 @@ export default class TaskCard extends Vue {
         this.loading = false;
     }
 
-    selectTask(): void {
-        store.actions.crowdplanning.setSelectedPlanId(this.value.id);
+    selectPlan() {
+        this.$emit('selectPlan', this.value)
     }
 
-    get CoverImage(): string | null {
-        if (!this.coverImage) return null;
-        
+     get CoverImage(): string | null {
+        if (!this.coverImage) return '';
         return Shared.imageFromString(this.coverImage);
     }
 }

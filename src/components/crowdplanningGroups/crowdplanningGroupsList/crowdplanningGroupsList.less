@@ -1,50 +1,84 @@
 .group-list {
-    padding: 0 1rem;
+  padding: 8px; 
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  height: 100%;
+  align-items: flex-end;
+
+  .item {
     display: flex;
-    flex-direction: row;
-    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    // max-width: 227px;
+    width: 95%;
+    min-height: 40px;
+    height: 40px;
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
+    &.main {
+      width: 100%;
+
+      .text{
+        width: fit-content;
+      }
+    }
+
+    .text {
+      width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &.active {
+      background-color: var(--crowdplanning-primary-color);
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    .icon {
+      display: none;
+    }
+  }
+
+  .item:hover {
+    &.main {
+      width: 100%;
+
+      .text{
+        width: fit-content !important;
+      }
+    }
+    .text {
+      width: 130px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    cursor: pointer;
+
+    .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  @media (max-width: var(--low-res-tablet-max-width)) {
     .item {
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-        max-width: 270px;
-        width: 270px;
-        height: 55px;
-        background-color: var(--white);
-        border-radius: var(--border-radius);
-    
-        .text {
-            text-transform: uppercase;
-        }
-
-        &.active {
-            background-color: var(--crowdplanning-primary-color);
-            color: var(--white);
-        }
-
-        .icon {
-            display: none;
-        }
+      width: fit-content;
     }
 
-    .item:hover {
-        cursor: pointer;
-
-        .icon {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    .text {
+      padding: 0.5rem 1rem;
     }
-    
-    @media(max-width: var(--low-res-tablet-max-width)) {
-        .item {
-            width: fit-content
-        }
-    
-        .text {
-            padding: 0.5rem 1rem;
-        }
-    }
+  }
 }

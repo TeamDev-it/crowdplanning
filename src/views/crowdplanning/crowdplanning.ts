@@ -15,6 +15,8 @@ import { cloneDeep } from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { MessageService, Projector } from "vue-mf-module";
+import dateTime from "@/components/dateTime/dateTime";
+import dateTimeVue from "@/components/dateTime/dateTime.vue";
 
 @Component({
     components: {
@@ -29,41 +31,31 @@ import { MessageService, Projector } from "vue-mf-module";
     name: "crowdplanning-component"
 })
 export default class Crowdplanning extends Vue {
+    selectedPlan: server.Plan | null = null;
+    selectedGroup: server.Group | null = null;
     plansGroupRoot: server.Group = {} as server.Group;
     currentUser: server.Myself | null = null;
     states: server.State[] = [];
     loading = true;
     workspaceId = "";
 
-    componentKey: number = 0;
+    value!: server.Plan;
 
-    get groups(): server.Group[] {
-        return this.plansGroupRoot?.children ?? [];
-    }
-
-    get selectedGroup(): server.Group | null {
-        return store.getters.crowdplanning.getSelectedGroup();
-    }
+    componentKey = 0;
 
     get searchedValue(): string {
         return store.state.crowdplanning.searchedValue
     }
 
-    get selectedTaskId(): string | null {
-        return store.getters.crowdplanning.getSelectedPlanId();
-    }
-
-    get selectedTask(): server.Plan | null {
-        return store.getters.crowdplanning.getPlanById(this.selectedTaskId!);
-    }
+     addTask() {
+         store.actions.crowdplanning.setSelectedPlanId(this.value);
+         console.log(this.value)
+     }
 
     get plans(): server.Plan[] {
         return store.getters.crowdplanning.getPlans();
     }
 
-    get filteredPlans(): server.Plan[] {
-        return store.getters.crowdplanning.getFilteredPlans();
-    }
 
     async mounted() {
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
@@ -72,11 +64,6 @@ export default class Crowdplanning extends Vue {
             this.openAuthModal();
 
         await this.getData();
-    }
-
-    public rootGroupChanged(group: server.Group): void {
-        this.plansGroupRoot = group;
-        this.componentKey++;
     }
 
     private async openAuthModal(): Promise<void> {
@@ -114,34 +101,79 @@ export default class Crowdplanning extends Vue {
 
         this.states = await statesService.getStates(this.plansGroupRoot);
 
-        console.log("filtered plans", this.filteredPlans);
 
         this.loading = false;
+    }
+
+    public rootGroupChanged(group: server.Group): void {
+        this.plansGroupRoot = group;
+        this.componentKey++;
     }
 
     hasPermission(permission: string): boolean {
         return this.$can(`${CONFIGURATION.context}.${permission}`);
     }
 
-    async createGroup(): Promise<void> {
-        const g = {} as server.Group;
-
-        g.parentGroupId = this.plansGroupRoot?.id ?? "";
-
-        if (!this.plansGroupRoot || !this.plansGroupRoot.id) return;
-
-        const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
-
-        if (result) {
-            this.plansGroupRoot?.children.push(result);
-            this.componentKey++;
-        } else {
-            // error message
-            MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.group-create-error", "Errore durante la creazione della categoria"));
-        }
+    addPlanSec: boolean = false
+    addPlan() {
+     let ap = this.addPlanSec
+     this.addPlanSec = !ap 
     }
 
-    async addTask(): Promise<void> {
-        await Projector.Instance.projectAsyncTo(PlanModal as never, '');
+    toggleMap: boolean = true
+    changeView() {
+       let tm = this.toggleMap
+       this.toggleMap = !tm
+    }
+
+    expiredPrj: boolean = true
+    noExpiredPrj(){
+        let eP = this.expiredPrj
+        this.expiredPrj = !eP
+    }
+    
+    today: Date = new Date
+    todayy = this.today.getDate
+
+    get filteredPlans() {
+        let result: server.Plan[] = cloneDeep(store.getters.crowdplanning.getPlans());
+
+        // if (this.expiredPrj) {
+        //     console.log(this.today)
+        //     result = result.filter(x => x.dueDate?.valueOf)
+        // }
+  
+        if (this.selectedPlan) {
+          return result.filter(x => x.id === this.selectedPlan?.id);
+        }
+  
+        if (this.selectedGroup) {
+          result = result.filter(x => x.groupId === this.selectedGroup?.id);
+        }
+  
+        if (this.searchedValue) {
+          result = result.filter(x => x.title?.includes(this.searchedValue) || x.description?.includes(this.searchedValue));
+        }
+
+       
+  
+        return result;
+    }
+
+    noGroup(value: null) {
+        this.selectedGroup = value
+    }
+
+    setSelectedGroup(value: server.Group | null) {
+        this.selectedGroup = value
+    }
+
+    setSelectedPlan(value: server.Plan | null) {
+        this.selectedPlan = value
+    }
+
+    goBack() {
+        this.selectedPlan = null;
+        this.addPlanSec = false;
     }
 }
