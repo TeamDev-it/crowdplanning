@@ -6,6 +6,7 @@ import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 import { Shared } from "@/utility/Shared";
+import { plansService } from "@/services/plansService";
 @Component
 export default class TaskCard extends Vue {
     @Prop()
@@ -20,6 +21,10 @@ export default class TaskCard extends Vue {
     coverImage: string | null = null;
     loading = true;
     group: server.Group | null = null;
+
+    // async delete() {
+    //     await plansService.deleteTask
+    // }
 
 
 

@@ -28,12 +28,18 @@ export default class TaskDetail extends Vue {
 @Prop({required: true})
 selectedPlan!: server.Plan | null;
 
+get likeButton() {
+    return CommonRegistry.Instance.getComponent("likeButton");
+}
 
+mounted(){
+    console.log(this.selectedPlan)
+}
 
 
     liked: boolean = false
     count: number = 0
-    addLike() {
+    async addLike() {
         let l = this.liked
         this.liked = !l           
         
@@ -54,7 +60,7 @@ selectedPlan!: server.Plan | null;
 
     commentSectionOpened = false;
 
-     get plan() {
+     get planId() {
          return this.selectedPlan!.id;
      }
 
@@ -104,16 +110,13 @@ selectedPlan!: server.Plan | null;
         return this.selectedPlan!.workspaceId
     }
 
-    // async remove(): Promise<void> {
-    //     try {
-    //         await plansService.deleteTask(this.task.id);
+    async remove(): Promise<void> {
+        
+            await plansService.deleteTask(this.planId);
 
-    //         this.clearTask();
-    //     } catch (err) {
-    //         MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.plan-delete-error", "Errore durante l'eliminazione della categoria"));
-    //     }
-    // }
-
+            
+    
+    }
     // async edit(): Promise<void> {
     //     try {
     //         await Projector.Instance.projectAsyncTo(PlanModal as never, this.task.id);

@@ -8,10 +8,9 @@
       
 
       <div class="commands">
-        <div class="like" @click="addLike" :class="{liked : liked}">
-          <i class="ti ti-heart"></i>
-          <span class="text">{{ $t('taskDetail.giveVote', 'Mi piace') }}</span>
-        </div>
+        <component :is="likeButton"></component>
+        <button @click="remove">delete</button>
+        
         <!-- <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </div>
@@ -25,9 +24,9 @@
     </div>
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
 
-    <div class="content">
+    <div class="content" :class="{ noComment: !selectedPlan?.citizensCanSeeOthersComments }">
       <div class="task-summary-cont">
-        <task-summary :plan="selectedPlan" :key="`summary-${plan}`" :workspaceId="workspaceId" :likes="count"></task-summary>
+        <task-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count"></task-summary>
       </div>
       <!-- <div class="second-column" v-if="(task.attachmentsIds && task.attachmentsIds.length) || children.length">
           <div class="attachments">
@@ -39,7 +38,7 @@
           </div>
         </div> -->
       <div class="third-column">
-        <div class="comments-section" >
+        <div class="comments-section">
           <!-- <div class="command" @click="closeCommentsSection">
             <i class="ti ti-x"></i>
           </div> -->
@@ -48,7 +47,7 @@
           <component
             :is="discussionRoom"
             :type="type"
-            :id="plan"
+            :id="planId"
             :titlePlaceholder="{ key: 'plans.comments.title', value: 'Commenti' }"
             :textPlaceholder="{ key: 'plans.comments.text', value: 'Utilizza questo spazio per commentare la proposta.' }"
             :showCommentsCount="true" 

@@ -4,11 +4,11 @@
       <i :class="iconCode"></i>
       <div class="detail-cont">
         <span class="text">{{ value.name }}</span>
-        <small class="description">{{ value.description }}</small>
+        <small class="description text" v-tooltip="value.description">{{ value.description }}</small>
       </div>
     </div>
     <div v-if="hasPermission('groups.canedit')" class="commands">
-      <i class="ti ti-pencil" @click.stop="edit" />
+      <i class="ti ti-pencil" @click.stop="edit"></i>
     </div>
   </div>
 </template>

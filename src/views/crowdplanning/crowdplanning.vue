@@ -1,11 +1,11 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div id="crowdplanning" :class="{ 'plan-selected': selectedPlan, 'plan-added': addPlanSec }">
-    <crowdplanning-header :currentUser="currentUser" @addTask="addPlan()" @changeView="changeView()"/>
+    <crowdplanning-header :currentUser="currentUser" @addTask="addPlan()" @changeView="changeView()" @expiredPrj="noExpiredPrj" />
     <div class="crowdplanning-content" v-if="!loading">
       <div class="groups" v-if="!selectedPlan && !addPlanSec">
         <!-- <scrollable-container> --> 
-        <crowdplanning-group-list :key="componentKey" v-if="plansGroupRoot && plansGroupRoot.id" :rootGroup="plansGroupRoot" @selectedCategory="setSelectedGroup" @rootGroupChanged="rootGroupChanged"></crowdplanning-group-list>
+        <crowdplanning-group-list :key="componentKey" v-if="plansGroupRoot && plansGroupRoot.id" :rootGroup="plansGroupRoot" @selectedNoCategory="noGroup" @selectedCategory="setSelectedGroup" :selectedCategory="selectedGroup" @rootGroupChanged="rootGroupChanged"></crowdplanning-group-list>
         <!-- </scrollable-container> -->
         
       </div>
@@ -19,9 +19,9 @@
           <task-detail :selectedPlan="selectedPlan" :key="selectedPlan.id" @goback="goBack"></task-detail>
         </div>
         <div class="task-detail" v-if="addPlanSec">
-          <planModal @goback="goBack"> </planModal>
+          <planModal @goback="goBack" :groups="plansGroupRoot" :plans="filteredPlans"> </planModal>
         </div> 
-        <div class="map" v-if="!selectedPlan" v-show="toggleMap">
+        <div class="map" v-if="!selectedPlan  && !addPlanSec" v-show="toggleMap">
           <task-map v-if="(selectedGroup || plansGroupRoot) && states.length" :group="selectedGroup ?? plansGroupRoot"></task-map>
         </div>
       </div>

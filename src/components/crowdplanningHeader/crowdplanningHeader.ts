@@ -31,7 +31,9 @@ export default class CrowdplanningHeader extends Vue {
         this.$emit("changeView")
     }
 
-    async expiredPrj() {
+    expiredPrj: boolean = true
+    @Watch("expiredPrj")
+    async noExpiredPrj() {
         this.$emit("expiredPrj");
     }
 

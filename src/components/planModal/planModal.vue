@@ -6,17 +6,17 @@
       </div>
       <div class="title">{{ $t('taskDetail.publish.title', 'Inserisci nuovo post') }}</div>
       <div class="commands">
-        <button class="publish" @click="" disabled>
+        <button class="publish" @click="confirm" type="submit" >
           <i class="ti ti-brand-open-source"></i>
           <span class="text">{{ $t('taskDetail.publish', 'Pubblica') }} </span>
         </button>
       </div>
     </div>
-    <div class="content">
+    <div class="content" v-if="plan">
       <div class="task-summary-cont">
         <div class="summary-container">
           <header>
-            <input class="title" type="text" placeholder="Inserisci titolo del post" />
+            <input class="title" type="text" placeholder="Inserisci titolo del post" v-model="plan.title" />
           </header>
           <div class="cover-image">
             <componenet
@@ -39,33 +39,87 @@
             <div class="description">
               <header class="content-editor">
                 <div class="cont">
-                  <content-editor v-model="plan" @keydown.native.stop style="width: 100%; height: 100%"></content-editor>
+                  <content-editor v-model="plan.description" @keydown.native.stop style="width: 100%; height: 100%"></content-editor>
                 </div>
               </header>
             </div>
           </article>
         </div>
       </div>
-
-      <div class="third-column" v-if="plan">
+      <div class="third-column">
         <div class="fieldsets">
           <fieldset>
             <small>{{ $t('plans.modal.categoria', 'categoria*') }}</small>
             <select v-model="plan.groupId">
-              <option value="" disabled>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-              <option v-for="group in groups" :key="group" :value="group">
-                {{ group.toString.name.toUpperCase() }}
+              <option value="" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
+              <option class="opt" v-for="group in groups.children" :key="group.id" :value="group.id">
+                {{ group.name }}
               </option>
             </select>
           </fieldset>
           <fieldset class="position">
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-            <component :is="esriGeocodingAutocomplete" v-if="!loading" v-model="plan.location" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
+            <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
           </fieldset>
           <fieldset>
             <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
             <input type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="confirmVisibleLayer()" />
           </fieldset>
+          
+            <fieldset class="area fixed">
+              <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
+              <div class="date-picker-container">
+                <date-picker v-model="plan.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
+                  <template v-slot="{ inputEvents }">
+                    <date-time :value="plan.startDate" :events="inputEvents"></date-time>
+                  </template>
+                </date-picker>
+              </div>
+            </fieldset>
+
+            <fieldset class="area fixed">
+              <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
+              <div class="date-picker-container">
+                <date-picker v-model="plan.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
+                  <template v-slot="{ inputEvents }">
+                    <date-time :value="plan.dueDate" :events="inputEvents"></date-time>
+                  </template>
+                </date-picker>
+              </div>
+            </fieldset>
+
+            <header v-if="plans" class="cluster">
+          <div class="row">
+            <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
+            <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
+          </div>
+          <div v-if="hasClusterParent" class="autocomplete">
+            <autocomplete
+              v-model="plan.parentId"
+              :inputValues="plans"
+              :filterFunction="autocompleteFilterFunction"
+              :labelKey="'PLANS.modal.plan.autocomplete'"
+              :placeholderKey="'PLANS.modal.plan.autocomplete.placeholder'"
+              :showThisPropertyAsItemName="'title'"
+              @valueChanged="valueChanged"
+            ></autocomplete>
+          </div>
+        </header>
+
+        <header class="toggle">
+          <div class="row">
+            <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
+            <toggle v-model="plan.citizensCanSeeOthersComments" @keydown.native.stop />
+          </div>
+        </header>
+
+        <header class="toggle">
+          <div class="row">
+            <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI').toUpperCase() }}</span>
+            <toggle v-model="plan.citizensCanSeeOthersRatings" @keydown.native.stop />
+          </div>
+        </header>
+          
         </div>
       </div>
     </div>
@@ -80,6 +134,9 @@
 
 <style lang="less">
 .date-picker-container {
+  width: 100%;
+  height: 40px;
+
   time {
     font-family: 'Open Sans';
   }
@@ -88,12 +145,6 @@
     height: 100%;
   }
 }
-
-// .content-editor-container {
-//   .content-editor {
-
-//   }
-// }
 
 .modal {
   header {
