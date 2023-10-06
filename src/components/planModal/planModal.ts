@@ -1,16 +1,17 @@
 import Component from "vue-class-component";
 import Vue from "vue";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
 import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
+import datePicker from "v-calendar/lib/components/date-picker.umd";
 import dateTime from "../dateTime/dateTime.vue";
-// import datePicker from "v-calendar/lib/components/date-picker.umd";
 import { plansService } from "@/services/plansService";
 import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
+import { store } from "@/store";
 
 @Component({
     components: {
-        // datePicker,
+        datePicker,
         dateTime,
         Autocomplete,
     }
@@ -27,8 +28,13 @@ export default class PlanModal extends Vue {
         return this.selectedPlan!.workspaceId
     }
 
-    groups: server.Group | null = null;
-    plan: server.Plan | null = null;
+    @Prop({ required: true })
+    plans!: server.Plan;
+
+    @Prop({ required: true })
+    groups!: server.Group;
+
+    plan: server.Plan | null = {} as server.Plan;
     coverImage: File | null = null;
     citizenCanSeeOthersRatings = false;
     citizenCanSeeOthersComments = false;
@@ -50,10 +56,6 @@ export default class PlanModal extends Vue {
 
     // get plans(): server.Plan[] {
     //     return store.getters.crowdplanning.getPlans();
-    // }
-
-    // get groups(): server.Group[] {
-    //      ;
     // }
 
     // get planIfExists() {
@@ -121,46 +123,47 @@ export default class PlanModal extends Vue {
         this.tmpVisibleLayer = "";
     }
 
-    // public valueChanged(value: server.Plan): void {
-    //     this.plan = { ...this.plan, parentId: value.id } as server.Plan;
-    // }
+     public valueChanged(value: server.Plan): void {
+         this.plan = { ...this.plan, parentId: value.id } as server.Plan;
+     }
 
-    // autocompleteFilterFunction(plans: server.Plan[], filteringValue: string): server.Plan[] {
-    //     return plans.filter(x =>
-    //         x?.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
-    //         x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
-    // }
+     autocompleteFilterFunction(plans: server.Plan[], filteringValue: string): server.Plan[] {
+         return plans.filter(x =>
+             x?.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
+             x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
+     }
 
     // removeLayer(idx: number): void {
     //     this.plan?.visibleLayers.splice(idx, 1);
     // }
 
-    // async confirm(): Promise<void> {
-    //     if (!this.requiredFieldsSatisfied()) {
-    //         return;
-    //     }
+    async confirm(): Promise<void> {
+        if (!this.requiredFieldsSatisfied()) {
+            return;
+        }
 
-    //     if (this.plan && !this.plan?.id)
-    //         // Save new plan
-    //         this.plan = await plansService.Set(this.plan.groupId, this.plan);
+        if (this.plan && !this.plan?.id)
+            // Save new plan
+            this.plan = await plansService.Set(this.plan.groupId, this.plan);
+            console.log(this.plan)
 
-    //     if (!this.plan) {
-    //         MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
-    //         return;
-    //     }
+        if (!this.plan) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
+            return;
+        }
+        
+        // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
+         await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.plan.id);
 
-    //     // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-    //     await (this.$refs[this.coverMediaGalleryRef] as any).save(this.plan.id);
+        //  await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
 
-    //     await (this.$refs[this.mediaGalleryRef] as any).save(this.plan.id);
+        // Update plan with new properties
+        await plansService.Set(this.plan!.groupId, this.plan);
 
-    //     // Update plan with new properties
-    //     await plansService.Set(this.plan!.groupId, this.plan);
+        this.setPlan(this.plan);
 
-    //     this.setPlan(this.plan);
-
-    //     this.close();
-    // }
+        this.back();
+    }
 
     async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
         if (file && this.plan) {
@@ -242,33 +245,37 @@ export default class PlanModal extends Vue {
         }
     }
 
-    //     private setPlan(plan: server.Plan): void {
-    //         store.actions.crowdplanning.setPlan(plan);
-    //     }
+    private setPlan(plan: server.Plan): void {
+        store.actions.crowdplanning.setPlan(plan);
+    }
 
-    //     private requiredFieldsSatisfied(): boolean {
-    //         if (!this.plan?.location) {
-    //             MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
-    //             return false;
-    //         }
-
-    //         if (!this.plan?.description) {
-    //             MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-    //             return false;
-    //         }
-
-    //         if (!this.plan?.startDate) {
-    //             MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-    //             return false;
-    //         }
-
-    //         if (!this.plan?.dueDate) {
-    //             MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-    //             return false;
-    //         }
-
-    //         return true;
-    //     }
+    private requiredFieldsSatisfied(): boolean {
+        // if (!this.plan?.location) {
+        //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
+        //     return false;
+        // }
+        // if (!this.plan?.startDate) {
+        //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
+        //     return false;
+        // }
+        // if (!this.plan?.dueDate) {
+        //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
+        //     return false;
+        // }
+        if (!this.plan?.title) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
+            return false;
+        }
+        if (!this.plan?.description) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
+            return false;
+        }
+        if (!this.plan?.groupId) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
+            return false;
+        }
+        return true;
+    }
 
     private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
         return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
@@ -279,4 +286,5 @@ export default class PlanModal extends Vue {
 
     //         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
     //     }
+
 }

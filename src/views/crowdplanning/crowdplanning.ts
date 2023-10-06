@@ -15,6 +15,8 @@ import { cloneDeep } from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { MessageService, Projector } from "vue-mf-module";
+import dateTime from "@/components/dateTime/dateTime";
+import dateTimeVue from "@/components/dateTime/dateTime.vue";
 
 @Component({
     components: {
@@ -45,10 +47,10 @@ export default class Crowdplanning extends Vue {
         return store.state.crowdplanning.searchedValue
     }
 
-    // addTask() {
-    //     store.actions.crowdplanning.setSelectedPlanId(this.value);
-    //     console.log(this.value)
-    // }
+     addTask() {
+         store.actions.crowdplanning.setSelectedPlanId(this.value);
+         console.log(this.value)
+     }
 
     get plans(): server.Plan[] {
         return store.getters.crowdplanning.getPlans();
@@ -123,10 +125,23 @@ export default class Crowdplanning extends Vue {
        let tm = this.toggleMap
        this.toggleMap = !tm
     }
+
+    expiredPrj: boolean = true
+    noExpiredPrj(){
+        let eP = this.expiredPrj
+        this.expiredPrj = !eP
+    }
     
+    today: Date = new Date
+    todayy = this.today.getDate
 
     get filteredPlans() {
         let result: server.Plan[] = cloneDeep(store.getters.crowdplanning.getPlans());
+
+        // if (this.expiredPrj) {
+        //     console.log(this.today)
+        //     result = result.filter(x => x.dueDate?.valueOf)
+        // }
   
         if (this.selectedPlan) {
           return result.filter(x => x.id === this.selectedPlan?.id);
@@ -139,8 +154,14 @@ export default class Crowdplanning extends Vue {
         if (this.searchedValue) {
           result = result.filter(x => x.title?.includes(this.searchedValue) || x.description?.includes(this.searchedValue));
         }
+
+       
   
         return result;
+    }
+
+    noGroup(value: null) {
+        this.selectedGroup = value
     }
 
     setSelectedGroup(value: server.Group | null) {

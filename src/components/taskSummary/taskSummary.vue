@@ -10,20 +10,19 @@
         <span>{{ formattedDate }}</span>
       </div>
 
-      <div v-if="plan.location" class="location info">
+      <div v-if="plan.locationName" class="location info">
         <i class="ti ti-map-pin"></i>
         <span>{{ plan.locationName }}</span>
       </div>
 
-      <div v-if="group" class="group info">
+      <div v-if="group?.name" class="group info">
         <i :class="iconCode(group.iconCode ?? '')"></i>
         <span class="text">{{ group.name }}</span>
       </div>
 
-      <div class="info">
-        <i class="ti ti-heart"></i>
-        <span class="text votes">{{ likes }} {{ $t('taskSummary.votes', 'voti') }}</span>
-      </div>
+      <div class="infoProva" v-if="plan.citizensCanSeeOthersRatings">
+        <component :is="likeViewer"></component>
+       </div>
     </div>
     <article>
       <!-- <div class="title">{{ $t('plan.summary.description-label', 'Descrizione') }}</div> -->
