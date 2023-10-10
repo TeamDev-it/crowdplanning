@@ -49,13 +49,8 @@ export default class PlanModal extends Vue {
     errors: { [id: string]: string } = {};
 
     mounted(){
-        console.log(this.editable)
-        
-        
-        
         if (this.editable) 
             this.plan = this.editable
-            this.plan!.description = this.editable.description
     }
 
     back() {
@@ -86,6 +81,10 @@ export default class PlanModal extends Vue {
     get mediaGallery() {
         return CommonRegistry.Instance.getComponent('media-gallery');
     }
+
+    
+        
+    
 
     // async mounted() {
     //     if (this.value.data) {

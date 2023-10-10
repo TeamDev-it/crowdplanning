@@ -47,6 +47,8 @@
           
 
           <component
+            :canSeeOthersComments = "canSeeOthersComments"
+            :currentUser = "currentUser"
             :is="discussionRoom"
             :type="type"
             :id="planId"

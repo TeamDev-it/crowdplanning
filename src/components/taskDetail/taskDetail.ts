@@ -25,8 +25,15 @@ import TaskMap from "../taskMap/taskMap.vue";
 })
 export default class TaskDetail extends Vue {
 
+@Prop({})
+currentUser!: server.Myself | null;
+
 @Prop({required: true})
 selectedPlan!: server.Plan | null;
+
+get canSeeOthersComments() {
+    return this.selectedPlan?.citizensCanSeeOthersComments
+}
 
 get likeButton() {
     return CommonRegistry.Instance.getComponent("likeButton");

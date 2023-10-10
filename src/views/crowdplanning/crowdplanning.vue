@@ -16,7 +16,7 @@
           </scrollableContainer>
         </div>
         <div class="task-detail" v-if="selectedPlan">
-          <task-detail :selectedPlan="selectedPlan" :key="selectedPlan.id" @goback="goBack" @edit="edit"></task-detail>
+          <task-detail :currentUser="currentUser" :selectedPlan="selectedPlan" :key="selectedPlan.id" @goback="goBack" @edit="edit"></task-detail>
         </div>
         <div class="task-detail" v-else-if="addPlanSec">
           <planModal @goback="goBack" :groups="plansGroupRoot" :plans="filteredPlans"> </planModal>
