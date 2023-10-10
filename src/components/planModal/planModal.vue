@@ -6,9 +6,19 @@
       </div>
       <div class="title">{{ $t('taskDetail.publish.title', 'Inserisci nuovo post') }}</div>
       <div class="commands">
-        <button class="publish" @click="confirm" type="submit" >
-          <i class="ti ti-brand-open-source"></i>
+        <button class="publish" @click="confirm" type="submit" v-if="!editable">
+          <i class="ti ti-presentation"></i>
           <span class="text">{{ $t('taskDetail.publish', 'Pubblica') }} </span>
+        </button>
+        <button class="publish" @click="confirm" type="submit" v-else-if="editable">
+          <i class="ti ti-presentation"></i>
+          <span class="text">{{ $t('taskDetail.saveMod', 'Salva') }} </span>
+        </button>
+        <button class="warning" v-tooltip="'annulla modifiche'" v-if="editable" @click="back">
+          <i class="ti ti-arrow-back"></i>
+        </button>
+        <button class="danger" v-tooltip=" $t('taskDetail.delete', 'doppio click per eliminare') " v-if="editable" @dblclick="remove">
+          <i class="ti ti-trash"></i>
         </button>
       </div>
     </div>

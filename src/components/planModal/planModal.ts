@@ -19,19 +19,21 @@ import { store } from "@/store";
 export default class PlanModal extends Vue {
     public readonly coverMediaGalleryRef: string = 'cover-media-gallery';
     public readonly mediaGalleryRef: string = 'media-gallery';
+    
+    @Prop() 
+    editable!: server.Plan;
 
+    @Prop()
+    selectedPlan!: server.Plan;
 
-    @Prop({ required: true })
-    selectedPlan!: server.Plan | null;
+    // get workspaceId() {
+    //     return this.selectedPlan!.workspaceId
+    // }
 
-    get workspaceId() {
-        return this.selectedPlan!.workspaceId
-    }
-
-    @Prop({ required: true })
+    @Prop()
     plans!: server.Plan;
 
-    @Prop({ required: true })
+    @Prop()
     groups!: server.Group;
 
     plan: server.Plan | null = {} as server.Plan;
@@ -45,6 +47,16 @@ export default class PlanModal extends Vue {
     loading = true;
 
     errors: { [id: string]: string } = {};
+
+    mounted(){
+        console.log(this.editable)
+        
+        
+        
+        if (this.editable) 
+            this.plan = this.editable
+            this.plan!.description = this.editable.description
+    }
 
     back() {
         this.$emit('goback')
@@ -163,6 +175,11 @@ export default class PlanModal extends Vue {
         this.setPlan(this.plan);
 
         this.back();
+    }
+
+    async remove(): Promise<void> {
+        await plansService.deleteTask(this.plan!.id);
+        this.back()
     }
 
     async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {

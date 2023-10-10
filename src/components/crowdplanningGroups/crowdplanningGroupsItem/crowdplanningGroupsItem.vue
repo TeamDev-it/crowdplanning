@@ -4,7 +4,8 @@
       <i :class="iconCode"></i>
       <div class="detail-cont">
         <span class="text">{{ value.name }}</span>
-        <small class="description text" v-tooltip="value.description">{{ value.description }}</small>
+        <small class="description text" v-tooltip="value.description">{{ value.description }}
+        </small>
       </div>
     </div>
     <div v-if="hasPermission('groups.canedit')" class="commands">
@@ -17,4 +18,11 @@
 
 <style lang="less" scoped>
 @import url(./crowdplanningGroupsItem.less);
+</style>
+<style lang="less" >
+.description{
+  .tooltip{
+    color: red;
+  }
+}
 </style>

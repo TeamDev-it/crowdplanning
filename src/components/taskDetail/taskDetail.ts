@@ -32,11 +32,6 @@ get likeButton() {
     return CommonRegistry.Instance.getComponent("likeButton");
 }
 
-mounted(){
-    console.log(this.selectedPlan)
-}
-
-
     liked: boolean = false
     count: number = 0
     async addLike() {
@@ -90,9 +85,9 @@ mounted(){
         // return store.getters.crowdplanning.getRootGroup();
     // }
 
-    // clearTask(): void {
-    //     store.actions.crowdplanning.setSelectedPlanId(null);
-    // }
+    //  clearTask(): void {
+    //      store.actions.crowdplanning.setSelectedPlanId(null);
+    //  }
 
     // get groups() {
         // return store.getters.crowdplanning.getGroups;
@@ -110,22 +105,22 @@ mounted(){
         return this.selectedPlan!.workspaceId
     }
 
-    async remove(): Promise<void> {
-        
-            await plansService.deleteTask(this.planId);
-
-            
-    
-    }
-    // async edit(): Promise<void> {
-    //     try {
-    //         await Projector.Instance.projectAsyncTo(PlanModal as never, this.task.id);
-    //     } catch (_) {
-
-    //     }
-
-    //     this.clearTask();
+    // async remove(): Promise<void> {
+    //     await plansService.deleteTask(this.planId);
     // }
+
+    edit(editable: server.Plan){
+        this.back()
+        this.$emit('edit', editable)
+    }
+
+    //  async edit(): Promise<void> {
+    //      try {
+    //          await Projector.Instance.projectAsyncTo(PlanModal as never, this.planId);
+    //      } catch (_) 
+         
+    //      this.clearTask();
+    //  }
 
     openCommentSection(): void {
         this.commentSectionOpened = true;

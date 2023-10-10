@@ -5,7 +5,7 @@
       <img :src="CoverImage" />
     </div>
     <div class="info-case">
-      <div class="date info">
+      <div class="date info" v-if="plan.dueDate">
         <i class="ti ti-calendar"></i>
         <span>{{ formattedDate }}</span>
       </div>

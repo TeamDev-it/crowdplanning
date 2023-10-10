@@ -9,6 +9,10 @@ import { Shared } from "@/utility/Shared";
 import { plansService } from "@/services/plansService";
 @Component
 export default class TaskCard extends Vue {
+
+    @Prop({ default: false })
+    liked!: boolean
+
     @Prop()
     value!: server.Plan;
 

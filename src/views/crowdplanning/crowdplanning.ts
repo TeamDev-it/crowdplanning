@@ -15,8 +15,8 @@ import { cloneDeep } from "lodash";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { MessageService, Projector } from "vue-mf-module";
-import dateTime from "@/components/dateTime/dateTime";
-import dateTimeVue from "@/components/dateTime/dateTime.vue";
+// import dateTime from "@/components/dateTime/dateTime";
+// import dateTimeVue from "@/components/dateTime/dateTime.vue";
 
 @Component({
     components: {
@@ -47,10 +47,10 @@ export default class Crowdplanning extends Vue {
         return store.state.crowdplanning.searchedValue
     }
 
-     addTask() {
-         store.actions.crowdplanning.setSelectedPlanId(this.value);
-         console.log(this.value)
-     }
+    //  addTask() {
+    //     //  store.actions.crowdplanning.setSelectedPlanId(this.value);
+    //      console.log(this.value)
+    //  }
 
     get plans(): server.Plan[] {
         return store.getters.crowdplanning.getPlans();
@@ -120,6 +120,18 @@ export default class Crowdplanning extends Vue {
      this.addPlanSec = !ap 
     }
 
+    editPlan: boolean = false
+    editable!: server.Plan 
+    edit(value: server.Plan | null) {
+        this.editable = value
+        // console.log(value) 
+        // console.log(this.editable) 
+
+        let ep = this.editPlan
+        this.editPlan = !ep
+        
+    }
+
     toggleMap: boolean = true
     changeView() {
        let tm = this.toggleMap
@@ -175,5 +187,9 @@ export default class Crowdplanning extends Vue {
     goBack() {
         this.selectedPlan = null;
         this.addPlanSec = false;
+        this.editPlan = false;
     }
+
+    
+
 }

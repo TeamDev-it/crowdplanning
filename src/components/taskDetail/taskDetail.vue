@@ -9,7 +9,8 @@
 
       <div class="commands">
         <component :is="likeButton"></component>
-        <button @click="remove">delete</button>
+        <button v-if="selectedPlan" class="success" @click="edit(selectedPlan)"><i class="ti ti-pencil"></i></button>
+        <!-- <button @dblclick="remove">delete</button> -->
         
         <!-- <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
           <i class="ti ti-trash"></i>
@@ -24,7 +25,8 @@
     </div>
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
 
-    <div class="content" :class="{ noComment: !selectedPlan?.citizensCanSeeOthersComments }">
+    <div class="content">
+    <!-- <div class="content" :class="{ noComment: !selectedPlan?.citizensCanSeeOthersComments }"> -->
       <div class="task-summary-cont">
         <task-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count"></task-summary>
       </div>
