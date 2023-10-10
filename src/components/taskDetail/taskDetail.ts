@@ -8,11 +8,11 @@ import { store } from "@/store";
 import { CONFIGURATION } from "@/configuration";
 import { CommonRegistry, MessageService, Projector } from "vue-mf-module";
 import PlanModal from "../planModal/planModal.vue";
-import { kebabCase } from "lodash";
 import { plansService } from "@/services/plansService";
 import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
 import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
 import TaskMap from "../taskMap/taskMap.vue";
+
 
 @Component({
     components: {
@@ -24,11 +24,45 @@ import TaskMap from "../taskMap/taskMap.vue";
     }
 })
 export default class TaskDetail extends Vue {
+
+@Prop({required: true})
+selectedPlan!: server.Plan | null;
+
+get likeButton() {
+    return CommonRegistry.Instance.getComponent("likeButton");
+}
+
+mounted(){
+    console.log(this.selectedPlan)
+}
+
+
+    liked: boolean = false
+    count: number = 0
+    async addLike() {
+        let l = this.liked
+        this.liked = !l           
+        
+        if(l == false) {
+            this.count++
+        }
+
+        if(l == true) {
+            this.count--
+        }
+
+        
+    }
+
+    // mounted() {
+    //     console.log(this.selectedPlan)
+    // }
+
     commentSectionOpened = false;
 
-    get task() {
-        return store.getters.crowdplanning.getPlanById(this.selectedPlanId);
-    }
+     get planId() {
+         return this.selectedPlan!.id;
+     }
 
     get sharedPreviewComponent() {
         return CommonRegistry.Instance.getComponent('shared-preview');
@@ -38,57 +72,60 @@ export default class TaskDetail extends Vue {
         return CONFIGURATION.context;
     }
 
-    get children(): server.Plan[] {
-        return store.getters.crowdplanning.getChildrenOfPlan(this.selectedPlanId);
+     //get children(): server.Plan[] {
+     //    return this.selectedPlan!.attachmentsIds;
+     //}
+
+    get selectedPlanTitle(): string {
+        return this.selectedPlan!.title
     }
 
-    get selectedPlanId(): string {
-        return store.getters.crowdplanning.getSelectedPlanId();
-    }
+  
 
-    get selectedGroup(): server.Group | null {
-        return store.getters.crowdplanning.getSelectedGroup();
-    }
+    // get states(): server.State[] {
+        // return store.getters.crowdplanning.getStates(store.getters.crowdplanning.getRootGroup()?.id!);
+    // }
 
-    get states(): server.State[] {
-        return store.getters.crowdplanning.getStates(store.getters.crowdplanning.getRootGroup()?.id!);
-    }
+    // get rootGroup(): server.Group{
+        // return store.getters.crowdplanning.getRootGroup();
+    // }
 
-    get rootGroup(): server.Group{
-        return store.getters.crowdplanning.getRootGroup();
-    }
+    // clearTask(): void {
+    //     store.actions.crowdplanning.setSelectedPlanId(null);
+    // }
 
-    clearTask(): void {
-        store.actions.crowdplanning.setSelectedPlanId(null);
-    }
-
-    get groups() {
-        return store.getters.crowdplanning.getGroups;
-    }
+    // get groups() {
+        // return store.getters.crowdplanning.getGroups;
+    // }
 
     get mediaGallery() {
         return CommonRegistry.Instance.getComponent('public-media-gallery');
     }
 
+    get discussionRoom() {
+        return CommonRegistry.Instance.getComponent('discussion-room-crowd')
+    }
+
+    get workspaceId() {
+        return this.selectedPlan!.workspaceId
+    }
+
     async remove(): Promise<void> {
-        try {
-            await plansService.deleteTask(this.task.id);
+        
+            await plansService.deleteTask(this.planId);
 
-            this.clearTask();
-        } catch (err) {
-            MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.plan-delete-error", "Errore durante l'eliminazione della categoria"));
-        }
+            
+    
     }
+    // async edit(): Promise<void> {
+    //     try {
+    //         await Projector.Instance.projectAsyncTo(PlanModal as never, this.task.id);
+    //     } catch (_) {
 
-    async edit(): Promise<void> {
-        try {
-            await Projector.Instance.projectAsyncTo(PlanModal as never, this.task.id);
-        } catch (_) {
+    //     }
 
-        }
-
-        this.clearTask();
-    }
+    //     this.clearTask();
+    // }
 
     openCommentSection(): void {
         this.commentSectionOpened = true;
@@ -98,8 +135,8 @@ export default class TaskDetail extends Vue {
         this.commentSectionOpened = false;
     }
  
-    onBackClick() {
-        store.actions.crowdplanning.setSelectedPlanId(null);
+    back() {
+        this.$emit('goback')
     }
 
     hasPermission(permission: string): boolean {
