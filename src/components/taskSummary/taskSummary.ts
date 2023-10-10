@@ -1,51 +1,44 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop } from "vue-property-decorator";
-import { attachmentService } from "@/services/attachmentService";
-import { documentContentTypes, imagesContentTypes } from "@/@types/inputFileTypes";
-import FilesPreview from "../file/filesPreview/filesPreview.vue";
-import ImagesPreview from "../file/imagesPreview/imagesPreview.vue";
+import { CONFIGURATION } from "@/configuration";
+import { store } from "@/store";
+import { MessageService } from "vue-mf-module";
+import moment from "moment";
+import { Icon } from "@/utility/Icon";
+import { Shared } from "@/utility/Shared";
 
 @Component({
-    components: {
-        FilesPreview,
-        ImagesPreview
-    }
+    components: {}
 })
 export default class TaskSummary extends Vue {
     @Prop()
-    task!: server.Task;
+    plan!: server.Plan;
 
-    files: server.FileAttach[] = [];
+    @Prop({ required: true })
+    workspaceId!: string;
 
-    public async mounted(): Promise<void> {
-        this.files = await attachmentService.getAttachments(`${this.task.id}`)
+    group: server.Group | null = null;
+    coverImage: string | null = null;
+
+    public async mounted(): Promise<void> {        
+        if (this.plan.coverImageIds?.sharedToken)
+            this.coverImage = await Shared.getShared(this.plan.coverImageIds.sharedToken);
+
+        this.group = store.getters.crowdplanning.getGroupById(this.plan.groupId);
     }
 
-    get images(): server.FileAttach[] {
-        return this.files.filter(x => imagesContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
+    iconCode(iconCode: string): string {
+        return Icon.getIconCode(iconCode);
     }
 
-    get documents(): server.FileAttach[] {
-        return this.files.filter(x => documentContentTypes.toLocaleLowerCase().includes(x.contentType.toLocaleLowerCase()));
+    get CoverImage(): string | null {
+        if (!this.coverImage) return null;
+
+        return Shared.imageFromString(this.coverImage);
     }
 
-    getImagePreview(file: server.FileAttach): string {
-        return attachmentService.getImagePreviewUri("PLANS", file.id);
-    }
-
-    async downloadDocument(doc: server.FileAttach): Promise<void> {
-        const uri: string = attachmentService.getFileUrl("PLANS", doc.id);
-
-        const a: HTMLAnchorElement = document.createElement("a");
-
-        a.setAttribute("href", uri);
-        a.setAttribute("target", "_blank");
-
-        a.click();
-    }
-
-    get taskDate(): string {
-        return `${this.task.creationDate.getDate()}/${this.task.creationDate.getMonth()}/${this.task.creationDate.getFullYear()}`;
+    get formattedDate(): string {
+        return moment(this.plan.dueDate).format('D/MM/YYYY');
     }
 }

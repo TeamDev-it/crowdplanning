@@ -2,32 +2,27 @@
 <template>
   <div id="crowdplanning">
     <crowdplanning-header :currentUser="currentUser" @addTask="addTask()" />
-    <div class="crowdplanning-content" v-if="!loading">
-      <div class="groups">
-        <scrollable-container v-if="plansGroupRoot && plansGroupRoot.id">
-          <crowdplanning-group-list :groups="groups" :rootGroup="plansGroupRoot"></crowdplanning-group-list>
+    <div class="crowdplanning-content" :class="{'plan-selected': selectedTask}" v-if="!loading">
+      <div class="groups" v-if="!selectedTask">
+        <scrollable-container>
+          <crowdplanning-group-list :key="componentKey" v-if="plansGroupRoot && plansGroupRoot.id" :groups="groups" :rootGroup="plansGroupRoot" @rootGroupChanged="rootGroupChanged"></crowdplanning-group-list>
         </scrollable-container>
         <div class="btn">
-          <button class="square success" v-if="currentUser && hasPermission('canCreatePlansGroup')">
+          <button class="square success" v-if="currentUser && hasPermission('groups.cancreate')">
             <i class="ti ti-plus" @click="createGroup()"></i>
           </button>
         </div>
       </div>
-      <div class="tasks" v-if="filteredTasks && filteredTasks.length && !selectedTask">
+      <div class="tasks" v-if="filteredPlans && filteredPlans.length && !selectedTask && groups.length">
         <scrollableContainer>
-          <task-list :tasks="filteredTasks"></task-list>
+          <task-list :tasks="filteredPlans"></task-list>
         </scrollableContainer>
       </div>
-      <div class="task-detail" v-if="selectedTask">
-        <task-detail :task="selectedTask">
-        </task-detail>
+      <div class="task-detail" v-if="selectedTaskId">
+        <task-detail></task-detail>
       </div>
-      <div class="map">
-        <task-map 
-        v-if="(selectedGroup || plansGroupRoot) && states.length"
-        :group="selectedGroup ?? plansGroupRoot" 
-        :states="states" 
-        :tasks="filteredTasks"></task-map>
+      <div class="map" v-if="!selectedTaskId">
+        <task-map v-if="(selectedGroup || plansGroupRoot) && states.length" :group="selectedGroup ?? plansGroupRoot"></task-map>
       </div>
     </div>
   </div>

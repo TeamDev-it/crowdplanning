@@ -20,7 +20,15 @@
     gap: 1rem;
     height: 100%;
     display: grid;
-    grid-template-rows: auto 1fr 1fr;
+    grid-template-rows: auto auto 1fr;
+
+    &.plan-selected {
+      grid-template-rows: 1fr;
+    }
+
+    .tasks {
+      overflow-x: hidden;
+    }
 
     .groups {
       display: grid;
@@ -38,13 +46,14 @@
     .task-detail {
       display: grid;
       overflow: hidden;
+      box-sizing: border-box;
     }
 
     .map {
       display: flex;
       flex: 1;
       overflow: hidden;
-      
+
       .task-map {
         display: flex;
         flex: 1;

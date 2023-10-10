@@ -7,7 +7,7 @@
     </div>
     <div class="header-content">
       <div class="btn">
-        <button class="square success" v-if="currentUser && hasPermission('canCreatePlans')">
+        <button class="square success" v-if="currentUser && hasPermission('plans.cancreate')">
           <i class="ti ti-plus" @click="$event => addTask()"></i>
         </button>
       </div>

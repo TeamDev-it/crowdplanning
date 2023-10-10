@@ -1,5 +1,5 @@
 declare namespace server {
-    export interface Task {
+    export interface Plan {
         id: string;
         parentId: string;
         parentType: string;
@@ -18,15 +18,23 @@ declare namespace server {
         group: Group;
         assignedTo: TaskUser[];
         location?: locations.Location;
+        locationName: string;
         workspaceId?: string;
-        customFields: object;
         subtaskCount?: { type: string, count: number }[];
         isClusterRoot: boolean;
-        tags: string[];
+        planType: PlanType;
+        mapType: string;
+        visibleLayers: Array<String>;
+        coverImageIds: file.SharedRef | null;
+        attachmentsIds: Array<file.SharedRef>;
+        citizensCanSeeOthersComments: boolean;
+        citizensCanSeeOthersRatings: boolean;
     }
 
     export interface TaskUser {
         userId: string;
         userName: string;
     }
+
+    declare type PlanType = 'proposal' | 'project';
 }

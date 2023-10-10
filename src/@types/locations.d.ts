@@ -13,6 +13,7 @@ declare namespace locations {
         id?: string,
         name?: string,
         dataType: string,
+        renderer?: any,
         symbols: {
             field: string,
             symbols: {
@@ -35,7 +36,7 @@ declare namespace locations {
                 onSelect?: Function,
             },
         },
-        dataMapping?: { (i: locations.Location & { task: server.Task; } , updateMap: (item: locations.Location) => void): { id: number; state: string; } }
+        dataMapping?: { (i: locations.Location & { task: server.Plan; } , updateMap: (item: locations.Location) => void): { id: number; state: string; } }
         visible: boolean,
         tocVisible?: boolean,
         data?: Array<locations.Location>,

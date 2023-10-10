@@ -1,13 +1,15 @@
 import CrowdplanningGroupList from "@/components/crowdplanningGroups/crowdplanningGroupsList/crowdplanningGroupsList.vue";
 import CrowdplanningHeader from "@/components/crowdplanningHeader/crowdplanningHeader.vue";
 import groupModal from "@/components/groupModal/groupModal.vue";
+import PlanModal from "@/components/planModal/planModal.vue";
 import ScrollableContainer from "@/components/scrollableContainer/scrollableContainer.vue";
 import TaskDetail from "@/components/taskDetail/taskDetail.vue";
 import TaskMap from "@/components/taskMap/taskMap.vue";
-import TaskModal from "@/components/taskModal/taskModal.vue";
 import TaskList from "@/components/tasks/taskList/taskList.vue";
 import { CONFIGURATION } from "@/configuration";
-import { tasksService } from "@/services/tasksService";
+import { groupsService } from "@/services/groupsService";
+import { statesService } from "@/services/statesService";
+import { plansService } from "@/services/plansService";
 import { store } from "@/store";
 import { cloneDeep } from "lodash";
 import Vue from "vue";
@@ -20,7 +22,7 @@ import { MessageService, Projector } from "vue-mf-module";
         ScrollableContainer,
         CrowdplanningGroupList,
         TaskList,
-        TaskModal,
+        PlanModal,
         TaskMap,
         TaskDetail
     },
@@ -28,59 +30,73 @@ import { MessageService, Projector } from "vue-mf-module";
 })
 export default class Crowdplanning extends Vue {
     plansGroupRoot: server.Group = {} as server.Group;
-    tasks: server.Task[] = [];
     currentUser: server.Myself | null = null;
     states: server.State[] = [];
     loading = true;
+    workspaceId = "";
+
+    componentKey: number = 0;
 
     get groups(): server.Group[] {
         return this.plansGroupRoot?.children ?? [];
     }
 
     get selectedGroup(): server.Group | null {
-        return store.getters.crowdplanning.getSelectedCategory();
+        return store.getters.crowdplanning.getSelectedGroup();
     }
 
     get searchedValue(): string {
         return store.state.crowdplanning.searchedValue
     }
 
-    get selectedTask(): server.Task | null {
-        return store.state.crowdplanning.selectedTask;
+    get selectedTaskId(): string | null {
+        return store.getters.crowdplanning.getSelectedPlanId();
     }
 
-    get filteredTasks(): server.Task[] {
-        let result: server.Task[] = cloneDeep(this.tasks);
+    get selectedTask(): server.Plan | null {
+        return store.getters.crowdplanning.getPlanById(this.selectedTaskId!);
+    }
 
-        if (this.selectedTask) {
-            return this.tasks.filter(x => x.id === this.selectedTask?.id);
-        }
+    get plans(): server.Plan[] {
+        return store.getters.crowdplanning.getPlans();
+    }
 
-        if (this.selectedGroup) {
-            result = this.tasks.filter(x => x.groupId === this.selectedGroup?.id);
-        }
-
-        if (this.searchedValue) {
-            result = result.filter(x => x.title?.includes(this.searchedValue) || x.description?.includes(this.searchedValue));
-        }
-
-        return result;
+    get filteredPlans(): server.Plan[] {
+        return store.getters.crowdplanning.getFilteredPlans();
     }
 
     async mounted() {
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
-        MessageService.Instance.subscribe("PLANS_CREATED", this.plansCreated);
+
+        if (!this.currentUser)
+            this.openAuthModal();
 
         await this.getData();
     }
 
-    private plansCreated(task: server.Task): void {
-        this.tasks.push(task);
+    public rootGroupChanged(group: server.Group): void {
+        this.plansGroupRoot = group;
+        this.componentKey++;
+    }
+
+    private async openAuthModal(): Promise<void> {
+        await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/authModal/authModal.vue')) as any, {})
     }
 
     private async getData(): Promise<void> {
-        const allGroups = (await tasksService.getGroups())
-            .filter(g => g.taskType.toUpperCase() === CONFIGURATION.defaultTaskType.toUpperCase());
+        this.workspaceId = (await MessageService.Instance.ask("MY_WORKSPACE") as any)?.id ?? '';
+
+        if (!this.workspaceId)
+            this.workspaceId = (CONFIGURATION.domainWorkspaceMap as Map<string, string>).get(window.location.hostname) || "";
+
+        if (!this.workspaceId) return;
+
+        let allGroups = [];
+        if (this.currentUser) {
+            allGroups = await groupsService.getGroups();
+        } else {
+            allGroups = await groupsService.getPublicGroups(this.workspaceId);
+        }
 
         this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
 
@@ -88,28 +104,37 @@ export default class Crowdplanning extends Vue {
             this.plansGroupRoot.children = allGroups.filter(x => x.parentGroupId === this.plansGroupRoot?.id);
         }
 
-        if (this.plansGroupRoot?.id)
-            this.tasks = await tasksService.getTasks(CONFIGURATION.workspaceId);
+        if (this.plansGroupRoot?.id) {
+            if (this.currentUser) {
+                await plansService.getPlans();
+            } else {
+                await plansService.getPublicPlans(this.workspaceId);
+            }
+        }
 
-        this.states = await tasksService.getStates(CONFIGURATION.workspaceId);
+        this.states = await statesService.getStates(this.plansGroupRoot);
+
+        console.log("filtered plans", this.filteredPlans);
 
         this.loading = false;
-    }   
+    }
 
     hasPermission(permission: string): boolean {
-        return this.$can(`${CONFIGURATION.defaultTaskType}.${permission}`);
+        return this.$can(`${CONFIGURATION.context}.${permission}`);
     }
 
     async createGroup(): Promise<void> {
         const g = {} as server.Group;
 
         g.parentGroupId = this.plansGroupRoot?.id ?? "";
-        g.taskType = this.plansGroupRoot?.taskType ?? "PLANS";
+
+        if (!this.plansGroupRoot || !this.plansGroupRoot.id) return;
 
         const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
 
         if (result) {
             this.plansGroupRoot?.children.push(result);
+            this.componentKey++;
         } else {
             // error message
             MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.group-create-error", "Errore durante la creazione della categoria"));
@@ -117,6 +142,6 @@ export default class Crowdplanning extends Vue {
     }
 
     async addTask(): Promise<void> {
-        await Projector.Instance.projectAsyncTo(TaskModal as never, this.groups);
+        await Projector.Instance.projectAsyncTo(PlanModal as never, '');
     }
 }

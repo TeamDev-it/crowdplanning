@@ -1,11 +1,16 @@
 .container {
-  min-width: 300px;
   border-radius: var(--border-radius);
   background-color: var(--white);
   padding: 0.5rem;
   height: 100%;
-  display: grid;
-  grid-template-rows: auto 1fr;
+
+  .command {
+    padding: 0 1rem;
+
+    > button {
+      width: 100%;
+    }
+  }
 
   .rating {
     display: grid;
@@ -14,5 +19,14 @@
 
   .title {
     font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    .text {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 }
