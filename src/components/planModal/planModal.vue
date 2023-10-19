@@ -42,6 +42,7 @@
               @filesUploaded="coverUploaded"
               @fileRemoved="coverRemoved"
               style="background-color: #e5e5e5; height: 100%; display: grid"
+              v-model="plan.description"
             ></componenet>
           </div>
           <div class="info-case"></div>
