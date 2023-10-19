@@ -25,7 +25,11 @@
           <planModal @goback="goBack" :groups="plansGroupRoot" :plans="filteredPlans" :editable="editable"> </planModal>
         </div> 
         <div class="map" v-if="!selectedPlan  && !addPlanSec && !editPlan" v-show="toggleMap">
-          <task-map v-if="(selectedGroup || plansGroupRoot) && states.length" :group="selectedGroup ?? plansGroupRoot"></task-map>
+          <task-map v-if="(selectedGroup || plansGroupRoot) && states.length" 
+            :center="mapCenter"
+            :states="states"
+            :plans="filteredPlans"
+            :group="selectedGroup ?? plansGroupRoot"></task-map>
         </div>
       </div>
     </div>
