@@ -21,17 +21,17 @@ export default class PlanModal extends Vue {
     public readonly mediaGalleryRef: string = 'media-gallery';
     
     @Prop() 
-    editable!: server.Plan;
+    editable?: server.Plan;
 
     @Prop()
-    selectedPlan!: server.Plan;
+    selectedPlan?: server.Plan;
 
-    // get workspaceId() {
-    //     return this.selectedPlan!.workspaceId
-    // }
+     get workspaceId() {
+         return this.selectedPlan!.workspaceId
+     }
 
     @Prop()
-    plans!: server.Plan;
+    plans?: server.Plan;
 
     @Prop()
     groups!: server.Group;
@@ -156,7 +156,6 @@ export default class PlanModal extends Vue {
         if (this.plan && !this.plan?.id)
             // Save new plan
             this.plan = await plansService.Set(this.plan.groupId, this.plan);
-            console.log(this.plan)
 
         if (!this.plan) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
@@ -290,6 +289,14 @@ export default class PlanModal extends Vue {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
             return false;
         }
+
+        //deve stare giu
+        let titleLength = this.plan?.title.length as number
+        if(titleLength > 112) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
+            return false;
+        }
+        
         return true;
     }
 

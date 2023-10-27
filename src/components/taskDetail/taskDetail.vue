@@ -5,13 +5,12 @@
         <i class="ti ti-arrow-left"></i>
       </div>
       <div class="title">{{ selectedPlanTitle }}</div>
-      
 
       <div class="commands">
-        <component :is="likeButton"></component>
-        <button v-if="selectedPlan" class="success" @click="edit(selectedPlan)"><i class="ti ti-pencil"></i></button>
+        <component :is="likeButton" :type="type" :id="selectedPlan?.id"></component>
+        <button v-if="selectedPlan && $can('PLANS.plans.canedit')" class="success" @click="edit(selectedPlan)"><i class="ti ti-pencil"></i></button>
         <!-- <button @dblclick="remove">delete</button> -->
-        
+
         <!-- <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </div>
@@ -21,12 +20,12 @@
         <div class="close" @click="clearTask">
           <i class="ti ti-x"></i>
         </div>  -->
-      </div> 
+      </div>
     </div>
     <!-- <task-card :value="task" :showCommands="false"></task-card> -->
 
     <div class="content">
-    <!-- <div class="content" :class="{ noComment: !selectedPlan?.citizensCanSeeOthersComments }"> -->
+      <!-- <div class="content" :class="{ noComment: !selectedPlan?.citizensCanSeeOthersComments }"> -->
       <div class="task-summary-cont">
         <task-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count"></task-summary>
       </div>
@@ -44,17 +43,16 @@
           <!-- <div class="command" @click="closeCommentsSection">
             <i class="ti ti-x"></i>
           </div> -->
-          
 
           <component
-            :canSeeOthersComments = "canSeeOthersComments"
-            :currentUser = "currentUser"
+            :canSeeOthersComments="canSeeOthersComments"
+            :currentUser="currentUser"
             :is="discussionRoom"
             :type="type"
             :id="planId"
             :titlePlaceholder="{ key: 'plans.comments.title', value: 'Commenti' }"
             :textPlaceholder="{ key: 'plans.comments.text', value: 'Utilizza questo spazio per commentare la proposta.' }"
-            :showCommentsCount="true" 
+            :showCommentsCount="true"
           >
           </component>
         </div>

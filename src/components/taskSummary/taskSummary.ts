@@ -45,7 +45,10 @@ export default class TaskSummary extends Vue {
         return Shared.imageFromString(this.coverImage);
     }
 
-    get formattedDate(): string {
+    get formattedDuedDate(): string {
         return moment(this.plan.dueDate).format('D/MM/YYYY');
+    }
+    get formattedStartDate(): string {
+        return moment(this.plan.startDate).format('D/MM/YYYY');
     }
 }

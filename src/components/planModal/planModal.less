@@ -136,6 +136,20 @@
         display: flex;
         flex-flow: column;
 
+        .cluster {
+          .autocomplete {
+            border: none;
+          }
+        }
+
+        .category{
+          padding-left: 0;
+        }
+
+        .layer{
+          padding-left: 0.3rem;
+        }
+
         select {
           width: 100%;
 
@@ -173,7 +187,7 @@
 
 .summary-container {
   display: grid;
-  grid-template-rows: auto 120px 24px 1fr;
+  grid-template-rows: auto 232px 24px 1fr;
   background-color: var(--white);
   padding: 1rem;
   //margin-right: 1rem;
@@ -193,6 +207,7 @@
     line-height: normal;
     letter-spacing: 0.75px;
     border: none;
+    width: 100%;
   }
 
   .cover-image {
