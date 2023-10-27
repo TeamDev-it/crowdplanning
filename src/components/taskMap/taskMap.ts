@@ -8,6 +8,9 @@ import { store } from "@/store";
 
 @Component
 export default class TaskMap extends Vue {
+    @Prop({default: []})
+    plans!: server.Plan[];
+
     @Prop()
     group!: server.Group;
 
@@ -15,14 +18,10 @@ export default class TaskMap extends Vue {
     center!: number[] | null;
  
     states: server.State[] = [];
-    tasks: server.Plan[] = [];
     datas: Array<locations.Location> = [];
 
     async mounted(): Promise<void> {
         this.states = store.getters.crowdplanning.getStates(this.group.id);
-
-        this.tasks = store.getters.crowdplanning.getFilteredPlans();
-
         await this.getData();
     }
 
@@ -90,7 +89,7 @@ export default class TaskMap extends Vue {
 
         for (const s of this.states) {
             layerdata?.push(...
-                this.tasks.filter(i => i.state == s.generalStatus && i.location)
+                this.plans.filter(i => i.state == s.generalStatus && i.location)
                     .map(t => Object.assign({
                         "id": 0,
                         "relationId": t.id,
@@ -103,7 +102,7 @@ export default class TaskMap extends Vue {
     private foreachTaskVisibleLayerGetMapLayers(): locations.MapLayer[] {
         const mapLayers: locations.MapLayer[] = [];
 
-        for (const plan of this.tasks) {
+        for (const plan of this.plans) {
             if (plan.visibleLayers)
                 mapLayers.push(...plan.visibleLayers.map(x => ({
                     dataType: 'PLANS',

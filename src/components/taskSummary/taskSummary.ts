@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Prop } from "vue-property-decorator";
 import { CONFIGURATION } from "@/configuration";
 import { store } from "@/store";
-import { MessageService } from "vue-mf-module";
+import { CommonRegistry, MessageService } from "vue-mf-module";
 import moment from "moment";
 import { Icon } from "@/utility/Icon";
 import { Shared } from "@/utility/Shared";
@@ -13,10 +13,17 @@ import { Shared } from "@/utility/Shared";
 })
 export default class TaskSummary extends Vue {
     @Prop()
+    likes: number = 0;
+
+    @Prop()
     plan!: server.Plan;
 
     @Prop({ required: true })
     workspaceId!: string;
+
+    get likeViewer() {
+        return CommonRegistry.Instance.getComponent("likeViewer");
+    }
 
     group: server.Group | null = null;
     coverImage: string | null = null;
