@@ -1,11 +1,14 @@
 <template>
-  <div class="item" :class="{ active: selectedCategory === value || selectedCategory?.id === value.id }">
+  <div class="item" :class="{ active: selectedCategory === value || selectedCategory?.id === value.id }" @click="setSelectedCategory()">
     <div class="group-detail">
       <i :class="iconCode"></i>
-      <span class="text">{{ value.name }}</span>
+      <div class="detail-cont">
+        <span class="text">{{ value.name }}</span>
+        <small class="description text" v-tooltip="value.description">{{ value.description }}</small>
+      </div>
     </div>
     <div v-if="hasPermission('groups.canedit')" class="commands">
-      <i class="ti ti-pencil" @click="edit" />
+      <i class="ti ti-pencil" @click.stop="edit"></i>
     </div>
   </div>
 </template>

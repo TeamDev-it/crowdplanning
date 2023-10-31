@@ -1,19 +1,34 @@
 .item {
   display: flex;
+  flex-flow: row;
   align-items: center;
-  justify-content: center !important;
+  justify-content: space-between;
   gap: 0.5rem;
-  max-width: 270px;
-  width: 270px;
-  height: 55px;
+  max-width: 227px;
+  width: 227px;
+  min-height: 40px;
+  height: 40px;
   background-color: var(--white);
   border-radius: var(--border-radius);
 
   .group-detail {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     gap: 0.5rem;
+
+    .detail-cont{
+      display:flex;
+      flex-flow: column;
+      overflow: hidden;
+      max-width: 140px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .description{
+        text-transform: uppercase;
+      }
+    }
   }
 
   .commands {
@@ -21,7 +36,11 @@
   }
 
   .text {
-    text-transform: uppercase;
+    //text-transform: uppercase;
+    width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &.active {
@@ -31,7 +50,13 @@
 }
 
 .item:hover {
-  justify-content: space-evenly !important;
+  .text {
+    width: 140px !important;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  //justify-content: space-evenly !important;
 
   .commands {
     display: inline;

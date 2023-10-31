@@ -1,19 +1,79 @@
 .modal.taskgroup {
-  grid-template-rows: auto 1fr auto !important;
+  grid-template-rows: 60px auto 60px !important;
   max-width: 600px;
   max-height: 500px;
   padding: 0;
   gap: 0;
+  height: fit-content !important;
 
-  > header {
+  header {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
     gap: 1rem;
+    background-color: #43A047 ;
+
+    div {
+      display: flex;
+      gap: 5px;
+
+      .danger {
+        width: 40px;
+      }
+    }
   }
 
-  > section {
+  section {
     padding: 1rem;
-    gap: 1rem;
+    gap: 2rem;
+    overflow: hidden;
+
+    textarea {
+      border: var(--input-border);
+    }
+
+    .description {
+      height: 100%;
+      max-height: 88px;
+    }
+
+    .wToggle {
+      display: flex;
+      align-items: center;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+    }
   }
+}
+
+small {
+  color: #000;
+  font-family: Open Sans;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 500;
+  letter-spacing: 1px;
+  line-height: normal;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+
+  &.title {
+    background-color: white;
+    position: absolute;
+    z-index: 1;
+    margin-left: 12px;
+    margin-top: -7px;
+    padding: 0 5px;
+
+    &.id {
+      color: rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+.valueID {
+  position: absolute;
+  margin-top: 10px;
+  margin-left: 15px;
+  color: rgba(0, 0, 0, 0.5);
 }
