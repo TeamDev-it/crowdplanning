@@ -10,9 +10,6 @@ import { plansService } from "@/services/plansService";
 @Component
 export default class TaskCard extends Vue {
 
-    @Prop({ default: false })
-    liked!: boolean
-
     @Prop()
     value!: server.Plan;
 
@@ -30,7 +27,9 @@ export default class TaskCard extends Vue {
     //     await plansService.deleteTask
     // }
 
-
+    get likeViewer() {
+        return CommonRegistry.Instance.getComponent("likeViewer");
+    }
 
     get iconCode(): string {
         return Icon.getIconCode(this.group?.iconCode ?? '');
@@ -56,5 +55,9 @@ export default class TaskCard extends Vue {
      get CoverImage(): string | null {
         if (!this.coverImage) return '';
         return Shared.imageFromString(this.coverImage);
+    }
+
+    get type(): string {
+        return CONFIGURATION.context;
     }
 }

@@ -21,8 +21,12 @@ export default class TaskSummary extends Vue {
     @Prop({ required: true })
     workspaceId!: string;
 
-    get likeViewer() {
-        return CommonRegistry.Instance.getComponent("likeViewer");
+    get likeCounter() {
+        return CommonRegistry.Instance.getComponent("likeCounter");
+    }
+
+    get type(): string {
+        return CONFIGURATION.context;
     }
 
     group: server.Group | null = null;

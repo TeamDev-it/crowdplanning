@@ -21,7 +21,7 @@
       </div>
 
       <div class="infoProva" v-if="plan.citizensCanSeeOthersRatings">
-        <component :is="likeViewer"></component>
+        <component :is="likeCounter" :type="type" :id="plan.id"></component>
        </div>
     </div>
     <article>

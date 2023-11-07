@@ -292,7 +292,7 @@ export default class PlanModal extends Vue {
 
         //deve stare giu
         let titleLength = this.plan?.title.length as number
-        if(titleLength > 112) {
+        if(titleLength > 106) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
             return false;
         }
