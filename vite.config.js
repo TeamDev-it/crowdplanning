@@ -5,10 +5,13 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import { resolve } from 'path';
 
-var isDevelopment = process.env.NODE_ENV == 'development';
+var isDevelopment = process.env.NODE_ENV?.toString().trim() == 'development';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server:{
+    hmr:false
+  },
   plugins: [
     cssInjectedByJsPlugin(),
     createVuePlugin(),
@@ -35,6 +38,7 @@ export default defineConfig({
     rollupOptions: {
       external: ["vue"],
       output: {
+        manualChunks: undefined,
         chunkFileNames: "chunks/[name]-[hash].min.js",
         globals: {
           qs: 'qs',
