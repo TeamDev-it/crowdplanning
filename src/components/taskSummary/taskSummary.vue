@@ -1,13 +1,13 @@
 <template>
   <div class="summary-container">
-    <header><h1>{{ plan.title }}</h1></header>
+    <header><h1 class="title">{{ plan.title }}</h1></header>
     <div class="cover-image" v-if="CoverImage">
       <img :src="CoverImage" />
     </div>
     <div class="info-case">
-      <div class="date info">
+      <div v-tooltip="'scadenza progetto'" class="date info" v-if="plan.dueDate">
         <i class="ti ti-calendar"></i>
-        <span>{{ formattedDate }}</span>
+        <span>{{ formattedDuedDate }}</span>
       </div>
 
       <div v-if="plan.locationName" class="location info">
@@ -21,7 +21,7 @@
       </div>
 
       <div class="infoProva" v-if="plan.citizensCanSeeOthersRatings">
-        <component :is="likeViewer"></component>
+        <component :is="likeCounter" :type="type" :id="plan.id"></component>
        </div>
     </div>
     <article>

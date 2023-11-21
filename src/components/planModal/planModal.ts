@@ -19,19 +19,21 @@ import { store } from "@/store";
 export default class PlanModal extends Vue {
     public readonly coverMediaGalleryRef: string = 'cover-media-gallery';
     public readonly mediaGalleryRef: string = 'media-gallery';
+    
+    @Prop() 
+    editable?: server.Plan;
 
+    @Prop()
+    selectedPlan?: server.Plan;
 
-    @Prop({ required: true })
-    selectedPlan!: server.Plan | null;
+     get workspaceId() {
+         return this.selectedPlan!.workspaceId
+     }
 
-    get workspaceId() {
-        return this.selectedPlan!.workspaceId
-    }
+    @Prop()
+    plans?: server.Plan;
 
-    @Prop({ required: true })
-    plans!: server.Plan;
-
-    @Prop({ required: true })
+    @Prop()
     groups!: server.Group;
 
     plan: server.Plan | null = {} as server.Plan;
@@ -45,6 +47,11 @@ export default class PlanModal extends Vue {
     loading = true;
 
     errors: { [id: string]: string } = {};
+
+    mounted(){
+        if (this.editable) 
+            this.plan = this.editable
+    }
 
     back() {
         this.$emit('goback')
@@ -74,6 +81,10 @@ export default class PlanModal extends Vue {
     get mediaGallery() {
         return CommonRegistry.Instance.getComponent('media-gallery');
     }
+
+    
+        
+    
 
     // async mounted() {
     //     if (this.value.data) {
@@ -145,7 +156,6 @@ export default class PlanModal extends Vue {
         if (this.plan && !this.plan?.id)
             // Save new plan
             this.plan = await plansService.Set(this.plan.groupId, this.plan);
-            console.log(this.plan)
 
         if (!this.plan) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
@@ -163,6 +173,11 @@ export default class PlanModal extends Vue {
         this.setPlan(this.plan);
 
         this.back();
+    }
+
+    async remove(): Promise<void> {
+        await plansService.deleteTask(this.plan!.id);
+        this.back()
     }
 
     async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
@@ -274,6 +289,14 @@ export default class PlanModal extends Vue {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
             return false;
         }
+
+        //deve stare giu
+        let titleLength = this.plan?.title.length as number
+        if(titleLength > 106) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
+            return false;
+        }
+        
         return true;
     }
 
