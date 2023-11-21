@@ -21,8 +21,12 @@ export default class TaskSummary extends Vue {
     @Prop({ required: true })
     workspaceId!: string;
 
-    get likeViewer() {
-        return CommonRegistry.Instance.getComponent("likeViewer");
+    get likeCounter() {
+        return CommonRegistry.Instance.getComponent("likeCounter");
+    }
+
+    get type(): string {
+        return CONFIGURATION.context;
     }
 
     group: server.Group | null = null;
@@ -45,7 +49,10 @@ export default class TaskSummary extends Vue {
         return Shared.imageFromString(this.coverImage);
     }
 
-    get formattedDate(): string {
+    get formattedDuedDate(): string {
         return moment(this.plan.dueDate).format('D/MM/YYYY');
+    }
+    get formattedStartDate(): string {
+        return moment(this.plan.startDate).format('D/MM/YYYY');
     }
 }
