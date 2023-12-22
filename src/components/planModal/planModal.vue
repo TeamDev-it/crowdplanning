@@ -24,7 +24,11 @@
       </div>
     </div>
     <div class="content" v-if="plan">
-      <div class="task-summary-cont">
+      <div class="editor" v-if="(plan && plan.description) || !editable">
+        <inject name="note-editor" v-model="plan.description" @keydown.native.stop> </inject>
+      </div>
+
+      <!-- <div class="task-summary-cont">
         <div class="summary-container">
           <header>
             <input class="title" type="text" placeholder="Inserisci titolo del post" v-model="plan.title" />
@@ -42,12 +46,11 @@
               :id="plan.id ?? ''"
               @filesUploaded="coverUploaded"
               @fileRemoved="coverRemoved"
-              style="background-color: #e5e5e5; height: 100%; display: grid"
+              style="background-color: var(--grey-light); height: 100%; display: grid"
             ></componenet>
           </div>
           <div class="info-case"></div>
           <article v-if="(plan && plan.description) || !editable">
-            <!-- <article v-if="plan" > -->
             <div class="description">
               <header class="content-editor">
                 <div class="cont">
@@ -57,13 +60,34 @@
             </div>
           </article>
         </div>
-      </div>
+      </div> -->
       <div class="third-column">
-        <div class="fieldsets">
+        <div class="fieldsets" v-if="(plan && plan.description) || !editable">
           <fieldset>
-            <small>{{ $t('plans.modal.categoria', 'categoria*') }}</small>
+            <small>{{ $t('plans.modal.title', 'titolo') }}*</small>
+            <input class="layer" type="url" v-model="plan.title" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
+          </fieldset>
+          <fieldset style="height: 100%">
+            <small>{{ $t('plans.modal.copertina', 'copertina') }}*</small>
+            <componenet
+              :ref="coverMediaGalleryRef"
+              :is="mediaGallery"
+              :fileLimit="1"
+              :titleText="{ key: 'modal.cover-image-addPlan', value: `` }"
+              :subtitleText="{ key: 'modal.cover-image-description-addPlan', value: `` }"
+              :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
+              :type="`${context}-COVER`"
+              :inputFileTypes="'images'"
+              :id="plan.id ?? ''"
+              @filesUploaded="coverUploaded"
+              @fileRemoved="coverRemoved"
+              style="background-color: var(--white); height: 100%; display: grid"
+            ></componenet>
+          </fieldset>
+          <fieldset>
+            <small>{{ $t('plans.modal.categoria', 'categoria*') }}*</small>
             <select v-model="plan.groupId" class="category">
-              <option value="" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
+              <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
               <option class="opt" v-for="group in groups.children" :key="group.id" :value="group.id">
                 {{ group.name }}
               </option>
@@ -101,7 +125,7 @@
           </fieldset>
 
           <header v-if="plans" class="cluster">
-            <div class="row"> 
+            <div class="row">
               <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
               <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
             </div>
@@ -110,7 +134,7 @@
                 v-model="plan.parentId"
                 :inputValues="plans"
                 :filterFunction="autocompleteFilterFunction"
-                :placeholderKey=" $t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
+                :placeholderKey="$t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
                 :showThisPropertyAsItemName="'title'"
                 @valueChanged="valueChanged"
               ></autocomplete>
@@ -145,6 +169,18 @@
 <style lang="less">
 .third-column {
   .fieldsets {
+    .media-gallery {
+      .image-container,
+      .preview {
+        width: auto;
+
+        small {
+          top: 0;
+          bottom: auto;
+        }
+      }
+    }
+
     .position {
       .position-input {
         .esri-search__sources-button {

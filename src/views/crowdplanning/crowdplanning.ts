@@ -1,4 +1,4 @@
-import CrowdplanningGroupList from "@/components/crowdplanningGroups/crowdplanningGroupsList/crowdplanningGroupsList.vue";
+import CrowdplanningGroupList from "@/components/crowdplanningGroupsList/crowdplanningGroupsList.vue";
 import CrowdplanningHeader from "@/components/crowdplanningHeader/crowdplanningHeader.vue";
 import groupModal from "@/components/groupModal/groupModal.vue";
 import PlanModal from "@/components/planModal/planModal.vue";

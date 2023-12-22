@@ -9,40 +9,18 @@
       <div class="commands">
         <component :is="likeButton" :type="type" :id="selectedPlan?.id"></component>
         <button v-if="selectedPlan && $can('PLANS.plans.canedit')" class="success" @click="edit(selectedPlan)"><i class="ti ti-pencil"></i></button>
-        <!-- <button @dblclick="remove">delete</button> -->
-
-        <!-- <div class="remove" v-if="hasPermission('plans.candelete')" @dblclick="remove">
-          <i class="ti ti-trash"></i>
-        </div>
-        <div class="edit" v-if="hasPermission('plans.canedit')" @click="edit">
-          <i class="ti ti-pencil"></i>
-        </div>
-        <div class="close" @click="clearTask">
-          <i class="ti ti-x"></i>
-        </div>  -->
+      
       </div>
     </div>
-    <!-- <task-card :value="task" :showCommands="false"></task-card> -->
 
     <div class="content">
       <!-- <div class="content" :class="{ noComment: !selectedPlan?.citizensCanSeeOthersComments }"> -->
       <div class="task-summary-cont">
         <task-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count"></task-summary>
       </div>
-      <!-- <div class="second-column" v-if="(task.attachmentsIds && task.attachmentsIds.length) || children.length">
-          <div class="attachments">
-            <span>{{ $t('plans.detail.attachments', 'Allegati') }}</span>
-            <component :key="`attachments-${selectedPlanId}`" :is="sharedPreviewComponent" :shareds="task.attachmentsIds"></component>
-          </div>
-          <div class="children-plans" :key="`children-${selectedPlanId}`" v-if="children.length">
-            <children-plans :children="children"></children-plans>
-          </div>
-        </div> -->
+   
       <div class="third-column">
         <div class="comments-section">
-          <!-- <div class="command" @click="closeCommentsSection">
-            <i class="ti ti-x"></i>
-          </div> -->
 
           <component
             :canSeeOthersComments="canSeeOthersComments"

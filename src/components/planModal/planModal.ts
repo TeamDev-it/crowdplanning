@@ -277,25 +277,27 @@ export default class PlanModal extends Vue {
         //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
         //     return false;
         // }
-        if (!this.plan?.title) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-            return false;
-        }
-        if (!this.plan?.description) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-            return false;
-        }
-        if (!this.plan?.groupId) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-            return false;
-        }
 
-        //deve stare giu
-        let titleLength = this.plan?.title.length as number
-        if(titleLength > 106) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-            return false;
-        }
+        
+        // if (!this.plan?.title) {
+        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
+        //     return false;
+        // }
+        // if (!this.plan?.description) {
+        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
+        //     return false;
+        // }
+        // if (!this.plan?.groupId) {
+        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
+        //     return false;
+        // }
+
+        // //deve stare giu
+        // let titleLength = this.plan?.title.length as number
+        // if(titleLength > 106) {
+        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
+        //     return false;
+        // }
         
         return true;
     }

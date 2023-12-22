@@ -5,7 +5,7 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import { resolve } from 'path';
 
-var isDevelopment = process.env.NODE_ENV?.toString().trim() == 'development';
+var isDevelopment = process.env.NODE_ENV == 'development';
 
 // https://vitejs.dev/config/
 export default defineConfig({

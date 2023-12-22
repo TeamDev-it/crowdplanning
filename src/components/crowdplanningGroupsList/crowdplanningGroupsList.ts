@@ -6,9 +6,9 @@ import { store } from "@/store";
 import { MessageService, Projector } from "vue-mf-module";
 import groupModal from "@/components/groupModal/groupModal.vue";
 import { CONFIGURATION } from "@/configuration";
-import { groupsService } from "@/services/groupsService";
-import { plansService } from "@/services/plansService";
-import { statesService } from "@/services/statesService";
+// import { groupsService } from "@/services/groupsService";
+// import { plansService } from "@/services/plansService";
+// import { statesService } from "@/services/statesService";
 
 
 @Component({
