@@ -1,6 +1,8 @@
 <template>
   <div class="summary-container">
-    <header><h1 class="title">{{ plan.title }}</h1></header>
+    <header>
+      <h1 class="title">{{ plan.title }}</h1>
+    </header>
     <div class="cover-image" v-if="CoverImage">
       <img :src="CoverImage" />
     </div>
@@ -22,7 +24,7 @@
 
       <div class="infoProva" v-if="plan.citizensCanSeeOthersRatings">
         <component :is="likeCounter" :type="type" :id="plan.id"></component>
-       </div>
+      </div>
     </div>
     <article>
       <!-- <div class="title">{{ $t('plan.summary.description-label', 'Descrizione') }}</div> -->
@@ -32,7 +34,7 @@
 </template>
 
 <style lang="less" scoped>
-@import url(./taskSummary.less);
+@import url(./planSummary.less);
 </style>
 
-<script lang="ts" src="./taskSummary.ts" />
+<script lang="ts" src="./planSummary.ts" />

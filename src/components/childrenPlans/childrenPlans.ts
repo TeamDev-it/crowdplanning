@@ -6,31 +6,31 @@ import { Prop } from 'vue-property-decorator';
 
 @Component({})
 export default class ChildrenPlans extends Vue {
-    @Prop({required: true})
-    children!: server.Plan[];
+  @Prop({ required: true })
+  children!: server.Plan[];
 
-    loading = true;
-    planAddressDictionary: Map<string, string> = new Map<string, string>();
+  loading = true;
+  planAddressDictionary: Map<string, string> = new Map<string, string>();
 
-    public async mounted(): Promise<void> {
-        await this.getAddressForEachChildren();
+  public async mounted(): Promise<void> {
+    await this.getAddressForEachChildren();
 
-        this.loading = false;
+    this.loading = false;
+  }
+
+  private async getAddressForEachChildren(): Promise<void> {
+    for (const child of this.children) {
+      const address = (await MessageService.Instance.ask("LOCATION_TO_ADDRESS", child.location)) as string ?? '';
+
+      this.planAddressDictionary.set(child.id, address);
     }
+  }
 
-    private async getAddressForEachChildren(): Promise<void> {
-        for (const child of this.children) {
-            const address = (await MessageService.Instance.ask("LOCATION_TO_ADDRESS", child.location)) as string ?? '';
+  public getAddressFromId(id: string): string {
+    return (this.planAddressDictionary.has(id) ? this.planAddressDictionary.get(id) : '') ?? '';
+  }
 
-            this.planAddressDictionary.set(child.id, address);
-        }
-    }
-
-    public getAddressFromId(id: string): string {
-        return (this.planAddressDictionary.has(id) ? this.planAddressDictionary.get(id) : '') ?? '';
-    }
-
-    public onLinkedPlanClicked(planId: string) {
-        store.actions.crowdplanning.setSelectedPlanId(planId);
-    }
+  public onLinkedPlanClicked(planId: string) {
+    store.actions.crowdplanning.setSelectedPlanId(planId);
+  }
 }

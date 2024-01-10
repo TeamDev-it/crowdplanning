@@ -1,32 +1,29 @@
+import Vue from "vue";
+import Component from "vue-class-component";
+import { MessageService, Projector } from "vue-mf-module";
 import CrowdplanningGroupList from "@/components/crowdplanningGroups/crowdplanningGroupsList/crowdplanningGroupsList.vue";
 import CrowdplanningHeader from "@/components/crowdplanningHeader/crowdplanningHeader.vue";
-import groupModal from "@/components/groupModal/groupModal.vue";
 import PlanModal from "@/components/planModal/planModal.vue";
 import ScrollableContainer from "@/components/scrollableContainer/scrollableContainer.vue";
-import TaskDetail from "@/components/taskDetail/taskDetail.vue";
-import TaskMap from "@/components/taskMap/taskMap.vue";
-import TaskList from "@/components/tasks/taskList/taskList.vue";
+import PlanDetail from "@/components/planDetail/planDetail.vue";
+import PlanMap from "@/components/planMap/planMap.vue";
+import PlanList from "@/components/plans/planList/planList.vue";
 import { CONFIGURATION } from "@/configuration";
 import { groupsService } from "@/services/groupsService";
 import { statesService } from "@/services/statesService";
 import { plansService } from "@/services/plansService";
 import { store } from "@/store";
 import { cloneDeep } from "lodash";
-import Vue from "vue";
-import Component from "vue-class-component";
-import { MessageService, Projector } from "vue-mf-module";
-// import dateTime from "@/components/dateTime/dateTime";
-// import dateTimeVue from "@/components/dateTime/dateTime.vue";
 
 @Component({
   components: {
     CrowdplanningHeader,
     ScrollableContainer,
     CrowdplanningGroupList,
-    TaskList,
+    PlanList,
     PlanModal,
-    TaskMap,
-    TaskDetail
+    PlanMap,
+    PlanDetail
   },
   name: "crowdplanning-component"
 })
@@ -46,11 +43,6 @@ export default class Crowdplanning extends Vue {
   get searchedValue(): string {
     return store.state.crowdplanning.searchedValue
   }
-
-  //  addTask() {
-  //     //  store.actions.crowdplanning.setSelectedPlanId(this.value);
-  //      console.log(this.value)
-  //  }
 
   get plans(): server.Plan[] {
     return store.getters.crowdplanning.getPlans();

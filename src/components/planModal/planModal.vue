@@ -4,14 +4,14 @@
       <div class="back" @click="back">
         <i class="ti ti-arrow-left"></i>
       </div>
-      <div v-if="editable" class="title">{{ $t('taskDetail.modify.title', 'Modifica post') }}</div>
-      <div v-else class="title">{{ $t('taskDetail.publish.title', 'Inserisci nuovo post') }}</div>
+      <div v-if="editable" class="title">{{ $t('planDetail.modify.title', 'Modifica post') }}</div>
+      <div v-else class="title">{{ $t('planDetail.publish.title', 'Inserisci nuovo post') }}</div>
       <div class="commands">
         <button class="publish" @click="confirm" type="submit" v-if="!editable">
           <i class="ti ti-presentation"></i>
-          <span class="text">{{ $t('taskDetail.publish', 'Pubblica') }} </span>
+          <span class="text">{{ $t('planDetail.publish', 'Pubblica') }} </span>
         </button>
-        <button class="danger" v-tooltip="$t('taskDetail.delete', 'doppio click per eliminare')" v-if="editable" @dblclick="remove">
+        <button class="danger" v-tooltip="$t('planDetail.delete', 'doppio click per eliminare')" v-if="editable" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </button>
         <button class="warning" v-tooltip="'annulla modifiche'" v-if="editable" @click="back">
@@ -19,12 +19,12 @@
         </button>
         <button class="publish" @click="confirm" type="submit" v-if="editable">
           <i class="ti ti-presentation"></i>
-          <span class="text">{{ $t('taskDetail.saveMod', 'Salva') }} </span>
+          <span class="text">{{ $t('planDetail.saveMod', 'Salva') }} </span>
         </button>
       </div>
     </div>
     <div class="content" v-if="plan">
-      <div class="task-summary-cont">
+      <div class="plan-summary-cont">
         <div class="summary-container">
           <header>
             <input class="title" type="text" placeholder="Inserisci titolo del post" v-model="plan.title" />
@@ -101,7 +101,7 @@
           </fieldset>
 
           <header v-if="plans" class="cluster">
-            <div class="row"> 
+            <div class="row">
               <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
               <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
             </div>
@@ -110,7 +110,7 @@
                 v-model="plan.parentId"
                 :inputValues="plans"
                 :filterFunction="autocompleteFilterFunction"
-                :placeholderKey=" $t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
+                :placeholderKey="$t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
                 :showThisPropertyAsItemName="'title'"
                 @valueChanged="valueChanged"
               ></autocomplete>

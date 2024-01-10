@@ -24,12 +24,13 @@
 
     .crowdplanning-content {
       display: block;
-      .task-and-map {
+
+      .plan-and-map {
         display: flex;
         padding: 0;
         height: 100%;
 
-        .task-detail {
+        .plan-detail {
           width: 100%;
         }
       }
@@ -37,7 +38,6 @@
   }
 
   .crowdplanning-content {
-    //padding: 1rem 0;
     overflow: hidden;
     height: 100%;
     display: grid;
@@ -46,6 +46,7 @@
     .groups {
       background-color: #ecf4fc;
       overflow: hidden;
+
       .btn {
         display: flex;
         justify-content: center;
@@ -53,35 +54,30 @@
       }
     }
 
-    .task-and-map {
+    .plan-and-map {
       display: grid;
       grid-template-rows: auto 1fr;
       padding: 1rem 2rem 1.5rem 1rem;
       overflow: hidden;
 
       .map {
-        .task-map {
+        .plan-map {
           height: 100%;
         }
       }
 
-      &.noMap{
-
-        .map{
+      &.noMap {
+        .map {
           display: none;
         }
 
-        .tasks{
+        .plans {
           overflow-y: auto;
         }
       }
 
-      .tasks {
+      .plans {
         overflow: hidden;
-
-        // .noMap{
-          //   overflow-y: auto;
-        // }
       }
     }
   }

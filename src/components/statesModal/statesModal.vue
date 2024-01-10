@@ -1,14 +1,14 @@
 <template>
-  <div class="modal taskstatus">
+  <div class="modal planstatus">
     <header>
       <h2>
-        {{ $t(`taskStatusModal.title`, 'Organizza gli stati') }}
+        {{ $t(`planStatusModal.title`, 'Organizza gli stati') }}
       </h2>
     </header>
     <section class="can-scroll-y">
       <drop @drop="handleDropState(state, ...arguments)" class="state" v-for="(state, sidx) in ['New', 'Open', 'Active', 'Review', 'Closed']" :key="sidx">
         <div class="header">
-          {{ $t(`taskstate.${state}`) }}
+          {{ $t(`planstate.${state}`) }}
           <button class="none" @click="addState(state)">
             <i class="ti ti-plus"></i>
           </button>
@@ -19,8 +19,8 @@
               <i class="wt drag_indicator"></i>
 
               <small v-if="s.id">{{ idx + 1 }}. {{ s.shortName }}</small>
-              <input v-else type="text" v-model="s.shortName" :placeholder="$t('taskstate.shortname.placeholder', 'state shortname')" />
-              <input type="text" v-model="s.name" :placeholder="$t('taskstate.name.placeholder', 'state name')" />
+              <input v-else type="text" v-model="s.shortName" :placeholder="$t('planstate.shortname.placeholder', 'state shortname')" />
+              <input type="text" v-model="s.name" :placeholder="$t('planstate.name.placeholder', 'state name')" />
               <color-selector v-model="s.color"></color-selector>
               <button class="square none danger" @dblclick="remove(s)">
                 <i class="wt delete"></i>
@@ -31,14 +31,15 @@
       </drop>
     </section>
     <!-- <footer>
-        <button class="success" @click="close()"></button>
       </footer> -->
     <button class="close" @click="close()">
       <i class="wt close"> </i>
     </button>
   </div>
 </template>
+
 <script src="./statesModal.ts" lang="ts"></script>
+
 <style lang="less">
 @import url(./statesModal.less);
 </style>
