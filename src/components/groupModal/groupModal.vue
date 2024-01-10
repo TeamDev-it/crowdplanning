@@ -1,5 +1,5 @@
 <template>
-  <div class="modal taskgroup">
+  <div class="modal plangroup">
     <header>
       <h2 v-if="value.data.id">{{ $t('plans.group.create.modifyGroup', 'Modifica categoria') }}</h2>
       <h2 v-else>{{ $t('plans.group.create.newGroup', 'Crea nuova categoria') }}</h2>
@@ -15,7 +15,7 @@
     <section>
       <div class="area">
         <small class="title">{{ $t(`plan.group.create.shortName`, 'nome') }}</small>
-        <input :disabled="value.data.default" v-model="value.data.name" required="true" :placeholder="$t('task.group.create.placeholder', 'inserisci un nome per il tuo gruppo')" v-validate="(errs, _a) => setError('title', errs)" />
+        <input :disabled="value.data.default" v-model="value.data.name" required="true" :placeholder="$t('plan.group.create.placeholder', 'inserisci un nome per il tuo gruppo')" v-validate="(errs, _a) => setError('title', errs)" />
       </div>
       <div class="area">
         <small class="title">{{ $t(`plan.group.create.description`, 'descrizione') }}</small>
@@ -35,7 +35,7 @@
         </div>
       </template>
       <div class="area" v-if="value.data.id">
-        <small class="title id">{{ $t(`task.group.id`, 'id categoria') }}</small>
+        <small class="title id">{{ $t(`plan.group.id`, 'id categoria') }}</small>
         <input placeholder="" class="id" disabled />
         <span class="valueID">{{ value.data.id }}</span>
       </div>
@@ -44,13 +44,13 @@
       <button class="danger none" @click="close()">
         <i class="ti ti-x" />
         <span>
-          {{ $t('task.cancel', 'annulla') }}
+          {{ $t('plan.cancel', 'annulla') }}
         </span>
       </button>
       <button class="success none" @click="confirm()" :disabled="!!errors.length">
         <i class="ti ti-check" />
         <span>
-          {{ $t('task.confirm', 'conferma e salva') }}
+          {{ $t('plan.confirm', 'conferma e salva') }}
         </span>
       </button>
     </footer>

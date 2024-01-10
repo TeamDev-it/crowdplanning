@@ -7,21 +7,19 @@
       <div class="title">{{ selectedPlanTitle }}</div>
 
       <div class="commands">
-        <component :is="likeButton" :type="type" :id="selectedPlan?.id"></component>
-        <button v-if="selectedPlan && $can('PLANS.plans.canedit')" class="success" @click="edit(selectedPlan)"><i class="ti ti-pencil"></i></button>
-      
+        <component :is="likeButton" :type="type" :id="selectedPlan?.id" />
+        <button v-if="selectedPlan && $can('PLANS.plans.canedit')" class="success" @click="edit(selectedPlan)">
+          <i class="ti ti-pencil"></i>
+        </button>
       </div>
     </div>
 
     <div class="content">
-      <!-- <div class="content" :class="{ noComment: !selectedPlan?.citizensCanSeeOthersComments }"> -->
-      <div class="task-summary-cont">
-        <task-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count"></task-summary>
+      <div class="plan-summary-cont">
+        <plan-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count" />
       </div>
-   
       <div class="third-column">
         <div class="comments-section">
-
           <component
             :canSeeOthersComments="canSeeOthersComments"
             :currentUser="currentUser"
@@ -31,18 +29,15 @@
             :titlePlaceholder="{ key: 'plans.comments.title', value: 'Commenti' }"
             :textPlaceholder="{ key: 'plans.comments.text', value: 'Utilizza questo spazio per commentare la proposta.' }"
             :showCommentsCount="true"
-          >
-          </component>
+          />
         </div>
-        <!-- <task-map :key="`map-${selectedPlanId}`" :group="selectedGroup ?? rootGroup" v-else></task-map> -->
-        <!-- <citizen-interaction :key="`interaction-${selectedPlanId}`" :id="task.id" :type="type" @openCommentSection="openCommentSection"></citizen-interaction> -->
       </div>
     </div>
   </div>
 </template>
 
 <style lang="less" scoped>
-@import url(./taskDetail.less);
+@import url(./planDetail.less);
 </style>
 
 <style lang="less">
@@ -76,26 +71,6 @@
     }
   }
 }
-
-// .comments-section {
-//   .discussion {
-//     height: 100%;
-//     .discussion-room {
-//       margin: 0 !important;
-//       .count {
-//         color: #4b4847;
-//         font-family: Open Sans;
-//         font-size: 18px;
-//         font-style: normal;
-//         font-weight: 600;
-//         line-height: 24.788px; /* 137.71% */
-//       }
-//       .description {
-//         display: none;
-//       }
-//     }
-//   }
-// }
 </style>
 
-<script lang="ts" src="./taskDetail.ts" />
+<script lang="ts" src="./planDetail.ts" />
