@@ -67,7 +67,7 @@
             <small>{{ $t('plans.modal.title', 'titolo') }}*</small>
             <input class="layer" type="url" v-model="plan.title" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
           </fieldset>
-          <fieldset style="height: 100%">
+          <fieldset style="height: 100%; max-height: 250px;">
             <small>{{ $t('plans.modal.copertina', 'copertina') }}*</small>
             <componenet
               :ref="coverMediaGalleryRef"

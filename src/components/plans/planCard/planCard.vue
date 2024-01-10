@@ -6,7 +6,7 @@
       </div>
       <img :src="CoverImage" />
     </div>
-    <div v-elseif="!coverImage && !CoverImage" class="image">
+    <div v-else-if="!coverImage && !CoverImage" class="image">
       <div v-if="iconCode != ''" class="group-icon-card">
         <i :class="iconCode"></i>
       </div>

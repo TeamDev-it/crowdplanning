@@ -36,5 +36,22 @@
 <style lang="less" scoped>
 @import url(./planSummary.less);
 </style>
+<style>
+.summary-container {
+  article {
+    .description {
+      h1 {
+        font-size: 27px !important;
+      }
+      h2 {
+        font-size: 23px;
+      }
+      h3 {
+        font-size: 18px;
+      }
+    }
+  }
+}
+</style>
 
 <script lang="ts" src="./planSummary.ts" />
