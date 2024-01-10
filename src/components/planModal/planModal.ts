@@ -264,62 +264,44 @@ export default class PlanModal extends Vue {
     store.actions.crowdplanning.setPlan(plan);
   }
 
-    private requiredFieldsSatisfied(): boolean {
-        // if (!this.plan?.location) {
-        //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
-        //     return false;
-        // }
-        // if (!this.plan?.startDate) {
-        //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-        //     return false;
-        // }
-        // if (!this.plan?.dueDate) {
-        //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-        //     return false;
-        // }
+  private requiredFieldsSatisfied(): boolean {
+    // if (!this.plan?.location) {
+    //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
+    //     return false;
+    // }
+    // if (!this.plan?.startDate) {
+    //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
+    //     return false;
+    // }
+    // if (!this.plan?.dueDate) {
+    //     // MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
+    //     return false;
+    // }
 
-        
-        // if (!this.plan?.title) {
-        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-        //     return false;
-        // }
-        // if (!this.plan?.description) {
-        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-        //     return false;
-        // }
-        // if (!this.plan?.groupId) {
-        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-        //     return false;
-        // }
+    
+    // if (!this.plan?.title) {
+    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
+    //     return false;
+    // }
+    // if (!this.plan?.description) {
+    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
+    //     return false;
+    // }
+    // if (!this.plan?.groupId) {
+    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
+    //     return false;
+    // }
 
-        // //deve stare giu
-        // let titleLength = this.plan?.title.length as number
-        // if(titleLength > 106) {
-        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-        //     return false;
-        // }
-        
-        return true;
-    }
-    if (!this.plan?.description) {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-      return false;
-    }
-    if (!this.plan?.groupId) {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-      return false;
-    }
-
-    //deve stare giu
-    let titleLength = this.plan?.title.length as number
-    if (titleLength > 106) {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-      return false;
-    }
-
+    // //deve stare giu
+    // let titleLength = this.plan?.title.length as number
+    // if(titleLength > 106) {
+    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
+    //     return false;
+    // }
+    
     return true;
-  }
-
+}
+   
   private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
     return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
   }

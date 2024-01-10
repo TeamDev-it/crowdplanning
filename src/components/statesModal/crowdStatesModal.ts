@@ -14,7 +14,7 @@ import { statesService } from "@/services/statesService";
     Drag, Drop
   }
 })
-export default class statesModal extends Vue {
+export default class crowdStatesModal extends Vue {
   @Prop()
   value!: IProjectableModel<server.Group>;
 
