@@ -8,7 +8,7 @@ class StatesService extends baseRestService {
     this.baseUrl = () => CONFIGURATION.PlansServiceUri;
   }
 
-  public async getStates(group: server.Group): Promise<server.State[]> {
+  async getStates(group: server.Group): Promise<server.State[]> {
     const result = await this.Get<server.State[]>(`/states/${group.workspaceId}`) || [];
 
     store.actions.crowdplanning.setStates({ groupId: group.id, states: result });
@@ -16,7 +16,7 @@ class StatesService extends baseRestService {
     return result;
   }
 
-  public async setState(state: server.State, groupId: string): Promise<server.State | null> {
+  async setState(state: server.State, groupId: string): Promise<server.State | null> {
     let result: server.State | null = null;
 
     if (!state.id)
@@ -29,7 +29,7 @@ class StatesService extends baseRestService {
     return result;
   }
 
-  public async removeState(id: number): Promise<void> {
+  async removeState(id: number): Promise<void> {
     await this.Delete(`/states/${id}`);
   }
 }
