@@ -141,7 +141,7 @@
             </div>
           </header>
 
-          <header class="toggle">
+          <!-- <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
               <toggle v-model="plan.citizensCanSeeOthersComments" @keydown.native.stop />
@@ -153,7 +153,7 @@
               <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI').toUpperCase() }}</span>
               <toggle v-model="plan.citizensCanSeeOthersRatings" @keydown.native.stop />
             </div>
-          </header>
+          </header> -->
         </div>
       </div>
     </div>
