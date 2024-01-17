@@ -1,40 +1,39 @@
+type Guid = string;
+
 declare namespace server {
-  export interface Plan {
-    id: string;
-    parentId: string;
-    parentType: string;
+  declare type PlanType = 'proposal' | 'project';
+
+  interface Plan {
+    workspaceId: Guid;
+    id: Guid;
+    parentId?: Guid;
     title: string;
     description: string;
-    priority: number;
     state: string;
-    isArchived: boolean;
-    source: string;
-    startDate: Date;
-    dueDate: Date;
-    userName: string;
-    creationDate: Date;
-    lastUpdated: Date;
-    groupId: string;
-    group: Group;
-    assignedTo: PlanUser[];
-    location?: locations.Location;
-    locationName: string;
-    workspaceId?: string;
-    subplanCount?: { type: string, count: number }[];
-    isClusterRoot: boolean;
-    planType: PlanType;
-    mapType: string;
-    visibleLayers: Array<String>;
-    coverImageIds: file.SharedRef | null;
-    attachmentsIds: Array<file.SharedRef>;
-    citizensCanSeeOthersComments: boolean;
-    citizensCanSeeOthersRatings: boolean;
-  }
-
-  export interface PlanUser {
+    startDate?: Date;
+    dueDate?: Date;
     userId: string;
-    userName: string;
+    username: string;
+    locationName: string;
+    creationDate: Date;
+    lastUpdated?: Date;
+    groupId: Guid;
+    visibleLayers: string;
+    coverImageIds: SharedItemData;
+    attachmentsIds: SharedItemData[];
+    isPublic: bool;
+    rolesCanSeeOthersComments: string[];
+    rolesCanWriteComments: string[];
+    rolesCanSeeOthersRatings: string[];
+    rolesCanRate: string[];
+    subPlanCount: int;
+    group: Group;
+    location: locations.Location;
   }
 
-  declare type PlanType = 'proposal' | 'project';
+  interface SharedItemData {
+    sharedToken: string;
+    originalFileId: string;
+    contentType: string;
+  }
 }

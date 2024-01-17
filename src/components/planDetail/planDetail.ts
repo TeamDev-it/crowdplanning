@@ -28,7 +28,8 @@ export default class PlanDetail extends Vue {
   selectedPlan!: server.Plan | null;
 
   get canSeeOthersComments() {
-    return this.selectedPlan?.citizensCanSeeOthersComments
+    // TODO: Check if user roles matches rolesCanSeeOthersComments
+    return this.selectedPlan?.rolesCanSeeOthersComments
   }
 
   get likeButton() {
