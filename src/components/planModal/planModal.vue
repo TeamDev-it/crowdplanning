@@ -24,43 +24,11 @@
       </div>
     </div>
     <div class="content" v-if="plan">
+      
       <div class="editor" v-if="(plan && plan.description) || !editable">
         <inject name="note-editor" v-model="plan.description" @keydown.native.stop> </inject>
       </div>
 
-      <!-- <div class="task-summary-cont">
-        <div class="summary-container">
-          <header>
-            <input class="title" type="text" placeholder="Inserisci titolo del post" v-model="plan.title" />
-          </header>
-          <div class="cover-image" v-if="(plan && plan.description) || !editable">
-            <componenet
-              :ref="coverMediaGalleryRef"
-              :is="mediaGallery"
-              :fileLimit="1"
-              :titleText="{ key: 'modal.cover-image-addPlan', value: `` }"
-              :subtitleText="{ key: 'modal.cover-image-description-addPlan', value: `` }"
-              :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
-              :type="`${context}-COVER`"
-              :inputFileTypes="'images'"
-              :id="plan.id ?? ''"
-              @filesUploaded="coverUploaded"
-              @fileRemoved="coverRemoved"
-              style="background-color: var(--grey-light); height: 100%; display: grid"
-            ></componenet>
-          </div>
-          <div class="info-case"></div>
-          <article v-if="(plan && plan.description) || !editable">
-            <div class="description">
-              <header class="content-editor">
-                <div class="cont">
-                  <content-editor v-model="plan.description" @keydown.native.stop style="width: 100%; height: 100%" />
-                </div>
-              </header>
-            </div>
-          </article>
-        </div>
-      </div> -->
       <div class="third-column">
         <div class="fieldsets" v-if="(plan && plan.description) || !editable">
           <fieldset>

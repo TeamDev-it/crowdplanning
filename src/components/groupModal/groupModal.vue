@@ -7,7 +7,7 @@
         <button v-if="value.data.id" class="danger" @click="deleteGroup()">
           <i class="ti ti-trash"></i>
         </button>
-        <button class="square none" @click="_$event => close()">
+        <button class="square none" @click="close()">
           <i class="ti ti-x"></i>
         </button>
       </div>
@@ -41,12 +41,12 @@
       </div>
     </section>
     <footer>
-      <button class="danger none" @click="close()">
+      <!-- <button class="danger none" @click="close()">
         <i class="ti ti-x" />
         <span>
           {{ $t('plan.cancel', 'annulla') }}
         </span>
-      </button>
+      </button> -->
       <button class="success none" @click="confirm()" :disabled="!!errors.length">
         <i class="ti ti-check" />
         <span>

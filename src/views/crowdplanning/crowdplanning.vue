@@ -4,7 +4,6 @@
     <crowdplanning-header :currentUser="currentUser" @addPlan="addPlan()" @changeView="changeView()" @expiredPrj="noExpiredPrj" />
     <div class="crowdplanning-content" v-if="!loading">
       <div class="groups" v-if="!selectedPlan && !addPlanSec && !editPlan">
-        <!-- <scrollable-container> -->
         <crowdplanning-group-list
           :key="componentKey"
           v-if="plansGroupRoot && plansGroupRoot.id"
@@ -14,7 +13,6 @@
           :selectedCategory="selectedGroup"
           @rootGroupChanged="rootGroupChanged"
         ></crowdplanning-group-list>
-        <!-- </scrollable-container> -->
       </div>
       <div class="plan-and-map" :class="{ noMap: !toggleMap }" @goback="goBack">
         <div class="plans" v-if="filteredPlans && filteredPlans.length && !selectedPlan && !addPlanSec && !editPlan" :class="{ noMap: !toggleMap }">
