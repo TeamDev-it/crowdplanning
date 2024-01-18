@@ -57,7 +57,7 @@ export default class Crowdplanning extends Vue {
     if (locations.length)
       return [locations[0].longitude, locations[0].latitude];
     else
-      return [];
+      return null;
   }
 
 
@@ -71,11 +71,11 @@ export default class Crowdplanning extends Vue {
   }
 
   private async openAuthModal(): Promise<void> {
-    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/authModal/authModal.vue')) as any, {})
+    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/authModal/authModal.vue')) as never, {})
   }
 
   private async getData(): Promise<void> {
-    this.workspaceId = (await MessageService.Instance.ask("MY_WORKSPACE") as any)?.id ?? '';
+    this.workspaceId = (await MessageService.Instance.ask("MY_WORKSPACE") as { id: string })?.id ?? '';
 
     if (!this.workspaceId)
       this.workspaceId = (CONFIGURATION.domainWorkspaceMap as Map<string, string>).get(window.location.hostname) || "";
@@ -119,31 +119,31 @@ export default class Crowdplanning extends Vue {
 
   addPlanSec: boolean = false
   addPlan() {
-    let ap = this.addPlanSec
+    const ap = this.addPlanSec
     this.addPlanSec = !ap
   }
 
   editPlan: boolean = false
-  editable!: server.Plan
+  editable!: server.Plan | null;
   edit(value: server.Plan | null) {
     this.editable = value
     // console.log(value) 
     // console.log(this.editable) 
 
-    let ep = this.editPlan
+    const ep = this.editPlan
     this.editPlan = !ep
 
   }
 
   toggleMap: boolean = true
   changeView() {
-    let tm = this.toggleMap
+    const tm = this.toggleMap
     this.toggleMap = !tm
   }
 
   expiredPrj: boolean = true
   noExpiredPrj() {
-    let eP = this.expiredPrj
+    const eP = this.expiredPrj
     this.expiredPrj = !eP
   }
 
@@ -152,11 +152,6 @@ export default class Crowdplanning extends Vue {
 
   get filteredPlans() {
     let result: server.Plan[] = cloneDeep(store.getters.crowdplanning.getPlans());
-
-    // if (this.expiredPrj) {
-    //     console.log(this.today)
-    //     result = result.filter(x => x.dueDate?.valueOf)
-    // }
 
     if (this.selectedPlan) {
       return result.filter(x => x.id === this.selectedPlan?.id);
@@ -169,8 +164,6 @@ export default class Crowdplanning extends Vue {
     if (this.searchedValue) {
       result = result.filter(x => x.title?.includes(this.searchedValue) || x.description?.includes(this.searchedValue));
     }
-
-
 
     return result;
   }

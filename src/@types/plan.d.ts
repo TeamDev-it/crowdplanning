@@ -1,12 +1,10 @@
-type Guid = string;
-
 declare namespace server {
   declare type PlanType = 'proposal' | 'project';
 
   interface Plan {
-    workspaceId: Guid;
-    id: Guid;
-    parentId?: Guid;
+    workspaceId: string;
+    id: string;
+    parentId?: string;
     title: string;
     description: string;
     state: string;
@@ -17,7 +15,7 @@ declare namespace server {
     locationName: string;
     creationDate: Date;
     lastUpdated?: Date;
-    groupId: Guid;
+    groupId: string;
     visibleLayers: string;
     coverImageIds: SharedItemData;
     attachmentsIds: SharedItemData[];

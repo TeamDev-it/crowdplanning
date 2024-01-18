@@ -24,7 +24,7 @@ export default ModuleInitializer({
     Object.assign(CONFIGURATION, configuration || {});
 
     MessageService.Instance.subscribe("OPEN_PLANS_STATES_MODAL", (group: server.Group) => {
-      Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/statesModal/crowdStatesModal.vue')) as any, group)
+      Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/statesModal/crowdStatesModal.vue')) as never, group)
     });
   },
   routes

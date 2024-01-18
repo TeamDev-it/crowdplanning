@@ -12,10 +12,10 @@
           @selectedCategory="setSelectedGroup"
           :selectedCategory="selectedGroup"
           @rootGroupChanged="rootGroupChanged"
-        ></crowdplanning-group-list>
+        />
       </div>
       <div class="plan-and-map" :class="{ noMap: !toggleMap }" @goback="goBack">
-        <div class="plans" v-if="filteredPlans && filteredPlans.length && !selectedPlan && !addPlanSec && !editPlan" :class="{ noMap: !toggleMap }">
+        <div class="plans" v-if="filteredPlans && !selectedPlan && !addPlanSec && !editPlan" :class="{ noMap: !toggleMap }">
           <scrollableContainer :class="{ noMap: !toggleMap }">
             <plan-list :plans="filteredPlans" :class="{ noMap: !toggleMap }" @selectPlan="setSelectedPlan" />
           </scrollableContainer>
