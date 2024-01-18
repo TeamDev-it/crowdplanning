@@ -8,6 +8,7 @@ import { plansService } from "@/services/plansService";
 import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
+import { isNull } from "lodash";
 
 @Component({
   components: {
@@ -38,8 +39,12 @@ export default class PlanModal extends Vue {
 
   plan: server.Plan | null = {} as server.Plan;
   coverImage: File | null = null;
-  citizenCanSeeOthersRatings = false;
-  citizenCanSeeOthersComments = false;
+
+  rolesCanWriteComments = null
+  rolesCanSeeOthersComments = null
+  rolesCanRate = null
+  rolesCanSeeOthersRatings = null
+
   tmpVisibleLayer = "";
   hasClusterParent = false;
   planMode: planMode = "create";
@@ -163,9 +168,9 @@ export default class PlanModal extends Vue {
     }
 
     // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-    await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.plan.id);
+     await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.plan.id);
 
-    //  await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
+    // await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
 
     // Update plan with new properties
     await plansService.Set(this.plan!.groupId, this.plan);
@@ -265,37 +270,37 @@ export default class PlanModal extends Vue {
   }
 
   private requiredFieldsSatisfied(): boolean {    
-    // if (!this.plan?.title) {
-    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-    //     return false;
-    // }
-    // if (!this.plan?.description) {
-    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-    //     return false;
-    // }
-    // if (!this.plan?.groupId) {
-    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-    //     return false;
-    // }
-    // if (!this.plan?.location) {
-    //   MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
-    //   return false;
-    // }
-    // if (!this.plan?.startDate) {
-    //   MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-    //   return false;
-    // }
-    // if (!this.plan?.dueDate) {
-    //   MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-    //   return false;
-    // }
+    if (!this.plan?.title) {
+        MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
+        return false;
+    }
+    if (!this.plan?.description) {
+        MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
+        return false;
+    }
+    if (!this.plan?.groupId) {
+        MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
+        return false;
+    }
+    if (!this.plan?.location) {
+      MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
+      return false;
+    }
+    if (!this.plan?.startDate) {
+      MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
+      return false;
+    }
+    if (!this.plan?.dueDate) {
+      MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
+      return false;
+    }
 
-    // //deve stare giu
-    // let titleLength = this.plan?.title.length as number
-    // if(titleLength > 106) {
-    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-    //     return false;
-    // }
+    //deve stare giu
+    let titleLength = this.plan?.title.length as number
+    if(titleLength > 106) {
+        MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
+        return false;
+    }
 
     return true;
 }

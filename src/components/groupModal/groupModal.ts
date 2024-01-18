@@ -6,8 +6,14 @@ import { groupsService } from "@/services/groupsService";
 
 @Component
 export default class GroupModal extends Vue {
-  @Prop({ required: true })
+  @Prop()
   value!: IProjectableModel<server.Group>;
+
+  copyValue: server.Group | null = null
+
+  beforeMount() {
+    this.copyValue = structuredClone(this.value.data);
+  }
 
   errors: { [id: string]: string } = {};
   setError(id: string, value: unknown) {
@@ -15,12 +21,11 @@ export default class GroupModal extends Vue {
   }
 
   async confirm(): Promise<void> {
+    Object.assign(this.value.data, this.copyValue)
     if (this.value.data && !this.value.data.id) {
       const createdGroup = await groupsService.Set(this.value.data);
       if (createdGroup)
         this.value.resolve(createdGroup);
-
-      this.close();
     } else {
       const updatedGroup = await groupsService.Set(this.value.data);
 

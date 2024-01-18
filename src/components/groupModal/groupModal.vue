@@ -15,23 +15,22 @@
     <section>
       <div class="area">
         <small class="title">{{ $t(`plan.group.create.shortName`, 'nome') }}</small>
-        <input :disabled="value.data.default" v-model="value.data.name" required="true" :placeholder="$t('plan.group.create.placeholder', 'inserisci un nome per il tuo gruppo')" v-validate="(errs, _a) => setError('title', errs)" />
+        <input :disabled="value.data.default" v-model="copyValue.name" required="true" :placeholder="$t('plan.group.create.placeholder', 'inserisci un nome per il tuo gruppo')" v-validate="(errs, _a) => setError('title', errs)" />
       </div>
       <div class="area">
         <small class="title">{{ $t(`plan.group.create.description`, 'descrizione') }}</small>
-        <!-- <input class="description" v-model="value.data.description" :placeholder="$t('plan.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')" /> -->
-        <textarea class="description" v-model="value.data.description" name="" id="" cols="30" rows="3" :placeholder="$t('plan.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')"></textarea>
+        <textarea class="description" v-model="copyValue.description" name="" id="" cols="30" rows="3" :placeholder="$t('plan.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')"></textarea>
       </div>
       <template v-if="!value.data.default">
         <div class="area wToggle">
           <small>{{ $t('plan.group.public', 'categoria pubblica (disponibile per le applicazioni non autenticate)') }}</small>
-          <toggle v-model="value.data.public" />
+          <toggle v-model="copyValue.public" />
         </div>
       </template>
       <template>
         <div class="area">
           <small class="title">{{ $t('plan.group.create.icon.label', 'icona') }}</small>
-          <input v-model="value.data.iconCode" :placeholder="$t('plan.group.create.icon.placeholder', 'Inserisci un codice tabler icon')" />
+          <input v-model="copyValue.iconCode" :placeholder="$t('plan.group.create.icon.placeholder', 'Inserisci un codice tabler icon')" />
         </div>
       </template>
       <div class="area" v-if="value.data.id">

@@ -119,7 +119,46 @@ export default class Crowdplanning extends Vue {
 
   addPlanSec: boolean = false
   addPlan() {
-    const ap = this.addPlanSec
+    this.editable = {
+      attachmentsIds: [],
+      coverImageIds: { 
+        contentType: "",
+        originalFileId: "",
+        sharedToken: "",
+      },
+      creationDate: new Date(),
+      description: "",
+      group: this.selectedGroup ?? this.plansGroupRoot,
+      groupId: "",
+      id: "",
+      isPublic: null,
+      location: {
+        altitude: 0,
+        id: 0,
+        latitude: 0,
+        longitude: 0,
+        relationId: "",
+        relationType: "",
+        wkid: 0,
+      },
+      rolesCanRate: [],
+      rolesCanSeeOthersComments: [],
+      rolesCanSeeOthersRatings: [],
+      rolesCanWriteComments: [],
+      state: "",
+      subPlanCount: "",
+      title: "",
+      userId: "",
+      username: "",
+      visibleLayers: "",
+      workspaceId: "",
+      dueDate: undefined,
+      lastUpdated: undefined,
+      parentId: undefined,
+      startDate: undefined,
+      locationName: "",
+    }
+    let ap = this.addPlanSec
     this.addPlanSec = !ap
   }
 

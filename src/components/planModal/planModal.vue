@@ -24,7 +24,6 @@
       </div>
     </div>
     <div class="content" v-if="plan">
-      
       <div class="editor" v-if="(plan && plan.description) || !editable">
         <inject name="note-editor" v-model="plan.description" @keydown.native.stop> </inject>
       </div>
@@ -33,12 +32,12 @@
         <div class="fieldsets" v-if="(plan && plan.description) || !editable">
           <fieldset>
             <small>{{ $t('plans.modal.title', 'titolo') }}*</small>
-            <input class="layer" type="url" v-model="plan.title" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
+            <input class="layer" v-model="plan.title" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
           </fieldset>
-          <fieldset style="height: 100%; max-height: 250px;">
+          <fieldset style="height: 100%; max-height: 250px">
             <small>{{ $t('plans.modal.copertina', 'copertina') }}*</small>
             <componenet
-              :ref="coverMediaGalleryRef"
+              :ref="mediaGalleryRef"
               :is="mediaGallery"
               :fileLimit="1"
               :titleText="{ key: 'modal.cover-image-addPlan', value: `` }"
@@ -92,7 +91,7 @@
             </div>
           </fieldset>
 
-          <header v-if="plans" class="cluster">
+          <!-- <header v-if="plans" class="cluster">
             <div class="row">
               <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
               <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
@@ -107,8 +106,36 @@
                 @valueChanged="valueChanged"
               ></autocomplete>
             </div>
+          </header> -->
+
+          <header class="toggle">
+            <div class="row">
+              <span>{{ $t('plans.modal.isPublic', 'progetto pubblico') }}</span>
+              <toggle v-model="plan.isPublic" @keydown.native.stop />
+            </div>
           </header>
 
+          <div class="fieldsets">
+            <div class="row">
+              <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
+            </div>
+          <fieldset class="noborder">
+            <small>{{ $t('plans.modal.roles-can-write', 'scrivere commenti').toLocaleUpperCase() }}</small>
+            <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanWriteComments"> </inject>
+          </fieldset>
+          <fieldset class="noborder">
+            <small>{{ $t('plans.modal.roles-can-see-comments', 'leggere i commenti altrui').toLocaleUpperCase() }}</small>
+            <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersComments"> </inject>
+          </fieldset>
+          <fieldset class="noborder">
+            <small>{{ $t('plans.modal.roles-can-rate', 'votare il progetto').toLocaleUpperCase() }}</small>
+            <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanRate"> </inject>
+          </fieldset>
+          <fieldset class="noborder">
+            <small>{{ $t('plans.modal.roles-can-see-ratings', 'vedere il totale di voti').toLocaleUpperCase() }}</small>
+            <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersRatings"> </inject>
+          </fieldset>
+          </div>
           <!-- <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
@@ -162,6 +189,10 @@
           padding: 0;
         }
       }
+    }
+
+    .select-role {
+      right: auto !important;
     }
   }
 }
