@@ -1,7 +1,7 @@
 <template>
   <div class="plan-map-tooltip" v-if="plan">
     <div class="image">
-      <img v-if="coverImage && CoverImage" src="CoverImage" />
+      <img v-if="coverImage && CoverImage" :src="CoverImage" />
       <img v-else src="@/assets/images/placeholder-img.png" />
     </div>
     <div class="card-content">
