@@ -5,7 +5,7 @@ import PlanCard from "../plans/planCard/planCard.vue";
 import PlanSummary from "../planSummary/planSummary.vue";
 import CitizenInteraction from "../citizenInteraction/citizenInteraction.vue";
 import { CONFIGURATION } from "@/configuration";
-import { CommonRegistry } from "vue-mf-module";
+import { CommonRegistry, MessageService } from "vue-mf-module";
 import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
 import PlanMap from "../planMap/planMap.vue";
 
@@ -53,9 +53,9 @@ export default class PlanDetail extends Vue {
 
   }
 
-  // mounted() {
-  //     console.log(this.selectedPlan)
-  // }
+  mounted() {
+    this.userRoles = MessageService.Instance.ask("USER_ROLES") as string[]
+  }
 
   commentSectionOpened = false;
 
@@ -107,4 +107,16 @@ export default class PlanDetail extends Vue {
   hasPermission(permission: string): boolean {
     return this.$can(`${CONFIGURATION.context}.${permission}`);
   }
+
+ userRoles: string[] = []
+
+  canVote() {
+    console.log(this.selectedPlan?.rolesCanRate, 'chi può')
+    console.log(this.userRoles, 'ruoli miei')
+    if (this.selectedPlan && (!this.selectedPlan.rolesCanRate.length || this.selectedPlan.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
+      return true
+    } 
+  }
+
+
 }

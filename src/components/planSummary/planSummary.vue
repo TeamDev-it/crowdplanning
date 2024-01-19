@@ -22,7 +22,7 @@
         <span class="text">{{ group.name }}</span>
       </div>
 
-      <div class="infoProva" v-if="plan.citizensCanSeeOthersRatings">
+      <div class="infoProva" v-if="plan.rolesCanSeeOthersRatings">
         <component :is="likeCounter" :type="type" :id="plan.id"></component>
       </div>
     </div>

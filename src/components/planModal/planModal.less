@@ -156,7 +156,7 @@
             width: 100px;
             overflow-x: hidden;
             background-color: var(--white);
-            color: var(--text-color)
+            color: var(--text-color);
           }
         }
 
@@ -168,19 +168,28 @@
             z-index: 2;
           }
         }
+
         .position-input {
           background-color: var(--white);
           width: 100%;
         }
-      }
 
-      .row {
-        align-items: center;
-        justify-content: space-between;
-
-        span {
-          width: 80%;
+        .noborder {
+          border: none;
+          padding: 0;
+          .rolesSelector {
+            width: 100%;
+          }
         }
+      }
+    }
+
+    .row {
+      align-items: center;
+      justify-content: space-between;
+
+      span {
+        width: 80%;
       }
     }
   }
@@ -200,7 +209,7 @@
   height: fit-content;
 
   .title {
-    color: #4b4847;
+    color: var(--grey-light);
     font-family: Open Sans;
     font-size: 25px;
     font-style: normal;

@@ -13,7 +13,7 @@ import { groupsService } from "@/services/groupsService";
 import { statesService } from "@/services/statesService";
 import { plansService } from "@/services/plansService";
 import { store } from "@/store";
-import { cloneDeep } from "lodash";
+import { cloneDeep, uniqueId } from "lodash";
 
 @Component({
   components: {
@@ -119,7 +119,47 @@ export default class Crowdplanning extends Vue {
 
   addPlanSec: boolean = false
   addPlan() {
-    const ap = this.addPlanSec
+    this.editable = {
+      attachmentsIds: [],
+      coverImageIds: {
+        contentType: "",
+        originalFileId: "",
+        sharedToken: "",
+      },
+      creationDate: new Date(),
+      description: "",
+      group: this.selectedGroup ?? this.plansGroupRoot,
+      groupId: "",
+      id: null,
+      isPublic: true,
+      location: {
+        altitude: 0,
+        id: 0,
+        latitude: 0,
+        longitude: 0,
+        relationId: "",
+        relationType: "",
+        wkid: 0,
+      },
+      rolesCanRate: [],
+      rolesCanSeeOthersComments: [],
+      rolesCanSeeOthersRatings: [],
+      rolesCanWriteComments: [],
+      state: "",
+      subPlanCount: 0,
+      title: "",
+      userId: "",
+      username: "",
+      visibleLayers: "",
+      workspaceId: "",
+      dueDate: undefined,
+      lastUpdated: undefined,
+      parentId: undefined,
+      startDate: undefined,
+      locationName: "",
+    }
+
+    let ap = this.addPlanSec
     this.addPlanSec = !ap
   }
 

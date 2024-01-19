@@ -20,7 +20,9 @@
         <div class="description" v-if="value.description" v-html="value.description"></div>
       </div>
       <div class="commands" v-if="showCommands">
-        <component :is="likeViewer" :type="type" :id="value.id"></component>
+        
+          <component  :is="likeViewer" :type="type" :id="value.id" ></component>
+        
         <div class="go-detail colrow">
           <div class="text" @click="selectPlan">
             {{ $t('plans.card.go-to-details', 'Vai al dettaglio').toUpperCase() }}
