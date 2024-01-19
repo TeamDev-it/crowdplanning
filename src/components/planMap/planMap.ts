@@ -104,7 +104,7 @@ export default class PlanMap extends Vue {
     const layerdata = this.values.filter(x => x.data)[0].data;
     layerdata?.splice(0, layerdata?.length);
 
-    for (const s of this.states) {
+    this.states.forEach(() => {
       const visiblePlans = this.plans.filter(i => i.location);
       layerdata?.push(...
         visiblePlans
@@ -114,7 +114,7 @@ export default class PlanMap extends Vue {
             "relationType": t.group.id,
             plan: t
           }, t.location)));
-    }
+    });
   }
 
   private foreachPlanVisibleLayerGetMapLayers(): locations.MapLayer[] {
