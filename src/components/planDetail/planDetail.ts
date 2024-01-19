@@ -53,8 +53,8 @@ export default class PlanDetail extends Vue {
 
   }
 
-  mounted() {
-    this.userRoles = MessageService.Instance.ask("USER_ROLES") as string[]
+  async mounted() {
+    this.userRoles = await MessageService.Instance.ask("USER_ROLES"); 
   }
 
   commentSectionOpened = false;
