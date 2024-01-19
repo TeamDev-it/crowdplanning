@@ -127,12 +127,8 @@ export default class Crowdplanning extends Vue {
   editable!: server.Plan | null;
   edit(value: server.Plan | null) {
     this.editable = value
-    // console.log(value) 
-    // console.log(this.editable) 
-
     const ep = this.editPlan
     this.editPlan = !ep
-
   }
 
   toggleMap: boolean = true

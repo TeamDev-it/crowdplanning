@@ -47,7 +47,7 @@ export default class PlanMap extends Vue {
           field: "state",
           symbols: [
             ...this.states.map(s => ({
-              value: s.generalStatus,
+              value: s.shortName,
               symbol: {
                 color: s.color ? HexToRGBA(s.color, .9) : "rgba(0,255,0,.9)",
                 size: "20",
@@ -72,8 +72,6 @@ export default class PlanMap extends Vue {
         },
         dataMapping: (i: locations.Location & { plan: server.Plan }, updateMap) => {
           const data = { id: i.id, state: i.plan.state ?? "none" };
-          console.log(data);
-
           // osservo l'oggetto in mappa.
           this.$watch(() => i.plan.state, (n) => {
             data.state = n;
