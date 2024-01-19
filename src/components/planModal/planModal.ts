@@ -37,14 +37,11 @@ export default class PlanModal extends Vue {
   @Prop()
   groups!: server.Group;
 
-  plan: server.Plan | null = {} as server.Plan;
+  @Prop()
+  newPlan?: server.Plan
+
+  plan: server.Plan = {} as server.Plan;
   coverImage: File | null = null;
-
-  rolesCanWriteComments = null
-  rolesCanSeeOthersComments = null
-  rolesCanRate = null
-  rolesCanSeeOthersRatings = null
-
   tmpVisibleLayer = "";
   hasClusterParent = false;
   planMode: planMode = "create";
@@ -54,8 +51,15 @@ export default class PlanModal extends Vue {
   errors: { [id: string]: string } = {};
 
   mounted() {
-    if (this.editable)
+    console.log(this.newPlan)
+
+    if (this.editable) {
       this.plan = this.editable
+    }
+    if (this.newPlan) {
+      this.plan = this.newPlan
+    }
+
   }
 
   back() {
@@ -158,9 +162,13 @@ export default class PlanModal extends Vue {
       return;
     }
 
-    if (this.plan && !this.plan?.id)
+    if (this.plan && !this.plan?.id) {
+      this.plan.workspaceId = this.groups.workspaceId;
+      console.log('ci passa?')
       // Save new plan
       this.plan = await plansService.Set(this.plan.groupId, this.plan);
+      console.log('e qui?')
+    }
 
     if (!this.plan) {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
@@ -168,7 +176,7 @@ export default class PlanModal extends Vue {
     }
 
     // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-     await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.plan.id);
+    await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.plan.id);
 
     // await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
 
@@ -269,42 +277,42 @@ export default class PlanModal extends Vue {
     store.actions.crowdplanning.setPlan(plan);
   }
 
-  private requiredFieldsSatisfied(): boolean {    
-    if (!this.plan?.title) {
-        MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-        return false;
+  private requiredFieldsSatisfied(): boolean {
+    if (!this.plan?.title || this.plan.title == "") {
+      MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
+      return false;
     }
-    if (!this.plan?.description) {
-        MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-        return false;
+    if (!this.plan?.description || this.plan.description == "") {
+      MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
+      return false;
     }
-    if (!this.plan?.groupId) {
-        MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-        return false;
+    if (!this.plan?.groupId || this.plan.groupId == "") {
+      MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
+      return false;
     }
-    if (!this.plan?.location) {
+    if (!this.plan?.location || this.plan.location == undefined) {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
       return false;
     }
-    if (!this.plan?.startDate) {
+    if (!this.plan?.startDate || this.plan.startDate == undefined) {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
       return false;
     }
-    if (!this.plan?.dueDate) {
+    if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
       return false;
     }
 
     //deve stare giu
     let titleLength = this.plan?.title.length as number
-    if(titleLength > 106) {
-        MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-        return false;
+    if (titleLength > 106) {
+      MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
+      return false;
     }
 
     return true;
-}
-   
+  }
+
   private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
     return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
   }

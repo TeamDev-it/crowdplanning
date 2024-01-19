@@ -37,7 +37,7 @@
           <fieldset style="height: 100%; max-height: 250px">
             <small>{{ $t('plans.modal.copertina', 'copertina') }}*</small>
             <componenet
-              :ref="mediaGalleryRef"
+              :ref="coverMediaGalleryRef"
               :is="mediaGallery"
               :fileLimit="1"
               :titleText="{ key: 'modal.cover-image-addPlan', value: `` }"
@@ -111,7 +111,7 @@
           <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'progetto pubblico') }}</span>
-              <toggle v-model="plan.isPublic" @keydown.native.stop />
+              <toggle v-model="plan.isPublic" @keydown.native.stop :default="true" />
             </div>
           </header>
 

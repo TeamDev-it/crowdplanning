@@ -3,7 +3,7 @@ declare namespace server {
 
   interface Plan {
     workspaceId: string;
-    id: string;
+    id: string | null;
     parentId?: string;
     title: string;
     description: string;

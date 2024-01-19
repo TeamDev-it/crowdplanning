@@ -24,7 +24,7 @@
           <plan-detail :currentUser="currentUser" :selectedPlan="selectedPlan" :key="selectedPlan.id" @goback="goBack" @edit="edit" />
         </div>
         <div class="plan-detail" v-else-if="addPlanSec">
-          <planModal @goback="goBack" :groups="plansGroupRoot" :plans="filteredPlans"> </planModal>
+          <planModal @goback="goBack" :groups="plansGroupRoot" :plans="filteredPlans" :newPlan="editable"> </planModal>
         </div>
         <div class="plan-detail" v-else-if="editPlan">
           <planModal @goback="goBack" :groups="plansGroupRoot" :plans="filteredPlans" :editable="editable"> </planModal>

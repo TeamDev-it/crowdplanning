@@ -7,7 +7,7 @@
       <div class="title">{{ selectedPlanTitle }}</div>
 
       <div class="commands">
-        <component :is="likeButton" :type="type" :id="selectedPlan?.id" />
+        <component v-if="canVote()" :is="likeButton" :type="type" :id="selectedPlan?.id" />
         <button v-if="selectedPlan && $can('PLANS.plans.canedit')" class="success" @click="edit(selectedPlan)">
           <i class="ti ti-pencil"></i>
         </button>
