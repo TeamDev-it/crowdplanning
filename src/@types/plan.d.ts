@@ -16,7 +16,7 @@ declare namespace server {
     creationDate: Date;
     lastUpdated?: Date;
     groupId: string;
-    visibleLayers: string;
+    visibleLayers: string[];
     coverImageIds: SharedItemData;
     attachmentsIds: SharedItemData[];
     isPublic: bool;
