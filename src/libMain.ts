@@ -4,6 +4,8 @@ import { CONFIGURATION } from "./configuration";
 import { routes } from "./router";
 
 declare let __webpack_public_path__: string;
+declare let process: any;
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
 __webpack_public_path__ = process.env.BASE_URL;
 
@@ -23,10 +25,10 @@ export default ModuleInitializer({
 
     Object.assign(CONFIGURATION, configuration || {});
 
-    CommonRegistry.Instance.provideComponent(() => import("@/components/planMapToolTip/planMapTooltip.vue"), "maptooltip-PLAN")
+    CommonRegistry.Instance.provideComponent(() => import("@/components/planMapToolTip/planMapTooltip.vue"), "maptooltip-PLANS");
 
     MessageService.Instance.subscribe("OPEN_PLANS_STATES_MODAL", (group: server.Group) => {
-      Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/statesModal/crowdStatesModal.vue')) as never, group)
+      Projector.Instance.projectAsyncTo((() => import('@/components/statesModal/crowdStatesModal.vue')) as never, group)
     });
   },
   routes

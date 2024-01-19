@@ -1,39 +1,57 @@
-import { plansService } from "@/services/plansService";
 import Vue from "vue";
 import Component from "vue-class-component";
-import { MessageService, Projector } from "vue-mf-module";
 import { Prop } from "vue-property-decorator";
-import SituationObjectModal from "@/components/situationObjectModal/situationObjectModal.vue";
-import PlanDetail from "../planDetail/planDetail";
-import planDetail from "../planDetail/planDetail";
+import PlanCard from "../plans/planCard/planCard.vue";
+import { store } from "@/store";
+import { Shared } from "@/utility/Shared";
+import { CommonRegistry } from "vue-mf-module";
+import { Icon } from "@/utility/Icon";
 
-@Component({})
+@Component({
+  components: {
+    PlanCard
+  }
+})
 export default class ObjectMapTooltip extends Vue {
 
   @Prop()
-  value: { objectId: number, typeId: number, situationId: string, [key: string]: unknown };
+  value!: {
+    id: number,
+    relationId: string,
+    relationType: string,
+    plan: server.Plan,
+    latitude: number,
+    longitude: number,
+    altitude: number,
+    wkid: number,
+    workspaceId: string,
+    date: Date,
+  };
 
-  plans!: server.Plan[];
-  
+  coverImage: string | null = null;
+  get CoverImage(): string | null {
+    if (!this.coverImage)
+      return '';
+    return Shared.imageFromString(this.coverImage);
+  }
 
-  get visiblePlans() {
-    // return this.objectType.fieldsDefinitions.filter(d => d.showInCard).sort((a, b) => a.order - b.order);
-    return this.plans
+  get plan() {
+    return store.getters.crowdplanning.getPlanById(this.value.plan.id!);
+  }
+
+  get imagePreview() {
+    return CommonRegistry.Instance.getComponent("image-preview")
+  }
+
+  get iconCode(): string {
+    return Icon.getIconCode(this.plan.group?.iconCode ?? '');
   }
 
   async mounted() {
-    this.plans = await plansService.getPlans(this.value.situationId, this.value.typeId, this.value.objectId);
-    
+    if (this.plan.coverImageIds?.sharedToken)
+      this.coverImage = await Shared.getShared(this.plan.coverImageIds.sharedToken);
   }
 
-  async editObject() {
-    if (this.$can("SITUATION.objects.canedit")) {
-      let result = await Projector.Instance.projectAsyncTo(planDetail, this.plan);
-      result = await plansService.setplan(this.plan.situationId, result);
-      this.plan = result;
-      MessageService.Instance.send("SITUATION_OBJECT_CHANGED", result);
-    }
-  }
 };
 
 
