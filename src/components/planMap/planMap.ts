@@ -34,8 +34,10 @@ export default class PlanMap extends Vue {
         visible: true,
         data: this.datas,
         type: "managed",
-        fields: [{ name: 'id', alias: 'id', type: "long" },
-        { name: 'state', alias: 'state', type: "string" }],
+        fields: [
+          { name: 'id', alias: 'id', type: "long" },
+          { name: 'state', alias: 'state', type: "string" }
+        ],
         options: {
           clustering: {
             enable: false
@@ -43,20 +45,34 @@ export default class PlanMap extends Vue {
         },
         symbols: {
           field: "state",
-          symbols: this.states.map(s => ({
-            value: s.generalStatus,
-            symbol: {
-              color: HexToRGBA(s.color, .9),
-              size: "20",
-              outline: {
-                color: HexToRGBA(s.color, 1),
-                width: "1px"
+          symbols: [
+            ...this.states.map(s => ({
+              value: s.generalStatus,
+              symbol: {
+                color: s.color ? HexToRGBA(s.color, .9) : "rgba(0,255,0,.9)",
+                size: "20",
+                outline: {
+                  color: s.color ? HexToRGBA(s.color, 1) : "rgba(0,255,0,1)",
+                  width: "1px"
+                }
+              }
+            })),
+            {
+              value: "none",
+              symbol: {
+                color: "rgba(0,255,0,1)",
+                size: "20",
+                outline: {
+                  color: "rgba(0,255,0,.9)",
+                  width: "1px"
+                }
               }
             }
-          }))
+          ],
         },
         dataMapping: (i: locations.Location & { plan: server.Plan }, updateMap) => {
-          const data = { id: i.id, state: i.plan.state };
+          const data = { id: i.id, state: i.plan.state ?? "none" };
+          console.log(data);
 
           // osservo l'oggetto in mappa.
           this.$watch(() => i.plan.state, (n) => {
@@ -79,23 +95,26 @@ export default class PlanMap extends Vue {
     this.datas = [];
   }
 
-  @Watch("plans")
+  @Watch("plans", { deep: true })
   async getData(): Promise<void> {
-    if (!this.values) return;
+    if (!this.values)
+      return;
+
     // cancello tutti i dati dal layer
     const layerdata = this.values.filter(x => x.data)[0].data;
     layerdata?.splice(0, layerdata?.length);
 
-    for (const s of this.states) {
+    this.states.forEach(() => {
+      const visiblePlans = this.plans.filter(i => i.location);
       layerdata?.push(...
-        this.plans.filter(i => i.state == s.generalStatus && i.location)
+        visiblePlans
           .map(t => Object.assign({
             "id": 0,
             "relationId": t.id,
             "relationType": t.group.id,
             plan: t
           }, t.location)));
-    }
+    });
   }
 
   private foreachPlanVisibleLayerGetMapLayers(): locations.MapLayer[] {
