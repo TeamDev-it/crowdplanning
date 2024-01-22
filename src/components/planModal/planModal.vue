@@ -168,7 +168,7 @@
     .media-gallery {
       .image-container,
       .preview {
-        width: auto;
+        width: 100%;
 
         small {
           top: 0;
