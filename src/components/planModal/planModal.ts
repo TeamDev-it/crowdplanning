@@ -27,10 +27,6 @@ export default class PlanModal extends Vue {
   @Prop()
   selectedPlan?: server.Plan;
 
-  get workspaceId() {
-    return this.selectedPlan!.workspaceId
-  }
-
   @Prop()
   plans?: server.Plan;
 
@@ -45,10 +41,16 @@ export default class PlanModal extends Vue {
   tmpVisibleLayer = "";
   hasClusterParent = false;
   planMode: planMode = "create";
-
   loading = true;
-
   errors: { [id: string]: string } = {};
+
+  get workspaceId() {
+    return this.selectedPlan!.workspaceId
+  }
+
+  get editFeatureMap() {
+    return CommonRegistry.Instance.getComponent("editfeature-map");
+  }
 
   mounted() {
 

@@ -24,7 +24,6 @@
       </div>
     </div>
     <div class="content" v-if="plan">
-      
       <div class="third-column">
         <div class="fieldsets" v-if="(plan && plan.description) || !editable">
           <fieldset>
@@ -34,7 +33,7 @@
           <fieldset style="height: 100%; max-height: 250px">
             <small>{{ $t('plans.modal.copertina', 'copertina') }}*</small>
             <componenet
-            :ref="coverMediaGalleryRef"
+              :ref="coverMediaGalleryRef"
               :is="mediaGallery"
               :fileLimit="1"
               :titleText="{ key: 'modal.cover-image-addPlan-null', value: `` }"
@@ -61,13 +60,13 @@
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
             <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
           </fieldset>
-          
-          <!-- <fieldset>
+
+          <fieldset class="edit-map">
             <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
-            <input class="layer" type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="confirmVisibleLayer()" />
-          </fieldset> -->
-          
-          <fieldset class="area fixed">
+            <component class="featureMap" :is="editFeatureMap" type="PLANS" />
+          </fieldset>
+
+          <fieldset>
             <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
             <div class="date-picker-container">
               <date-picker v-model="plan.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
@@ -77,7 +76,7 @@
               </date-picker>
             </div>
           </fieldset>
-          
+
           <fieldset class="area fixed">
             <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
             <div class="date-picker-container">
@@ -88,7 +87,7 @@
               </date-picker>
             </div>
           </fieldset>
-          
+
           <!-- <header v-if="plans" class="cluster">
             <div class="row">
               <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
@@ -105,14 +104,14 @@
               ></autocomplete>
             </div>
           </header> -->
-          
+
           <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'progetto pubblico') }}</span>
               <toggle v-model="plan.isPublic" @keydown.native.stop :default="true" />
             </div>
           </header>
-          
+
           <div class="fieldsets" v-if="!plan.isPublic">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
