@@ -18,7 +18,7 @@
       <div class="plan-summary-cont">
         <plan-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count" />
       </div>
-      <div class="third-column">
+      <div class="third-column" >
         <div class="comments-section">
           <component
             :canSeeOthersComments="canSeeOthersComments"

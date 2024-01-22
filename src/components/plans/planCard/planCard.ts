@@ -4,7 +4,7 @@ import { Prop } from "vue-property-decorator";
 import { store } from "@/store";
 import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
-import { CommonRegistry } from "vue-mf-module";
+import { CommonRegistry, MessageService } from "vue-mf-module";
 import { Shared } from "@/utility/Shared";
 
 @Component
@@ -36,6 +36,9 @@ export default class PlanCard extends Vue {
   }
 
   async mounted() {
+
+    this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
+
     if (this.value.coverImageIds?.sharedToken)
       this.coverImage = await Shared.getShared(this.value.coverImageIds.sharedToken);
 
@@ -55,5 +58,13 @@ export default class PlanCard extends Vue {
 
   get type(): string {
     return CONFIGURATION.context;
+  }
+
+  userRoles: string[] = []
+
+  canVote() {
+    if (this.value && (!this.value.rolesCanRate.length || this.value.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
+      return true
+    } 
   }
 }

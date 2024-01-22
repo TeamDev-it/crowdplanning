@@ -64,10 +64,11 @@
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
             <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
           </fieldset>
-          <fieldset>
+          
+          <!-- <fieldset>
             <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
             <input class="layer" type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="confirmVisibleLayer()" />
-          </fieldset>
+          </fieldset> -->
 
           <fieldset class="area fixed">
             <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>

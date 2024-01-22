@@ -153,10 +153,6 @@ export default class PlanModal extends Vue {
       x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
   }
 
-  // removeLayer(idx: number): void {
-  //     this.plan?.visibleLayers.splice(idx, 1);
-  // }
-
   async confirm(): Promise<void> {
     if (!this.requiredFieldsSatisfied()) {
       return;
@@ -166,6 +162,7 @@ export default class PlanModal extends Vue {
       this.plan.workspaceId = this.groups.workspaceId;
       console.log('ci passa?')
       // Save new plan
+      this.plan.id = null;
       this.plan = await plansService.Set(this.plan.groupId, this.plan);
       console.log('e qui?')
     }

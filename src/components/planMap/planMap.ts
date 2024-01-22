@@ -72,6 +72,7 @@ export default class PlanMap extends Vue {
         },
         dataMapping: (i: locations.Location & { plan: server.Plan }, updateMap) => {
           const data = { id: i.id, state: i.plan.state ?? "none" };
+
           // osservo l'oggetto in mappa.
           this.$watch(() => i.plan.state, (n) => {
             data.state = n;

@@ -20,11 +20,11 @@
         <div class="description" v-if="value.description" v-html="value.description"></div>
       </div>
       <div class="commands" v-if="showCommands">
-        
-          <component  :is="likeViewer" :type="type" :id="value.id" ></component>
-        
+        <div>
+          <component v-if="canVote()" :is="likeViewer" :type="type" :id="value.id" ></component>
+        </div>
         <div class="go-detail colrow">
-          <div class="text" @click="selectPlan">
+          <div class="text" @click.prevent.stop="selectPlan">
             {{ $t('plans.card.go-to-details', 'Vai al dettaglio').toUpperCase() }}
           </div>
           <i class="ti ti-chevron-right"></i>

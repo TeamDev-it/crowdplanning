@@ -54,7 +54,7 @@ export default class PlanDetail extends Vue {
   }
 
   async mounted() {
-    this.userRoles = await MessageService.Instance.ask("USER_ROLES"); 
+    this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
   }
 
   commentSectionOpened = false;
@@ -111,12 +111,27 @@ export default class PlanDetail extends Vue {
  userRoles: string[] = []
 
   canVote() {
-    console.log(this.selectedPlan?.rolesCanRate, 'chi può')
-    console.log(this.userRoles, 'ruoli miei')
     if (this.selectedPlan && (!this.selectedPlan.rolesCanRate.length || this.selectedPlan.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
       return true
     } 
   }
 
+  canSeeMsg() {
+    if (this.selectedPlan && (!this.selectedPlan.rolesCanSeeOthersComments.length || this.selectedPlan.rolesCanSeeOthersComments.some((r) => this.userRoles.includes(r)))) {
+      return true 
+    } 
+  }
+
+  canWriteMsg() {
+    if (this.selectedPlan && (!this.selectedPlan.rolesCanWriteComments.length || this.selectedPlan.rolesCanWriteComments.some((r) => this.userRoles.includes(r)))) {
+      return true
+    } 
+  }
+
+  // cantSeeOrWriteMsg() {
+  //   if () {
+  //     return false
+  //   }
+  // }
 
 }

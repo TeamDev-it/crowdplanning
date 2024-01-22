@@ -3,7 +3,7 @@ import Vue from "vue";
 import { Prop } from "vue-property-decorator";
 import { CONFIGURATION } from "@/configuration";
 import { store } from "@/store";
-import { CommonRegistry } from "vue-mf-module";
+import { CommonRegistry, MessageService } from "vue-mf-module";
 import moment from "moment";
 import { Icon } from "@/utility/Icon";
 import { Shared } from "@/utility/Shared";
@@ -33,6 +33,10 @@ export default class PlanSummary extends Vue {
   coverImage: string | null = null;
 
   public async mounted(): Promise<void> {
+
+    this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
+    console.log(this.userRoles, 'sono quiiiiiiiiiiiiii')
+
     if (this.plan.coverImageIds?.sharedToken)
       this.coverImage = await Shared.getShared(this.plan.coverImageIds.sharedToken);
 
@@ -54,5 +58,13 @@ export default class PlanSummary extends Vue {
   }
   get formattedStartDate(): string {
     return moment(this.plan.startDate).format('D/MM/YYYY');
+  }
+
+  userRoles: string[] = []
+
+  canSeeRating() {
+    if (this.plan && (!this.plan.rolesCanRate.length || this.plan.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
+      return true
+    } 
   }
 }
