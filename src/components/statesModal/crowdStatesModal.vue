@@ -38,7 +38,7 @@
     </button>
   </div>
 </template>
-<script src="./statesModal.ts" lang="ts"></script>
-<style lang="less">
-@import url(./statesModal.less);
+<script src="./crowdStatesModal.ts" lang="ts"></script>
+<style lang="less" scoped>
+@import url(./crowdStatesModal.less);
 </style>

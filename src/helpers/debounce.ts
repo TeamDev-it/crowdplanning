@@ -6,11 +6,11 @@ export function debounce<F extends Procedure>(
 ): (this: ThisParameterType<F>, ...args: Parameters<F>) => void {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  return function (this: ThisParameterType<F>, ...args: Parameters<F>) {
+  return function(this: ThisParameterType<F>, ...args: Parameters<F>) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const context = this;
 
-    const doLater = function () {
+    const doLater = function() {
       timeoutId = undefined;
       func.apply(context, args);
     }

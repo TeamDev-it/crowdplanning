@@ -9,6 +9,9 @@ var isDevelopment = process.env.NODE_ENV == 'development';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server:{
+    hmr:false
+  },
   plugins: [
     cssInjectedByJsPlugin(),
     createVuePlugin(),
@@ -35,6 +38,7 @@ export default defineConfig({
     rollupOptions: {
       external: ["vue"],
       output: {
+        manualChunks: undefined,
         chunkFileNames: "chunks/[name]-[hash].min.js",
         globals: {
           qs: 'qs',
