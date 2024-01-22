@@ -119,7 +119,7 @@ export default class PlanDetail extends Vue {
   canSeeMsg() {
     if (this.selectedPlan && (!this.selectedPlan.rolesCanSeeOthersComments.length || this.selectedPlan.rolesCanSeeOthersComments.some((r) => this.userRoles.includes(r)))) {
       return true 
-    } 
+    } else return false
   }
 
   canWriteMsg() {
@@ -128,10 +128,5 @@ export default class PlanDetail extends Vue {
     } 
   }
 
-  // cantSeeOrWriteMsg() {
-  //   if () {
-  //     return false
-  //   }
-  // }
 
 }

@@ -51,7 +51,6 @@ export default class PlanModal extends Vue {
   errors: { [id: string]: string } = {};
 
   mounted() {
-    console.log(this.newPlan)
 
     if (this.editable) {
       this.plan = this.editable
@@ -160,11 +159,9 @@ export default class PlanModal extends Vue {
 
     if (this.plan && !this.plan?.id) {
       this.plan.workspaceId = this.groups.workspaceId;
-      console.log('ci passa?')
       // Save new plan
       this.plan.id = null;
       this.plan = await plansService.Set(this.plan.groupId, this.plan);
-      console.log('e qui?')
     }
 
     if (!this.plan) {

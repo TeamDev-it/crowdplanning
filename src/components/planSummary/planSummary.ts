@@ -35,7 +35,6 @@ export default class PlanSummary extends Vue {
   public async mounted(): Promise<void> {
 
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
-    console.log(this.userRoles, 'sono quiiiiiiiiiiiiii')
 
     if (this.plan.coverImageIds?.sharedToken)
       this.coverImage = await Shared.getShared(this.plan.coverImageIds.sharedToken);

@@ -64,7 +64,7 @@
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
             <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
           </fieldset>
-          
+
           <!-- <fieldset>
             <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
             <input class="layer" type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="confirmVisibleLayer()" />
@@ -116,26 +116,26 @@
             </div>
           </header>
 
-          <div class="fieldsets">
+          <div class="fieldsets" v-if="!plan.isPublic">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
             </div>
-          <fieldset class="noborder">
-            <small>{{ $t('plans.modal.roles-can-write', 'scrivere commenti').toLocaleUpperCase() }}</small>
-            <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanWriteComments"> </inject>
-          </fieldset>
-          <fieldset class="noborder">
-            <small>{{ $t('plans.modal.roles-can-see-comments', 'leggere i commenti altrui').toLocaleUpperCase() }}</small>
-            <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersComments"> </inject>
-          </fieldset>
-          <fieldset class="noborder">
-            <small>{{ $t('plans.modal.roles-can-rate', 'votare il progetto').toLocaleUpperCase() }}</small>
-            <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanRate"> </inject>
-          </fieldset>
-          <fieldset class="noborder">
-            <small>{{ $t('plans.modal.roles-can-see-ratings', 'vedere il totale di voti').toLocaleUpperCase() }}</small>
-            <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersRatings"> </inject>
-          </fieldset>
+            <fieldset class="noborder">
+              <small>{{ $t('plans.modal.roles-can-write', 'scrivere commenti').toLocaleUpperCase() }}</small>
+              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanWriteComments"> </inject>
+            </fieldset>
+            <fieldset class="noborder">
+              <small>{{ $t('plans.modal.roles-can-see-comments', 'leggere i commenti altrui').toLocaleUpperCase() }}</small>
+              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersComments"> </inject>
+            </fieldset>
+            <fieldset class="noborder">
+              <small>{{ $t('plans.modal.roles-can-rate', 'votare il progetto').toLocaleUpperCase() }}</small>
+              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanRate"> </inject>
+            </fieldset>
+            <fieldset class="noborder">
+              <small>{{ $t('plans.modal.roles-can-see-ratings', 'vedere il totale di voti').toLocaleUpperCase() }}</small>
+              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersRatings"> </inject>
+            </fieldset>
           </div>
           <!-- <header class="toggle">
             <div class="row">
