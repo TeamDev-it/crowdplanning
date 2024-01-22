@@ -1,6 +1,8 @@
 <template>
   <div class="summary-container">
-    <header><h1 class="title">{{ plan.title }}</h1></header>
+    <header>
+      <h1 class="title">{{ plan.title }}</h1>
+    </header>
     <div class="cover-image" v-if="CoverImage">
       <img :src="CoverImage" />
     </div>
@@ -20,9 +22,9 @@
         <span class="text">{{ group.name }}</span>
       </div>
 
-      <div class="infoProva" v-if="plan.citizensCanSeeOthersRatings">
+      <div class="infoProva" v-if="canSeeRating()">
         <component :is="likeCounter" :type="type" :id="plan.id"></component>
-       </div>
+      </div>
     </div>
     <article>
       <!-- <div class="title">{{ $t('plan.summary.description-label', 'Descrizione') }}</div> -->
@@ -32,7 +34,24 @@
 </template>
 
 <style lang="less" scoped>
-@import url(./taskSummary.less);
+@import url(./planSummary.less);
+</style>
+<style>
+.summary-container {
+  article {
+    .description {
+      h1 {
+        font-size: 27px !important;
+      }
+      h2 {
+        font-size: 23px;
+      }
+      h3 {
+        font-size: 18px;
+      }
+    }
+  }
+}
 </style>
 
-<script lang="ts" src="./taskSummary.ts" />
+<script lang="ts" src="./planSummary.ts" />

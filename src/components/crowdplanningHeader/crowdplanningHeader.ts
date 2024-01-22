@@ -2,44 +2,43 @@ import Component from "vue-class-component";
 import Vue from "vue";
 import { store } from "@/store";
 import { Prop, Watch } from "vue-property-decorator";
-import { ValidateDirective } from "vue-mf-module";
 
 @Component({})
 export default class CrowdplanningHeader extends Vue {
-    @Prop({})
-    currentUser!: server.Myself | null;
+  @Prop({})
+  currentUser!: server.Myself | null;
 
-    get searchedValue(): string {
-        return store.getters.crowdplanning.getSearchedValue();
-    }
+  seeMap: boolean = true
+  showListOpened: boolean = false
+  expiredPrj: boolean = true
 
-    set searchedValue(value: string) {
-        store.actions.crowdplanning.setSearchedValue(value);
-    }
+  get searchedValue(): string {
+    return store.getters.crowdplanning.getSearchedValue();
+  }
+  set searchedValue(value: string) {
+    store.actions.crowdplanning.setSearchedValue(value);
+  }
 
-    hasPermission(permission: string): boolean {
-        return this.$can(`PLANS.${permission}`);
-    }
+  @Watch("seeMap")
+  changeView() {
+    this.$emit("changeView")
+  }
 
-    async addTask(): Promise<void> {
-        this.$emit("addTask");
-    }
+  @Watch("expiredPrj")
+  async noExpiredPrj() {
+    this.$emit("expiredPrj");
+  }
 
-    seeMap: boolean = true
-    @Watch("seeMap")
-    changeView() {
-        this.$emit("changeView")
-    }
+  hasPermission(permission: string): boolean {
+    return this.$can(`PLANS.${permission}`);
+  }
 
-    expiredPrj: boolean = true
-    @Watch("expiredPrj")
-    async noExpiredPrj() {
-        this.$emit("expiredPrj");
-    }
+  async addPlan(): Promise<void> {
+    this.$emit("addPlan");
+  }
 
-    showListOpened: boolean = false
-    toggleOpened() {
-        let v = this.showListOpened;
-        this.showListOpened = !v;
-    }
+  toggleOpened() {
+    let v = this.showListOpened;
+    this.showListOpened = !v;
+  }
 }

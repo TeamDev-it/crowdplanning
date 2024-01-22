@@ -1,4 +1,4 @@
-.modal.taskgroup {
+.modal.plangroup {
   grid-template-rows: 60px auto 60px !important;
   max-width: 600px;
   max-height: 500px;
@@ -11,7 +11,7 @@
     flex-flow: row nowrap;
     justify-content: space-between;
     gap: 1rem;
-    background-color: #43A047 ;
+    background-color: #43A047;
 
     div {
       display: flex;
@@ -44,10 +44,14 @@
       justify-content: space-between;
     }
   }
+
+  footer {
+    justify-content: flex-end;
+  }
 }
 
 small {
-  color: #000;
+  color: var(--black);
   font-family: Open Sans;
   font-size: 10px;
   font-style: normal;
@@ -58,7 +62,7 @@ small {
   text-transform: uppercase;
 
   &.title {
-    background-color: white;
+    background-color: var(--white);
     position: absolute;
     z-index: 1;
     margin-left: 12px;
@@ -66,7 +70,7 @@ small {
     padding: 0 5px;
 
     &.id {
-      color: rgba(0, 0, 0, 0.5);
+      
     }
   }
 }
@@ -75,5 +79,5 @@ small {
   position: absolute;
   margin-top: 10px;
   margin-left: 15px;
-  color: rgba(0, 0, 0, 0.5);
+  color: var(--grey-semidark2);
 }

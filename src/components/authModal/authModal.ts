@@ -5,19 +5,19 @@ import { IProjectableModel } from "vue-mf-module";
 import { Prop } from "vue-property-decorator";
 
 @Component({
-    components: {
-        SpidLogin
-    }
+  components: {
+    SpidLogin
+  }
 })
 export default class AuthModal extends Vue {
-    @Prop()
-    value!: IProjectableModel<unknown>;
+  @Prop()
+  value!: IProjectableModel<unknown>;
 
-    close(): void {
-        try {
-            this.value?.reject();
-        } catch(_) {
-            //
-        } 
+  close(): void {
+    try {
+      this.value?.reject();
+    } catch (_) {
+      //
     }
+  }
 }

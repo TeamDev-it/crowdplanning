@@ -1,32 +1,29 @@
-import CrowdplanningGroupList from "@/components/crowdplanningGroups/crowdplanningGroupsList/crowdplanningGroupsList.vue";
+import Vue from "vue";
+import Component from "vue-class-component";
+import { MessageService, Projector } from "vue-mf-module";
+import CrowdplanningGroupList from "@/components/crowdplanningGroupsList/crowdplanningGroupsList.vue";
 import CrowdplanningHeader from "@/components/crowdplanningHeader/crowdplanningHeader.vue";
-import groupModal from "@/components/groupModal/groupModal.vue";
 import PlanModal from "@/components/planModal/planModal.vue";
 import ScrollableContainer from "@/components/scrollableContainer/scrollableContainer.vue";
-import TaskDetail from "@/components/taskDetail/taskDetail.vue";
-import TaskMap from "@/components/taskMap/taskMap.vue";
-import TaskList from "@/components/tasks/taskList/taskList.vue";
+import PlanDetail from "@/components/planDetail/planDetail.vue";
+import PlanMap from "@/components/planMap/planMap.vue";
+import PlanList from "@/components/plans/planList/planList.vue";
 import { CONFIGURATION } from "@/configuration";
 import { groupsService } from "@/services/groupsService";
 import { statesService } from "@/services/statesService";
 import { plansService } from "@/services/plansService";
 import { store } from "@/store";
-import { cloneDeep } from "lodash";
-import Vue from "vue";
-import Component from "vue-class-component";
-import { MessageService, Projector } from "vue-mf-module";
-// import dateTime from "@/components/dateTime/dateTime";
-// import dateTimeVue from "@/components/dateTime/dateTime.vue";
+import { cloneDeep, uniqueId } from "lodash";
 
 @Component({
   components: {
     CrowdplanningHeader,
     ScrollableContainer,
     CrowdplanningGroupList,
-    TaskList,
+    PlanList,
     PlanModal,
-    TaskMap,
-    TaskDetail
+    PlanMap,
+    PlanDetail
   },
   name: "crowdplanning-component"
 })
@@ -47,11 +44,6 @@ export default class Crowdplanning extends Vue {
     return store.state.crowdplanning.searchedValue
   }
 
-  //  addTask() {
-  //     //  store.actions.crowdplanning.setSelectedPlanId(this.value);
-  //      console.log(this.value)
-  //  }
-
   get plans(): server.Plan[] {
     return store.getters.crowdplanning.getPlans();
   }
@@ -65,7 +57,7 @@ export default class Crowdplanning extends Vue {
     if (locations.length)
       return [locations[0].longitude, locations[0].latitude];
     else
-      return [];
+      return null;
   }
 
 
@@ -79,11 +71,11 @@ export default class Crowdplanning extends Vue {
   }
 
   private async openAuthModal(): Promise<void> {
-    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/authModal/authModal.vue')) as any, {})
+    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/authModal/authModal.vue')) as never, {})
   }
 
   private async getData(): Promise<void> {
-    this.workspaceId = (await MessageService.Instance.ask("MY_WORKSPACE") as any)?.id ?? '';
+    this.workspaceId = (await MessageService.Instance.ask("MY_WORKSPACE") as { id: string })?.id ?? '';
 
     if (!this.workspaceId)
       this.workspaceId = (CONFIGURATION.domainWorkspaceMap as Map<string, string>).get(window.location.hostname) || "";
@@ -127,31 +119,67 @@ export default class Crowdplanning extends Vue {
 
   addPlanSec: boolean = false
   addPlan() {
+    this.editable = {
+      attachmentsIds: [],
+      coverImageIds: {
+        contentType: "",
+        originalFileId: "",
+        sharedToken: "",
+      },
+      creationDate: new Date(),
+      description: "",
+      group: this.selectedGroup ?? this.plansGroupRoot,
+      groupId: "",
+      id: null,
+      isPublic: true,
+      location: {
+        altitude: 0,
+        id: 0,
+        latitude: 0,
+        longitude: 0,
+        relationId: "",
+        relationType: "",
+        wkid: 0,
+      },
+      rolesCanRate: [],
+      rolesCanSeeOthersComments: [],
+      rolesCanSeeOthersRatings: [],
+      rolesCanWriteComments: [],
+      state: "",
+      subPlanCount: 0,
+      title: "",
+      userId: "",
+      username: "",
+      visibleLayers: "",
+      workspaceId: "",
+      dueDate: undefined,
+      lastUpdated: undefined,
+      parentId: undefined,
+      startDate: undefined,
+      locationName: "",
+    }
+
     let ap = this.addPlanSec
     this.addPlanSec = !ap
   }
 
   editPlan: boolean = false
-  editable!: server.Plan
+  editable!: server.Plan | null;
   edit(value: server.Plan | null) {
     this.editable = value
-    // console.log(value) 
-    // console.log(this.editable) 
-
-    let ep = this.editPlan
+    const ep = this.editPlan
     this.editPlan = !ep
-
   }
 
   toggleMap: boolean = true
   changeView() {
-    let tm = this.toggleMap
+    const tm = this.toggleMap
     this.toggleMap = !tm
   }
 
   expiredPrj: boolean = true
   noExpiredPrj() {
-    let eP = this.expiredPrj
+    const eP = this.expiredPrj
     this.expiredPrj = !eP
   }
 
@@ -160,11 +188,6 @@ export default class Crowdplanning extends Vue {
 
   get filteredPlans() {
     let result: server.Plan[] = cloneDeep(store.getters.crowdplanning.getPlans());
-
-    // if (this.expiredPrj) {
-    //     console.log(this.today)
-    //     result = result.filter(x => x.dueDate?.valueOf)
-    // }
 
     if (this.selectedPlan) {
       return result.filter(x => x.id === this.selectedPlan?.id);
@@ -177,8 +200,6 @@ export default class Crowdplanning extends Vue {
     if (this.searchedValue) {
       result = result.filter(x => x.title?.includes(this.searchedValue) || x.description?.includes(this.searchedValue));
     }
-
-
 
     return result;
   }
