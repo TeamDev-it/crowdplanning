@@ -24,10 +24,7 @@
       </div>
     </div>
     <div class="content" v-if="plan">
-      <div class="editor" v-if="(plan && plan.description) || !editable">
-        <inject name="note-editor" v-model="plan.description" @keydown.native.stop> </inject>
-      </div>
-
+      
       <div class="third-column">
         <div class="fieldsets" v-if="(plan && plan.description) || !editable">
           <fieldset>
@@ -37,10 +34,10 @@
           <fieldset style="height: 100%; max-height: 250px">
             <small>{{ $t('plans.modal.copertina', 'copertina') }}*</small>
             <componenet
-              :ref="coverMediaGalleryRef"
+            :ref="coverMediaGalleryRef"
               :is="mediaGallery"
               :fileLimit="1"
-              :titleText="{ key: 'modal.cover-image-addPlan', value: `` }"
+              :titleText="{ key: 'modal.cover-image-addPlan-null', value: `` }"
               :subtitleText="{ key: 'modal.cover-image-description-addPlan', value: `` }"
               :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
               :type="`${context}-COVER`"
@@ -52,7 +49,7 @@
             ></componenet>
           </fieldset>
           <fieldset>
-            <small>{{ $t('plans.modal.categoria', 'categoria*') }}*</small>
+            <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
             <select v-model="plan.groupId" class="category">
               <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
               <option class="opt" v-for="group in groups.children" :key="group.id" :value="group.id">
@@ -64,12 +61,12 @@
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
             <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
           </fieldset>
-
+          
           <!-- <fieldset>
             <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
             <input class="layer" type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="confirmVisibleLayer()" />
           </fieldset> -->
-
+          
           <fieldset class="area fixed">
             <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
             <div class="date-picker-container">
@@ -80,7 +77,7 @@
               </date-picker>
             </div>
           </fieldset>
-
+          
           <fieldset class="area fixed">
             <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
             <div class="date-picker-container">
@@ -91,7 +88,7 @@
               </date-picker>
             </div>
           </fieldset>
-
+          
           <!-- <header v-if="plans" class="cluster">
             <div class="row">
               <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
@@ -99,23 +96,23 @@
             </div>
             <div v-if="hasClusterParent" class="autocomplete">
               <autocomplete
-                v-model="plan.parentId"
-                :inputValues="plans"
-                :filterFunction="autocompleteFilterFunction"
-                :placeholderKey="$t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
-                :showThisPropertyAsItemName="'title'"
-                @valueChanged="valueChanged"
+              v-model="plan.parentId"
+              :inputValues="plans"
+              :filterFunction="autocompleteFilterFunction"
+              :placeholderKey="$t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
+              :showThisPropertyAsItemName="'title'"
+              @valueChanged="valueChanged"
               ></autocomplete>
             </div>
           </header> -->
-
+          
           <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'progetto pubblico') }}</span>
               <toggle v-model="plan.isPublic" @keydown.native.stop :default="true" />
             </div>
           </header>
-
+          
           <div class="fieldsets" v-if="!plan.isPublic">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
@@ -143,7 +140,7 @@
               <toggle v-model="plan.citizensCanSeeOthersComments" @keydown.native.stop />
             </div>
           </header>
-
+          
           <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI').toUpperCase() }}</span>
@@ -151,6 +148,9 @@
             </div>
           </header> -->
         </div>
+      </div>
+      <div class="editor" v-if="(plan && plan.description) || !editable">
+        <inject name="note-editor" v-model="plan.description" @keydown.native.stop> </inject>
       </div>
     </div>
   </div>
