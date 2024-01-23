@@ -17,7 +17,7 @@ declare namespace server {
     lastUpdated?: Date;
     groupId: string;
     visibleLayers: string[];
-    coverImageIds: SharedItemData;
+    coverImageIds: SharedItemData | null;
     attachmentsIds: SharedItemData[];
     isPublic: bool;
     rolesCanSeeOthersComments: string[];

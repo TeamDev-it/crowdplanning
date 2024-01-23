@@ -62,8 +62,8 @@
           </fieldset>
 
           <fieldset class="edit-map">
-            <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
-            <component class="featureMap" :is="editFeatureMap" type="PLANS" />
+            <small>{{ $t('plans.modal.plan-area', 'Area progetto').toLocaleUpperCase() }}</small>
+            <component class="featureMap" :is="editFeatureMap" type="PLANS" v-model="featureTest"/>
           </fieldset>
 
           <fieldset>
