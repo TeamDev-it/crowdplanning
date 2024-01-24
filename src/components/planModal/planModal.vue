@@ -58,20 +58,20 @@
           </fieldset>
           <fieldset class="position">
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-            <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
+            <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.stop @keydown.enter.prevent="$event.preventDefault()" />
           </fieldset>
 
           <fieldset class="edit-map">
             <small>{{ $t('plans.modal.plan-area', 'Area progetto').toLocaleUpperCase() }}</small>
-            <component class="featureMap" :is="editFeatureMap" type="PLANS" v-model="featureTest"/>
+            <component class="featureMap" :is="editFeatureMap" type="PLANS" v-model="featureTest" :id="plan ? plan.id : null" />
           </fieldset>
 
           <fieldset>
             <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
             <div class="date-picker-container">
-              <date-picker v-model="plan.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
+              <date-picker v-model="plan.startDate" @keydown.stop mode="dateTime" timezone="utc" required>
                 <template v-slot="{ inputEvents }">
-                  <date-time :value="plan.startDate" :events="inputEvents"></date-time>
+                  <date-time :value="plan ? plan.startDate : null" :events="inputEvents"></date-time>
                 </template>
               </date-picker>
             </div>
@@ -80,9 +80,9 @@
           <fieldset class="area fixed">
             <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
             <div class="date-picker-container">
-              <date-picker v-model="plan.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
+              <date-picker v-model="plan.dueDate" @keydown.stop mode="dateTime" timezone="utc">
                 <template v-slot="{ inputEvents }">
-                  <date-time :value="plan.dueDate" :events="inputEvents"></date-time>
+                  <date-time :value="plan ? plan.dueDate : null" :events="inputEvents"></date-time>
                 </template>
               </date-picker>
             </div>
@@ -108,7 +108,7 @@
           <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'progetto pubblico') }}</span>
-              <toggle v-model="plan.isPublic" @keydown.native.stop :default="true" />
+              <toggle v-model="plan.isPublic" @keydown.stop :default="true" />
             </div>
           </header>
 
@@ -149,7 +149,7 @@
         </div>
       </div>
       <div class="editor" v-if="(plan && plan.description) || !editable">
-        <inject name="note-editor" v-model="plan.description" @keydown.native.stop> </inject>
+        <inject name="note-editor" v-model="plan.description" @keydown.stop> </inject>
       </div>
     </div>
   </div>
