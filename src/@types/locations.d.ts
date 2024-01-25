@@ -9,11 +9,22 @@ declare namespace locations {
     wkid: number;
   }
 
+  export interface Feature {
+    id: number;
+    workspaceId: string;
+    relationId: string;
+    relationType: string;
+    shape: GeoJSON.Geometry;
+    wkid: number;
+    isArchived: boolean,
+    date: Date
+  }
+
   export interface MapLayer {
     id?: string,
     name?: string,
     dataType: string,
-    renderer?: any,
+    renderer?: Record<string, unknown>,
     symbols: {
       field: string,
       symbols: {

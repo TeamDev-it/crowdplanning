@@ -1,7 +1,7 @@
 import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop, Watch } from "vue-property-decorator";
-import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
+import { CommonRegistry, MessageService } from "vue-mf-module";
 import datePicker from "v-calendar/lib/components/date-picker.umd";
 import dateTime from "../dateTime/dateTime.vue";
 import { plansService } from "@/services/plansService";
@@ -26,10 +26,6 @@ export default class PlanModal extends Vue {
   @Prop()
   selectedPlan?: server.Plan;
 
-  get workspaceId() {
-    return this.selectedPlan!.workspaceId
-  }
-
   @Prop()
   plans?: server.Plan;
 
@@ -39,15 +35,22 @@ export default class PlanModal extends Vue {
   @Prop()
   newPlan?: server.Plan
 
-  plan: server.Plan = {} as server.Plan;
+  plan: server.Plan | null = null;
   coverImage: File | null = null;
   tmpVisibleLayer = "";
   hasClusterParent = false;
   planMode: planMode = "create";
-
   loading = true;
-
   errors: { [id: string]: string } = {};
+  featureTest: locations.Feature | null = null;
+
+  get workspaceId() {
+    return this.selectedPlan!.workspaceId
+  }
+
+  get editFeatureMap() {
+    return CommonRegistry.Instance.getComponent("editfeature-map");
+  }
 
   mounted() {
 
@@ -60,22 +63,15 @@ export default class PlanModal extends Vue {
 
   }
 
+  @Watch("featureTest")
+  featureChanged(n: unknown) {
+    console.log(n);
+  }
+
   back() {
     this.$emit('goback')
   }
 
-  //  get imageContentTypes(): string {
-  //      return imagesContentTypes;
-  //  }
-
-  // get plans(): server.Plan[] {
-  //     return store.getters.crowdplanning.getPlans();
-  // }
-
-  // get planIfExists() {
-  //     if (this.value.data)
-  //         return { ...store.getters.crowdplanning.getPlanById(this.value.data) };
-  // }
 
   get context(): string {
     return CONFIGURATION.context;
@@ -89,37 +85,6 @@ export default class PlanModal extends Vue {
     return CommonRegistry.Instance.getComponent('media-gallery');
   }
 
-
-
-
-
-  // async mounted() {
-  //     if (this.value.data) {
-  //         this.planMode = "edit";
-  //     }
-
-  //     if (this.value?.data) {
-  //         this.plan = this.planIfExists ?? {} as server.Plan;
-  //     } else {
-  //         this.plan = {
-  //             ...this.plan,
-  //             groupId: store.getters.crowdplanning.getSelectedGroup()?.id ?? '',
-  //             state: "Review",
-  //             visibleLayers: []
-  //         } as server.Plan;
-  //     }
-
-  //     if (this.plan.parentId) {
-  //         this.hasClusterParent = true;
-  //     }
-
-  //     this.loading = false;
-  // }
-
-  // setError(id: string, value: string) {
-  //     Vue.set(this.errors, id, value);
-  // }
-
   locationSelected(value: locations.Location & { name: string }) {
     if (this.plan) {
       this.plan.location = value;
@@ -127,13 +92,7 @@ export default class PlanModal extends Vue {
     }
   }
 
-
-
-  // onChangeCoverImage(event: InputEvent) {
-  //     this.coverImage = (event.target as any).files[0];
-  // }
-
-  public confirmVisibleLayer() {
+  confirmVisibleLayer() {
     if (!this.tmpVisibleLayer) return;
 
     this.plan?.visibleLayers.push(this.tmpVisibleLayer);
@@ -141,7 +100,7 @@ export default class PlanModal extends Vue {
     this.tmpVisibleLayer = "";
   }
 
-  public valueChanged(value: server.Plan): void {
+  valueChanged(value: server.Plan): void {
     this.plan = { ...this.plan, parentId: value.id } as server.Plan;
   }
 
@@ -182,7 +141,7 @@ export default class PlanModal extends Vue {
   }
 
   async remove(): Promise<void> {
-    await plansService.deletePlan(this.plan!.id);
+    await plansService.deletePlan(this.plan!.id!);
     this.back()
   }
 
@@ -195,7 +154,7 @@ export default class PlanModal extends Vue {
         cover = file;
       }
 
-      const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+      const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
 
       this.plan.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 
@@ -215,24 +174,6 @@ export default class PlanModal extends Vue {
     }
   }
 
-  //     async fileRemoved(file: string): Promise<void> {
-  //         if (this.plan) {
-  //             const attachments = [...this.plan.attachmentsIds];
-
-  //             const idx = this.plan.attachmentsIds.findIndex(x => x.originalFileId === file);
-
-  //             if (idx !== -1) {
-  //                 attachments.splice(idx, 1);
-  //             }
-
-  //             this.plan.attachmentsIds = [...attachments];
-
-  //             if (this.plan.id)
-  //                 // update plan
-  //                 await plansService.Set(this.plan!.groupId, this.plan);
-  //         }
-  //     }
-
   private decodeSharable(buffer: ArrayBuffer): string {
     const textDecoder = new TextDecoder();
 
@@ -248,12 +189,12 @@ export default class PlanModal extends Vue {
 
       if (Array.isArray(file)) {
         for (const f of file) {
-          const shared = await this.askForSharedFile(f.id, this.plan.id, CONFIGURATION.context) as unknown as ArrayBuffer;
+          const shared = await this.askForSharedFile(f.id, this.plan.id!, CONFIGURATION.context) as unknown as ArrayBuffer;
 
           attachmentsSharableIds.push({ originalFileId: f.id, sharedToken: this.decodeSharable(shared), contentType: f.contentType } as file.SharedRef);
         }
       } else {
-        const shared = await this.askForSharedFile(file.id, this.plan.id, CONFIGURATION.context) as unknown as ArrayBuffer;
+        const shared = await this.askForSharedFile(file.id, this.plan.id!, CONFIGURATION.context) as unknown as ArrayBuffer;
 
         attachmentsSharableIds.push({ originalFileId: file.id, sharedToken: this.decodeSharable(shared), contentType: file.contentType } as file.SharedRef);
       }
@@ -297,7 +238,7 @@ export default class PlanModal extends Vue {
     }
 
     //deve stare giu
-    let titleLength = this.plan?.title.length as number
+    const titleLength = this.plan?.title.length as number
     if (titleLength > 106) {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
       return false;
