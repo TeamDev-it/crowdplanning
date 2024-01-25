@@ -1,6 +1,4 @@
 declare namespace server {
-  declare type PlanType = 'proposal' | 'project';
-
   interface Plan {
     workspaceId: string;
     id: string | null;
@@ -27,6 +25,7 @@ declare namespace server {
     subPlanCount: int;
     group: Group;
     location: locations.Location;
+    planType: "simple" | "fromIssues"; 
   }
 
   interface SharedItemData {

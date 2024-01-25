@@ -8,7 +8,6 @@ import { plansService } from "@/services/plansService";
 import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
-import { isNull } from "lodash";
 
 @Component({
   components: {

@@ -14,6 +14,8 @@ import { statesService } from "@/services/statesService";
 import { plansService } from "@/services/plansService";
 import { store } from "@/store";
 import { cloneDeep, uniqueId } from "lodash";
+import PlanWizard from "@/components/planWizard/planWizard";
+
 
 @Component({
   components: {
@@ -117,8 +119,9 @@ export default class Crowdplanning extends Vue {
     return this.$can(`${CONFIGURATION.context}.${permission}`);
   }
 
+
   addPlanSec: boolean = false
-  addPlan() {
+  async addPlan() {
     this.editable = {
       attachmentsIds: [],
       coverImageIds: {
@@ -150,17 +153,19 @@ export default class Crowdplanning extends Vue {
       title: "",
       userId: "",
       username: "",
-      visibleLayers: "",
+      visibleLayers: [],
       workspaceId: "",
       dueDate: undefined,
       lastUpdated: undefined,
       parentId: undefined,
       startDate: undefined,
       locationName: "",
+      planType: "simple" 
     }
 
-    let ap = this.addPlanSec
-    this.addPlanSec = !ap
+    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "planWizard" */ '@/components/planWizard/planWizard.vue')) as never, this.editable) 
+    // let ap = this.addPlanSec
+    // this.addPlanSec = !ap
   }
 
   editPlan: boolean = false

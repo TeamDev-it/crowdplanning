@@ -9,7 +9,7 @@
       <div class="btn">
         <button class="success" :class="{ plain: !showListOpened }" @click="toggleOpened()" @blur="showListOpened = false">
           <i class="ti ti-eye"></i>
-          <span>{{ $t(`showwhat`) }}</span>
+          <span>{{ $t(`showwhat`, 'mostra') }}</span>
           <div class="viewOpt" v-show="showListOpened">
             <div class="viewCont">
               <div class="view">
