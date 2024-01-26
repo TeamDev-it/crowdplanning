@@ -75,13 +75,15 @@
             :id="value.data.id ?? ''"
             @filesUploaded="coverUploaded"
             @fileRemoved="coverRemoved"
-            style="background-color: var(--background-color); height: 100%; display: grid; "
+            style="background-color: var(--background-color); height: 100%; display: grid"
           ></componenet>
           <div class="editor">
             <inject name="note-editor" v-model="value.data.description" @keydown.native.stop> </inject>
           </div>
         </div>
-        <div v-if="steplevel == 2" class="field two">ciao</div>
+        <div v-if="steplevel == 2" class="field two">
+          <inject name="editfeature-map" v-model="value.data.location" :id="value.data.id" :type="'PLANS'" :proposedFeatures="null"> </inject>
+        </div>
         <div v-if="steplevel == 3" class="field three">
           <div class="dates">
             <fieldset class="area fixed">
@@ -107,12 +109,12 @@
             </fieldset>
           </div>
           <hr />
-          <header class="toggle">
+          <div class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'Progetto pubblico') }}</span>
               <toggle v-model="value.data.isPublic" @keydown.native.stop :default="true" />
             </div>
-          </header>
+          </div>
 
           <div class="fieldsets" v-if="!value.data.isPublic">
             <div class="row">
@@ -150,16 +152,19 @@
               </select>
             </fieldset>
           </div>
+          <div v-if="value.data.planType == 'fromIssues'">
+            <component :is="taskSelector" :ref="taskSelector" style="height: 100%"></component>
+          </div>
         </div>
       </div>
     </section>
     <footer :class="{ canGoBack: steplevel > 1 }">
-      <button class="none" v-if="steplevel > 1" @click="steplevel--">
+      <button class="void" v-if="steplevel > 1" @click="steplevel--">
         <i class="ti ti-arrow-left"></i>
         <span>{{ $t('plan.wizard-go-back', 'Indietro') }}</span>
       </button>
-      <button v-if="steplevel != 4" @click="goNext()">
-      <!-- <button v-if="steplevel != 4" @click="steplevel++"> -->
+      <button v-if="steplevel != 4" @click="steplevel++">
+        <!-- <button v-if="steplevel != 4" @click="steplevel++"> -->
         <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
         <i class="ti ti-arrow-right"></i>
       </button>

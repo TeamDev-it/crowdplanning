@@ -18,6 +18,9 @@ export default ModuleInitializer({
       icon: "<i class='ti ti-file-like'></i>",
       class: "main",
       routeName: "crowdplanning",
+      meta: {
+        themeColor: '#43a047'
+      },
       featureflags: []
     }, { section: menuType.drawer });
 
@@ -29,7 +32,15 @@ export default ModuleInitializer({
 
     MessageService.Instance.subscribe("OPEN_PLANS_STATES_MODAL", (group: server.Group) => {
       Projector.Instance.projectAsyncTo((() => import('@/components/statesModal/crowdStatesModal.vue')) as never, group)
-    });
+    }
+    
+    
+    );
+    
   },
   routes
 });
+
+// MessageService.Instance.reply("OPEN_PLANS_WIZARD", (group: server.Group) => {
+//   Projector.Instance.projectAsyncTo((() => import('@/components/planWizard/planWizard.vue')) as never, group)
+// })

@@ -9,7 +9,7 @@ export default class GroupModal extends Vue {
   @Prop()
   value!: IProjectableModel<server.Group>;
 
-  copyValue: server.Group | null = null
+  copyValue!: server.Group 
 
   beforeMount() {
     this.copyValue = structuredClone(this.value.data);

@@ -10,6 +10,7 @@ import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
 import { groupsService } from "@/services/groupsService";
 
+
 @Component({
     components: {
         datePicker,
@@ -39,6 +40,11 @@ export default class PlanWizard extends Vue {
     steplevel: number = 1
     workspaceId = "";
     plansGroupRoot: server.Group = {} as server.Group;
+    featureTest: locations.Feature | null = null;
+
+    get taskSelector() {
+        return CommonRegistry.Instance.getComponent('task-selector');
+    }
 
     get mediaGallery() {
         return CommonRegistry.Instance.getComponent('media-gallery');
@@ -49,7 +55,6 @@ export default class PlanWizard extends Vue {
     }
 
     async mounted() {
-        console.log(this.value)
         this.steplevel = 1
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
         await this.getData();
@@ -130,7 +135,7 @@ export default class PlanWizard extends Vue {
                 cover = file;
             }
 
-            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.value.data.id, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.value.data.id!, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
 
             this.value.data.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 
@@ -157,7 +162,7 @@ export default class PlanWizard extends Vue {
 
             if (this.value.data.id)
                 //update plan
-                await plansService.Set(this.value.data!.groupId, this.plan);
+                await plansService.Set(this.value.data!.groupId, this.value.data);
         }
     }
 
@@ -173,7 +178,7 @@ export default class PlanWizard extends Vue {
         //   this.value.data.workspaceId = this.value.data.workspaceId;
           // Save new plan
           this.value.data.id = null;
-          this.value.data = await plansService.Set(this.value.data.groupId, this.value.data);
+          this.value.data = await plansService.Set(this.value.data.groupId, this.value.data) as server.Plan;
         }
 
         if (!this.value.data) {
@@ -190,7 +195,6 @@ export default class PlanWizard extends Vue {
         await plansService.Set(this.value.data!.groupId, this.value.data);
 
         this.setPlan(this.value.data);
-
         this.close();
     }
 
