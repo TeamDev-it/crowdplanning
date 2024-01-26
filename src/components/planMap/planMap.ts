@@ -2,7 +2,7 @@ import Component from "vue-class-component";
 import Vue from "vue";
 import { Prop, Watch } from "vue-property-decorator";
 import { HexToRGBA } from "@/utility/HexToRGBA";
-import { CommonRegistry } from "vue-mf-module";
+import { CommonRegistry, MessageService } from "vue-mf-module";
 
 @Component
 export default class PlanMap extends Vue {
@@ -18,72 +18,112 @@ export default class PlanMap extends Vue {
   @Prop({ default: [] })
   states: server.State[] = [];
 
-  datas: Array<locations.Location> = [];
+  datas: GeoJSON.FeatureCollection = {
+    type: "FeatureCollection" as const,
+    features: []
+  }
 
   async mounted(): Promise<void> {
     await this.getData();
   }
 
   get values(): Array<locations.MapLayer> {
-    return [
-      ...this.foreachPlanVisibleLayerGetMapLayers(),
-      {
-        id: this.group.id,
-        name: this.group.name,
-        dataType: "PLANS",
-        visible: true,
-        data: this.datas,
-        type: "managed",
-        fields: [
-          { name: 'id', alias: 'id', type: "long" },
-          { name: 'state', alias: 'state', type: "string" }
-        ],
-        options: {
-          clustering: {
-            enable: false
-          }
-        },
-        symbols: {
-          field: "state",
-          symbols: [
-            ...this.states.map(s => ({
-              value: s.shortName,
-              symbol: {
-                color: s.color ? HexToRGBA(s.color, .9) : "rgba(0,255,0,.9)",
-                size: "20",
-                outline: {
-                  color: s.color ? HexToRGBA(s.color, 1) : "rgba(0,255,0,1)",
-                  width: "1px"
-                }
-              }
-            })),
-            {
-              value: "none",
-              symbol: {
-                color: "rgba(0,255,0,1)",
-                size: "20",
-                outline: {
-                  color: "rgba(0,255,0,.9)",
-                  width: "1px"
-                }
-              }
-            }
-          ],
-        },
-        dataMapping: (i: locations.Location & { plan: server.Plan }, updateMap) => {
-          const data = { id: i.id, state: i.plan.state ?? "none" };
 
-          // osservo l'oggetto in mappa.
-          this.$watch(() => i.plan.state, (n) => {
-            data.state = n;
-            updateMap(i);
-          });
+    const res: Array<locations.MapLayer> = [];
+    const labelingInfo = [{
+      labelExpressionInfo: { expression: `$feature.title` },
+      symbol: {
+        type: "text",  // autocasts as new TextSymbol()
+        color: "black",
+        haloSize: 1,
+        haloColor: "white",
+      }
+    }];
 
-          return data;
+    res.push({
+      id: `${this.group.id}-PLANS`,
+      name: this.$t('crowdplanning.PLANS', 'Progetti'),
+      visible: true,
+      data: this.datas,
+      fields: [
+        {
+          type: "long",
+          name: "objectId",
+          alias: "objectId",
+        },
+        {
+          type: "long",
+          name: "typeId",
+          alias: "typeId",
+        },
+        {
+          type: "string",
+          name: "planId",
+          alias: "planId",
+        },
+        {
+          type: "string",
+          name: "title",
+          alias: "title",
+        },
+        {
+          type: "string",
+          name: "state",
+          alias: "state",
+        },
+      ],
+      type: "geojson",
+      geometryType: "polygon",
+      dataType: 'PLANS', // Utilizzato per i popup
+      options: {
+        clustering: {
+          enable: false
         }
       },
-    ];
+      renderer: {
+        type: "unique-value",
+        field: "state",
+        defaultSymbol: {
+          type: "simple-fill",  // autocasts as new SimpleFillSymbol()
+          color: [51, 51, 51, 0.3],
+          style: "solid",
+          outline: {  // autocasts as new SimpleLineSymbol()
+            color: "black",
+            width: "0.5px",
+          }
+        },
+        defaultLabel: this.$t('crowdplanning.states.unknown', 'Altro'),
+        uniqueValueInfos: this.states.map(v => ({
+          value: v.shortName,
+          symbol: {
+            type: "simple-fill",
+            color: HexToRGBA(v.color, 0.8),
+            style: "solid",
+            outline: {  // autocasts as new SimpleLineSymbol()
+              color: "white",
+              width: "0.5px",
+            }
+          },
+          label: v.name
+        })),
+      },
+      labelingInfo,
+      dataMapping: (i, updateMap) => {
+        this.$watch(() => i.properties["state"], (n) => {
+          i.properties["state"] = n;
+          updateMap(i);
+        });
+
+        const res = { ...i.properties };
+        return res;
+      },
+      tocVisible: true,
+      legendEnabled: true,
+    });
+
+    return res;
   }
+
 
   get mapComponent() {
     return CommonRegistry.Instance.getComponent("map");
@@ -91,31 +131,35 @@ export default class PlanMap extends Vue {
 
   @Watch("group")
   groupChanged(): void {
-    this.datas = [];
+    this.datas = {};
   }
 
   @Watch("plans", { deep: true })
   async getData(): Promise<void> {
-    if (!this.values)
-      return;
 
-    // cancello tutti i dati dal layer
-    const layerdata = this.values.filter(x => x.data)[0].data;
-    layerdata?.splice(0, layerdata?.length);
+    const features: { plan: server.Plan, feature: locations.Feature }[] = [];
+    for (const item of this.plans) {
+      const feature: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: item.id });
+      if (feature)
+        features.push({ plan: item, feature });
+    }
 
-    this.states.forEach(() => {
-      const visiblePlans = this.plans.filter(i => i.location);
-      layerdata?.push(...
-        visiblePlans
-          .map(t => Object.assign({
-            "id": 0,
-            "relationId": t.id,
-            "relationType": t.group.id,
-            plan: t
-          }, t.location)));
-    });
+    this.$set(this.datas, "features", features.map(o => ({
+      type: "Feature" as const,
+      geometry: o.feature.shape,
+      id: o.feature.id,
+      properties: {
+        objectId: o.feature.id,
+        typeId: o.feature.relationType,
+        planId: o.plan.id,
+        title: o.plan.title,
+        state: o.plan.state,
+      },
+    })));
+
   }
 
+  //TODO: questa parte non è ancora implementata
   private foreachPlanVisibleLayerGetMapLayers(): locations.MapLayer[] {
     const mapLayers: locations.MapLayer[] = [];
 
