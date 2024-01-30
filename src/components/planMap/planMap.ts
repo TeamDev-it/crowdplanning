@@ -42,7 +42,7 @@ export default class PlanMap extends Vue {
 
     res.push({
       id: `${this.group.id}-PLANS`,
-      name: this.$t('crowdplanning.PLANS', 'Progetti'),
+      name: this.group.name,
       visible: true,
       data: this.datas,
       fields: [
@@ -97,7 +97,7 @@ export default class PlanMap extends Vue {
           value: v.shortName,
           symbol: {
             type: "simple-fill",
-            color: "blue", //HexToRGBA(v.color, 0.8),
+            color: HexToRGBA(v.color, 0.7),
             style: "solid",
             outline: {  // autocasts as new SimpleLineSymbol()
               color: "white",
@@ -109,8 +109,8 @@ export default class PlanMap extends Vue {
       },
       labelingInfo,
       dataMapping: (i, updateMap) => {
-        this.$watch(() => i.properties["state"], (n) => {
-          i.properties["state"] = n;
+        this.$watch(() => i.properties!["state"], (n) => {
+          i.properties!["state"] = n;
           updateMap(i);
         });
 
@@ -133,12 +133,12 @@ export default class PlanMap extends Vue {
 
   @Watch("group")
   groupChanged(): void {
-    this.datas = {};
+    this.datas.features.splice(0, this.datas.features.length);
   }
 
   @Watch("plans", { deep: true })
   async getData(): Promise<void> {
-    this.datas.features.splice(0, this.datas.features.lenght);
+    this.datas.features.splice(0, this.datas.features.length);
 
     const features: { plan: server.Plan, feature: locations.Feature }[] = [];
     for (const item of this.plans) {
@@ -161,23 +161,5 @@ export default class PlanMap extends Vue {
     }));
 
     this.datas.features.push(...coll);
-  }
-
-  //TODO: questa parte non è ancora implementata
-  private foreachPlanVisibleLayerGetMapLayers(): locations.MapLayer[] {
-    const mapLayers: locations.MapLayer[] = [];
-
-    for (const plan of this.plans) {
-      if (plan.visibleLayers)
-        mapLayers.push(...plan.visibleLayers.map(x => ({
-          dataType: 'PLANS',
-          visible: true,
-          symbols: {},
-          url: x,
-          type: "server",
-        } as locations.MapLayer)));
-    }
-
-    return mapLayers;
   }
 }

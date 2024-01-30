@@ -1,5 +1,5 @@
 <template>
-  <div class="plan-map-tooltip" v-if="plan">
+  <div class="plan-map-tooltip" v-if="plan" @click="openPlan">
     <div class="image">
       <img v-if="coverImage && CoverImage" :src="CoverImage" />
       <img v-else src="@/assets/images/placeholder-img.png" />
@@ -9,7 +9,6 @@
         <div class="title">
           <span v-if="plan.title">{{ plan.title.toUpperCase() }}</span>
         </div>
-        <div class="description" v-if="plan.description" v-html="plan.description"></div>
       </div>
     </div>
   </div>
@@ -40,8 +39,11 @@
     flex-flow: column;
   }
 
-  .cars-content {
+  .card-content {
     overflow: hidden;
+  }
+  .title {
+    font-weight: bold;
   }
 }
 </style>
