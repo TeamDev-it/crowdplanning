@@ -128,7 +128,8 @@ export default class PlanModal extends Vue {
     }
 
     // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-    await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.plan.id);
+    if (this.plan.id)
+      await (this.$refs[this.coverMediaGalleryRef] as unknown as { save(id: string): Promise<void> })?.save(this.plan.id);
 
     // await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
 
@@ -164,7 +165,7 @@ export default class PlanModal extends Vue {
     }
   }
 
-  async coverRemoved(file: server.FileAttach): Promise<void> {
+  async coverRemoved(/* file: server.FileAttach */): Promise<void> {
     if (this.plan) {
       this.plan.coverImageIds = null;
 

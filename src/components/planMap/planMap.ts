@@ -47,28 +47,28 @@ export default class PlanMap extends Vue {
       data: this.datas,
       fields: [
         {
-          type: "long",
           name: "objectId",
+          type: "long",
           alias: "objectId",
         },
         {
-          type: "long",
           name: "typeId",
+          type: "string",
           alias: "typeId",
         },
         {
-          type: "string",
           name: "planId",
+          type: "string",
           alias: "planId",
         },
         {
-          type: "string",
           name: "title",
+          type: "string",
           alias: "title",
         },
         {
-          type: "string",
           name: "state",
+          type: "string",
           alias: "state",
         },
       ],
@@ -97,7 +97,7 @@ export default class PlanMap extends Vue {
           value: v.shortName,
           symbol: {
             type: "simple-fill",
-            color: HexToRGBA(v.color, 0.8),
+            color: "blue", //HexToRGBA(v.color, 0.8),
             style: "solid",
             outline: {  // autocasts as new SimpleLineSymbol()
               color: "white",
@@ -121,6 +121,8 @@ export default class PlanMap extends Vue {
       legendEnabled: true,
     });
 
+    console.log("crowd: res", res);
+
     return res;
   }
 
@@ -136,15 +138,16 @@ export default class PlanMap extends Vue {
 
   @Watch("plans", { deep: true })
   async getData(): Promise<void> {
+    this.datas.features.splice(0, this.datas.features.lenght);
 
     const features: { plan: server.Plan, feature: locations.Feature }[] = [];
     for (const item of this.plans) {
       const feature: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: item.id });
-      if (feature)
+      if (feature && feature.shape)
         features.push({ plan: item, feature });
     }
 
-    this.$set(this.datas, "features", features.map(o => ({
+    const coll = features.map(o => ({
       type: "Feature" as const,
       geometry: o.feature.shape,
       id: o.feature.id,
@@ -155,8 +158,9 @@ export default class PlanMap extends Vue {
         title: o.plan.title,
         state: o.plan.state,
       },
-    })));
+    }));
 
+    this.datas.features.push(...coll);
   }
 
   //TODO: questa parte non è ancora implementata
