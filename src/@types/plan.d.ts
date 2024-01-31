@@ -24,7 +24,6 @@ declare namespace server {
     rolesCanRate: string[];
     subPlanCount: int;
     group: Group;
-    location: locations.Location;
     planType: "simple" | "fromIssues"; 
   }
 
