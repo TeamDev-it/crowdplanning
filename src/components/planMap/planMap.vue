@@ -1,6 +1,6 @@
 <template>
   <div class="plan-map">
-    <component :is="mapComponent" v-model="values" v-if="values && states && states.length" :center="center" />
+    <component :is="mapComponent" :value="values" v-if="values && states && states.length" :center="center" />
   </div>
 </template>
 

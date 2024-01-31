@@ -8,6 +8,7 @@ import { CONFIGURATION } from "@/configuration";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
 import PlanMap from "../planMap/planMap.vue";
+import { create } from "lodash";
 
 
 @Component({
@@ -128,5 +129,16 @@ export default class PlanDetail extends Vue {
     } 
   }
 
-
+  comments = true
+  issues = false
+  toggleSections(s: string) {
+    if (s == 'comments') {
+      this.comments = true 
+      this.issues = false
+    }
+    if (s == 'issues') {
+      this.comments = false 
+      this.issues = true
+    }
+  }
 }

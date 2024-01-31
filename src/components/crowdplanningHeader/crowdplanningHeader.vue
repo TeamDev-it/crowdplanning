@@ -7,19 +7,19 @@
     </div>
     <div class="header-content">
       <div class="btn">
-        <button class="success" :class="{ plain: !showListOpened }" @click="toggleOpened()" @blur="showListOpened = false">
+        <button class="success list" :class="{ plain: !showListOpened }" @click="toggleOpened()" @blur="showListOpened = false">
           <i class="ti ti-eye"></i>
-          <span>{{ $t(`showwhat`) }}</span>
+          <span>{{ $t(`showwhat`, 'mostra') }}</span>
           <div class="viewOpt" v-show="showListOpened">
             <div class="viewCont">
               <div class="view">
                 <label for="default">{{ $t(`crowdplanning.changeview.map`, `Mostra mappa`) }}</label>
                 <toggle type="checkbox" id="default" name="changeView" v-model="seeMap" />
               </div>
-              <div class="view">
+              <!-- <div class="view">
                 <label for="default">{{ $t(`crowdplanning.changeview.progetti`, `Mostra progetti scaduti`) }}</label>
                 <toggle type="checkbox" id="default" name="" v-model="expiredPrj" />
-              </div>
+              </div> -->
             </div>
           </div>
         </button>
@@ -28,7 +28,7 @@
           <i class="ti ti-filter"></i>
           <span>{{ $t(`plan.header.section.filter`) }}</span>
         </button> -->
-        <button class="square success" v-if="currentUser && hasPermission('plans.cancreate')" @click="addPlan()">
+        <button class="square success add" v-if="currentUser && hasPermission('plans.cancreate')" @click="addPlan()">
           <i class="ti ti-plus"></i>
         </button>
       </div>
