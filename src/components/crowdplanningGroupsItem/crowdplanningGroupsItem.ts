@@ -4,8 +4,11 @@ import { Prop } from "vue-property-decorator";
 import groupModal from "@/components/groupModal/groupModal.vue";
 import { MessageService, Projector } from "vue-mf-module";
 import { Icon } from "@/utility/Icon";
+import { groupsService } from "@/services/groupsService";
 
-@Component
+@Component({
+  name: 'crowdplanning-groups-item'
+})
 export default class CrowdplanningGroupsItem extends Vue {
   @Prop({ required: true })
   value!: server.Group;
@@ -13,18 +16,28 @@ export default class CrowdplanningGroupsItem extends Vue {
   @Prop({ required: true })
   selectedCategory!: server.Group | null;
 
-  @Prop()
-  idx!: number 
+  @Prop({ default: 0 })
+  treeLevel!: number
+
+  children: server.Group[] = [];
 
   get iconCode(): string {
     return Icon.getIconCode(this.value.iconCode);
   }
 
-  public hasPermission(value: string): boolean {
+  async mounted() {
+    this.getChildren();
+  }
+
+  async getChildren() {
+    this.children = await groupsService.getGroupChildren(this.value.id);
+  }
+
+  hasPermission(value: string): boolean {
     return this.$can(`PLANS.${value}`);
   }
 
-  public async edit(): Promise<void> {
+  async edit(): Promise<void> {
     const updatedGroup = await Projector.Instance.projectAsyncTo(groupModal as never, this.value);
 
     if (updatedGroup) {
@@ -32,42 +45,20 @@ export default class CrowdplanningGroupsItem extends Vue {
     }
   }
 
-  setSelectedCategory(value: server.Group) {
-    this.$emit('selectedCategory', value)
+  setSelectedCategory(item: server.Group) {
+    this.$emit('selectedCategory', item)
   }
 
   async addSubGroup(): Promise<void> {
     const g = {} as server.Group;
-
     g.parentGroupId = this.value.id;
-
-    // if (!this.rootGroup || !this.rootGroup.id) return;
-
     const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
-    
 
     if (result) {
-      this.changedGroup(result);
+      this.getChildren();
     } else {
       // error message
       MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.group-create-error", "Errore durante la creazione della categoria"));
     }
-  }
-
-  public changedGroup(group: server.Group) {
-    const idxChildrenGroup: number = this.idx++ as number;
-    
-
-    if (idxChildrenGroup !== -1) {
-      if ((group as any).deleted) {
-        this.value.children.splice(idxChildrenGroup, 1);
-      } else {
-        this.value.children[idxChildrenGroup] = group;
-      }
-    } else {
-      this.value.children.push(group);
-    }
-
-    this.$emit("rootGroup", this.value);
   }
 }
