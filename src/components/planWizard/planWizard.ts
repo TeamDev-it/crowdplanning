@@ -202,7 +202,7 @@ export default class PlanWizard extends Vue {
         if (this.tasksList != null) {
             await plansService.importTask(this.value.data.id!, this.tasksList!);
         }
-        
+
         this.setPlan(this.value.data);
 
         this.close();

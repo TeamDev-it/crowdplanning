@@ -82,7 +82,7 @@
           </div>
         </div>
         <div v-show="steplevel == 2" class="field two">
-          <inject name="editfeature-map" v-model="featureTest" :id="value.data.id" :type="'PLANS'" :proposedFeatures="null" :doNotShowDescription="true"> </inject>
+          <inject name="editfeature-map" v-model="featureTest" :id="value.data.id" :type="'PLANS'" :proposedFeatures="null"> </inject>
         </div>
         <div v-show="steplevel == 3" class="field three">
           <div class="dates">
