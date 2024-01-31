@@ -82,7 +82,7 @@
           </div>
         </div>
         <div v-show="steplevel == 2" class="field two">
-          <inject name="editfeature-map" v-model="value.data.location" :id="value.data.id" :type="'PLANS'" :proposedFeatures="null"> </inject>
+          <inject name="editfeature-map" v-model="featureTest" :id="value.data.id" :type="'PLANS'" :proposedFeatures="null" :showDescription="false"> </inject>
         </div>
         <div v-show="steplevel == 3" class="field three">
           <div class="dates">
@@ -153,7 +153,7 @@
             </fieldset>
           </div>
           <div v-if="value.data.planType == 'fromIssues'">
-            <component :is="taskSelector" :ref="taskSelector" style="height: 100%" @selectedTask="importTask" v-model="tasksList"></component>
+            <component :is="taskSelector" :ref="taskSelector" style="height: 100%" v-model="tasksList"></component>
           </div>
         </div>
       </div>
@@ -163,12 +163,12 @@
         <i class="ti ti-arrow-left"></i>
         <span>{{ $t('plan.wizard-go-back', 'Indietro') }}</span>
       </button>
-      <button v-if="steplevel != 4" @click="steplevel++">
+      <button v-if="steplevel != 4" @click="goNext">
         <!-- <button v-if="steplevel != 4" @click="steplevel++"> -->
         <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
         <i class="ti ti-arrow-right"></i>
       </button>
-      <button v-if="steplevel == 4" @click="confirm()">
+      <button v-if="steplevel == 4" @click="confirm()" :disabled="disablePublishButton">
         <span>{{ $t('plan.wizard-publish', 'Pubblica') }}</span>
         <i class="ti ti-confetti"></i>
       </button>

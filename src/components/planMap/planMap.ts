@@ -121,8 +121,6 @@ export default class PlanMap extends Vue {
       legendEnabled: true,
     });
 
-    console.log("crowd: res", res);
-
     return res;
   }
 

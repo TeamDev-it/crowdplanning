@@ -18,8 +18,12 @@
       <div class="plan-summary-cont">
         <plan-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count" />
       </div>
-      <div class="third-column" v-if="canSeeMsg()">
-        <div class="comments-section">
+      <div class="third-column">
+        <div class="togglebtn">
+          <div @click="toggleSections('comments')" :class="{active:comments}">Commenti</div>
+          <div @click="toggleSections('issues')" :class="{active:issues}">Segnalazioni</div>
+        </div>
+        <div class="comments-section" v-if="canSeeMsg()" v-show="comments">
           <component
             :canSeeOthersComments="canSeeOthersComments"
             :currentUser="currentUser"
@@ -31,9 +35,11 @@
             :showCommentsCount="true"
           />
         </div>
-        <!-- <div v-for="task in selectedPlan?.relatedTasksId">
-          {{ selectedPlan?.relatedTasksId }}
-        </div> -->
+        <div class="issues-section" v-show="issues">
+          <div class="temp" v-for="t in 5">
+
+          </div>
+        </div>
       </div>
     </div>
   </div>

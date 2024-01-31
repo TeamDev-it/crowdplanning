@@ -63,7 +63,7 @@
 
           <fieldset class="edit-map">
             <small>{{ $t('plans.modal.plan-area', 'Area progetto').toLocaleUpperCase() }}</small>
-            <component class="featureMap" :is="editFeatureMap" type="PLANS" v-model="featureTest" :id="plan ? plan.id : null" />
+            <component class="featureMap" :is="editFeatureMap" type="PLANS" v-model="featureTest" :doNotShowDescription="true" :id="plan ? plan.id : null" />
           </fieldset>
 
           <fieldset>

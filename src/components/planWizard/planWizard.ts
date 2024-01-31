@@ -33,18 +33,15 @@ export default class PlanWizard extends Vue {
     steplevel: number = 1
     workspaceId = "";
     plansGroupRoot: server.Group = {} as server.Group;
-    featureTest: locations.Feature | null = null;
+    featureTest?: locations.Feature;
 
-    // tasksList: server.createPlan = []
-
-    async importTask(val: string[]) {
-        
-            // this.tasksList.tasks = val
-            // console.log(this.tasksList)
-            MessageService.Instance.send("SUCCESS", this.$t('plans.wizard.import-task-success', 'Segnalazioni importante con successo'));
-
-        // MessageService.Instance.send("ERRORR", this.$t('plans.wizard.import-task-error', 'Si è verificato un problema'));
+    createPlan: server.createPlan = {
+        feature: this.featureTest as locations.Feature,
+        plan: this.value as unknown as server.Plan,
+        tasks: this.tasksList as string[]
     }
+
+    tasksList?: string[]
 
     get taskSelector() {
         return CommonRegistry.Instance.getComponent('task-selector');
@@ -170,8 +167,10 @@ export default class PlanWizard extends Vue {
         }
     }
 
+    disablePublishButton: boolean = false
     async confirm(): Promise<void> {
 
+        this.disablePublishButton = true
         // this.value.resolve(this.value.data)
 
         if (!this.requiredFieldsSatisfied()) {
@@ -190,6 +189,8 @@ export default class PlanWizard extends Vue {
             return;
         }
 
+        this.disablePublishButton = false
+
         // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
         await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.value.data.id);
 
@@ -198,7 +199,11 @@ export default class PlanWizard extends Vue {
         // Update plan with new properties
         await plansService.Set(this.value.data!.groupId, this.value.data);
 
+        if (this.tasksList != null) {
+            await plansService.importTask(this.value.data.id!, this.tasksList!);
+        }
         this.setPlan(this.value.data);
+
         this.close();
     }
 
@@ -211,25 +216,31 @@ export default class PlanWizard extends Vue {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
             return false;
         }
-        if (!this.value.data?.description || this.value.data.description == "") {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-            return false;
-        }
         if (!this.value.data?.groupId || this.value.data.groupId == "") {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
             return false;
         }
-        if (!this.value.data?.location || this.value.data.location == undefined) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
+        if (!this.value.data?.description || this.value.data.description == "") {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
+            return false;
+        }
+        if (!this.featureTest || this.featureTest == undefined) {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
             return false;
         }
         if (!this.value.data?.startDate || this.value.data.startDate == undefined) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
             return false;
         }
-        if (!this.value.data?.dueDate || this.value.data.dueDate == undefined) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-            return false;
+        // if (!this.value.data?.dueDate || this.value.data.dueDate == undefined) {
+        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
+        //     return false;
+        // }
+        if (this.value.data.planType == 'fromIssues') {
+            if (this.tasksList && this.tasksList.length == 0) {
+                MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
+                return false;
+            }
         }
 
         //deve stare giu
@@ -270,8 +281,8 @@ export default class PlanWizard extends Vue {
         }
 
         if (this.steplevel == 2) {
-            if (!this.value.data?.location || this.value.data.location == undefined) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una posizione valida'));
+            if (!this.featureTest || this.featureTest == undefined) {
+                MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
                 return false;
             }
 
@@ -282,6 +293,12 @@ export default class PlanWizard extends Vue {
             if (!this.value.data?.startDate || this.value.data.startDate == undefined) {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
                 return false;
+            }
+            if (this.value.data.planType == 'fromIssues') {
+                if (this.tasksList && this.tasksList.length == 0) {
+                    MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
+                    return false;
+                }
             }
 
             return this.steplevel++
