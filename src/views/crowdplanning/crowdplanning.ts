@@ -149,15 +149,7 @@ export default class Crowdplanning extends Vue {
       groupId: "",
       id: null,
       isPublic: true,
-      location: {
-        altitude: 0,
-        id: 0,
-        latitude: 0,
-        longitude: 0,
-        relationId: "",
-        relationType: "",
-        wkid: 0,
-      },
+      location: null,
       rolesCanRate: [],
       rolesCanSeeOthersComments: [],
       rolesCanSeeOthersRatings: [],
@@ -174,7 +166,9 @@ export default class Crowdplanning extends Vue {
       parentId: undefined,
       startDate: undefined,
       locationName: "",
-      planType: "simple"
+      planType: "simple",
+      relatedTasksId: null,
+    
     }
 
     await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "planWizard" */ '@/components/planWizard/planWizard.vue')) as never, this.editable)

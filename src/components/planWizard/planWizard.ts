@@ -26,21 +26,25 @@ export default class PlanWizard extends Vue {
     @Prop()
     value!: IProjectableModel<server.Plan>;
 
-    // @Prop({required: true})
-    // editable?: server.Plan;
 
-    // @Prop()
-    // newPlan?: server.Plan;
 
     currentUser!: server.Myself | null
-
-
-    // plan: server.Plan = {} as server.Plan;
 
     steplevel: number = 1
     workspaceId = "";
     plansGroupRoot: server.Group = {} as server.Group;
     featureTest: locations.Feature | null = null;
+
+    // tasksList: server.createPlan = []
+
+    async importTask(val: string[]) {
+        
+            // this.tasksList.tasks = val
+            // console.log(this.tasksList)
+            MessageService.Instance.send("SUCCESS", this.$t('plans.wizard.import-task-success', 'Segnalazioni importante con successo'));
+
+        // MessageService.Instance.send("ERRORR", this.$t('plans.wizard.import-task-error', 'Si è verificato un problema'));
+    }
 
     get taskSelector() {
         return CommonRegistry.Instance.getComponent('task-selector');
@@ -171,19 +175,19 @@ export default class PlanWizard extends Vue {
         // this.value.resolve(this.value.data)
 
         if (!this.requiredFieldsSatisfied()) {
-          return;
+            return;
         }
 
         if (this.value.data && !this.value.data?.id) {
-        //   this.value.data.workspaceId = this.value.data.workspaceId;
-          // Save new plan
-          this.value.data.id = null;
-          this.value.data = await plansService.Set(this.value.data.groupId, this.value.data) as server.Plan;
+            //   this.value.data.workspaceId = this.value.data.workspaceId;
+            // Save new plan
+            this.value.data.id = null;
+            this.value.data = await plansService.Set(this.value.data.groupId, this.value.data) as server.Plan;
         }
 
         if (!this.value.data) {
-          MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
-          return;
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
+            return;
         }
 
         // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
@@ -200,7 +204,7 @@ export default class PlanWizard extends Vue {
 
     private setPlan(plan: server.Plan): void {
         store.actions.crowdplanning.setPlan(plan);
-      }
+    }
 
     private requiredFieldsSatisfied(): boolean {
         if (!this.value.data?.title || this.value.data.title == "") {

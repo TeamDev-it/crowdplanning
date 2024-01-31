@@ -27,6 +27,8 @@ export default class PlanDetail extends Vue {
   @Prop({ required: true })
   selectedPlan!: server.Plan | null;
 
+
+
   get canSeeOthersComments() {
     // TODO: Check if user roles matches rolesCanSeeOthersComments
     return this.selectedPlan?.rolesCanSeeOthersComments
@@ -54,6 +56,7 @@ export default class PlanDetail extends Vue {
   }
 
   async mounted() {
+    console.log(this.selectedPlan?.relatedTasksId, 'iddddddd')
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
   }
 

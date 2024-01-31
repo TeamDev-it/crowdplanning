@@ -56,10 +56,10 @@
               </option>
             </select>
           </fieldset>
-          <fieldset class="position">
+          <!-- <fieldset class="position">
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
             <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.stop @keydown.enter.prevent="$event.preventDefault()" />
-          </fieldset>
+          </fieldset> -->
 
           <fieldset class="edit-map">
             <small>{{ $t('plans.modal.plan-area', 'Area progetto').toLocaleUpperCase() }}</small>

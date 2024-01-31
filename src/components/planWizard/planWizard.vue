@@ -14,7 +14,7 @@
                 one: steplevel == 1,
                 two: steplevel == 2,
                 three: steplevel == 3,
-                four: steplevel == 4
+                four: steplevel == 4,
               }"
             ></div>
           </div>
@@ -47,7 +47,7 @@
       <div class="data">
         <h1>{{ getCurrentStepTitle(steplevel) }}</h1>
         <span>{{ getCurrentStepDescription(steplevel) }}</span>
-        <div v-if="steplevel == 1" class="field one">
+        <div v-show="steplevel == 1" class="field one">
           <div class="row">
             <fieldset>
               <small>{{ $t('plans.modal.title', 'titolo') }}*</small>
@@ -81,10 +81,10 @@
             <inject name="note-editor" v-model="value.data.description" @keydown.native.stop> </inject>
           </div>
         </div>
-        <div v-if="steplevel == 2" class="field two">
+        <div v-show="steplevel == 2" class="field two">
           <inject name="editfeature-map" v-model="value.data.location" :id="value.data.id" :type="'PLANS'" :proposedFeatures="null"> </inject>
         </div>
-        <div v-if="steplevel == 3" class="field three">
+        <div v-show="steplevel == 3" class="field three">
           <div class="dates">
             <fieldset class="area fixed">
               <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
@@ -153,7 +153,7 @@
             </fieldset>
           </div>
           <div v-if="value.data.planType == 'fromIssues'">
-            <component :is="taskSelector" :ref="taskSelector" style="height: 100%"></component>
+            <component :is="taskSelector" :ref="taskSelector" style="height: 100%" @selectedTask="importTask" v-model="tasksList"></component>
           </div>
         </div>
       </div>

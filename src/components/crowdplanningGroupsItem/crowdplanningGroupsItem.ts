@@ -56,7 +56,7 @@ export default class CrowdplanningGroupsItem extends Vue {
 
   public changedGroup(group: server.Group) {
     const idxChildrenGroup: number = this.idx++ as number;
-    debugger
+    
 
     if (idxChildrenGroup !== -1) {
       if ((group as any).deleted) {

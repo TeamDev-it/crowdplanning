@@ -19,7 +19,7 @@ export default ModuleInitializer({
       class: "main",
       routeName: "crowdplanning",
       meta: {
-        themeColor: '#43a047'
+        themeColor: 'var(--crowdplanning-primary-color)'
       },
       featureflags: []
     }, { section: menuType.drawer });

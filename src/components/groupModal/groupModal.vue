@@ -4,7 +4,7 @@
       <h2 v-if="value.data.id">{{ $t('plans.group.create.modifyGroup', 'Modifica categoria') }}</h2>
       <h2 v-else>{{ $t('plans.group.create.newGroup', 'Crea nuova categoria') }}</h2>
       <div>
-        <button v-if="value.data.id" class="danger" @click="deleteGroup()">
+        <button v-if="value.data.id" class="danger" @dblclick="deleteGroup()">
           <i class="ti ti-trash"></i>
         </button>
         <button class="square none" @click="close()">

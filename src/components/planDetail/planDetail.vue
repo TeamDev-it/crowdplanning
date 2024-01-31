@@ -31,6 +31,9 @@
             :showCommentsCount="true"
           />
         </div>
+        <!-- <div v-for="task in selectedPlan?.relatedTasksId">
+          {{ selectedPlan?.relatedTasksId }}
+        </div> -->
       </div>
     </div>
   </div>

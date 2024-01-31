@@ -32,4 +32,10 @@ declare namespace server {
     originalFileId: string;
     contentType: string;
   }
+
+  interface createPlan {
+    plan: server.Plan;
+    tasks: string[] | null;
+    feature: locations.Feature
+  }
 }
