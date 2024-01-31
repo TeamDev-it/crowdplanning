@@ -24,7 +24,6 @@
       </div>
     </div>
     <div class="content" v-if="plan">
-      
       <div class="third-column">
         <div class="fieldsets" v-if="(plan && plan.description) || !editable">
           <fieldset>
@@ -34,7 +33,7 @@
           <fieldset style="height: 100%; max-height: 250px">
             <small>{{ $t('plans.modal.copertina', 'copertina') }}*</small>
             <componenet
-            :ref="coverMediaGalleryRef"
+              :ref="coverMediaGalleryRef"
               :is="mediaGallery"
               :fileLimit="1"
               :titleText="{ key: 'modal.cover-image-addPlan-null', value: `` }"
@@ -57,38 +56,38 @@
               </option>
             </select>
           </fieldset>
-          <fieldset class="position">
+          <!-- <fieldset class="position">
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-            <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
-          </fieldset>
-          
-          <!-- <fieldset>
-            <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
-            <input class="layer" type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="confirmVisibleLayer()" />
+            <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.stop @keydown.enter.prevent="$event.preventDefault()" />
           </fieldset> -->
-          
-          <fieldset class="area fixed">
+
+          <fieldset class="edit-map">
+            <small>{{ $t('plans.modal.plan-area', 'Area progetto').toLocaleUpperCase() }}</small>
+            <component class="featureMap" :is="editFeatureMap" type="PLANS" v-model="featureTest" :id="plan ? plan.id : null" />
+          </fieldset>
+
+          <fieldset>
             <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
             <div class="date-picker-container">
-              <date-picker v-model="plan.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
+              <date-picker v-model="plan.startDate" @keydown.stop mode="dateTime" timezone="utc" required>
                 <template v-slot="{ inputEvents }">
-                  <date-time :value="plan.startDate" :events="inputEvents"></date-time>
+                  <date-time :value="plan ? plan.startDate : null" :events="inputEvents"></date-time>
                 </template>
               </date-picker>
             </div>
           </fieldset>
-          
+
           <fieldset class="area fixed">
             <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
             <div class="date-picker-container">
-              <date-picker v-model="plan.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
+              <date-picker v-model="plan.dueDate" @keydown.stop mode="dateTime" timezone="utc">
                 <template v-slot="{ inputEvents }">
-                  <date-time :value="plan.dueDate" :events="inputEvents"></date-time>
+                  <date-time :value="plan ? plan.dueDate : null" :events="inputEvents"></date-time>
                 </template>
               </date-picker>
             </div>
           </fieldset>
-          
+
           <!-- <header v-if="plans" class="cluster">
             <div class="row">
               <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
@@ -105,14 +104,14 @@
               ></autocomplete>
             </div>
           </header> -->
-          
+
           <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'progetto pubblico') }}</span>
-              <toggle v-model="plan.isPublic" @keydown.native.stop :default="true" />
+              <toggle v-model="plan.isPublic" @keydown.stop :default="true" />
             </div>
           </header>
-          
+
           <div class="fieldsets" v-if="!plan.isPublic">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
@@ -150,7 +149,7 @@
         </div>
       </div>
       <div class="editor" v-if="(plan && plan.description) || !editable">
-        <inject name="note-editor" v-model="plan.description" @keydown.native.stop> </inject>
+        <inject name="note-editor" v-model="plan.description" @keydown.stop> </inject>
       </div>
     </div>
   </div>

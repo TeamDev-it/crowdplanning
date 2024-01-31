@@ -4,7 +4,7 @@ import { Prop } from "vue-property-decorator";
 import PlanCard from "../plans/planCard/planCard.vue";
 import { store } from "@/store";
 import { Shared } from "@/utility/Shared";
-import { CommonRegistry } from "vue-mf-module";
+import { CommonRegistry, MessageService } from "vue-mf-module";
 import { Icon } from "@/utility/Icon";
 
 @Component({
@@ -16,16 +16,11 @@ export default class ObjectMapTooltip extends Vue {
 
   @Prop()
   value!: {
-    id: number,
-    relationId: string,
-    relationType: string,
-    plan: server.Plan,
-    latitude: number,
-    longitude: number,
-    altitude: number,
-    wkid: number,
-    workspaceId: string,
-    date: Date,
+    objectId: number,
+    planId: string,
+    state: string,
+    title: string,
+    typeId: string
   };
 
   coverImage: string | null = null;
@@ -36,7 +31,7 @@ export default class ObjectMapTooltip extends Vue {
   }
 
   get plan() {
-    return store.getters.crowdplanning.getPlanById(this.value.plan.id!);
+    return store.getters.crowdplanning.getPlanById(this.value.planId!);
   }
 
   get imagePreview() {
@@ -52,6 +47,9 @@ export default class ObjectMapTooltip extends Vue {
       this.coverImage = await Shared.getShared(this.plan.coverImageIds.sharedToken);
   }
 
-};
+  openPlan() {
+    MessageService.Instance.send("OPEN_CROWDPLAN", this.plan.id);
+  }
 
+}
 

@@ -32,7 +32,7 @@ export default defineConfig({
   },
   build: {
     minify: !isDevelopment,
-    sourcemap: isDevelopment,
+    sourcemap: false,
     emptyOutDir: true,
     outDir: resolve(__dirname, isDevelopment ? "../../main/public/modules/crowdplanning" : "dist"),
     rollupOptions: {

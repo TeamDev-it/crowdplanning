@@ -62,7 +62,7 @@ export default class PlanSummary extends Vue {
   userRoles: string[] = []
 
   canSeeRating() {
-    if (this.plan && (!this.plan.rolesCanRate.length || this.plan.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
+    if (this.plan && (!this.plan.rolesCanSeeOthersRatings.length || this.plan.rolesCanSeeOthersRatings.some((r) => this.userRoles.includes(r)))) {
       return true
     } 
   }

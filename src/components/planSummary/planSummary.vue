@@ -3,27 +3,29 @@
     <header>
       <h1 class="title">{{ plan.title }}</h1>
     </header>
-    <div class="cover-image" v-if="CoverImage">
-      <img :src="CoverImage" />
-    </div>
-    <div class="info-case">
-      <div v-tooltip="'scadenza progetto'" class="date info" v-if="plan.dueDate">
-        <i class="ti ti-calendar"></i>
-        <span>{{ formattedDuedDate }}</span>
+    <div>
+      <div class="cover-image" v-if="CoverImage">
+        <img :src="CoverImage" />
       </div>
+      <div class="info-case">
+        <div v-tooltip="$t('crowdplanning.planSummary-startDate' ,'Inizio progetto')" class="date info" v-if="plan.startDate">
+          <i class="ti ti-calendar"></i>
+          <span>{{ formattedStartDate }}</span>
+        </div>
 
-      <div v-if="plan.locationName" class="location info">
-        <i class="ti ti-map-pin"></i>
-        <span>{{ plan.locationName }}</span>
-      </div>
+        <div v-if="plan.dueDate" class="date info"  v-tooltip="$t('crowdplanning.planSummary-dueDate' ,'Scadenza progetto')">
+          <i class="ti ti-calendar-off"></i>
+          <span>{{ formattedDuedDate }}</span>
+        </div>
 
-      <div v-if="group?.name" class="group info">
-        <i :class="iconCode(group.iconCode ?? '')"></i>
-        <span class="text">{{ group.name }}</span>
-      </div>
+        <div v-if="group?.name" class="group info">
+          <i :class="iconCode(group.iconCode ?? '')"></i>
+          <span class="text">{{ group.name }}</span>
+        </div>
 
-      <div class="infoProva" v-if="canSeeRating()">
-        <component :is="likeCounter" :type="type" :id="plan.id"></component>
+        <div class="infoProva" v-if="canSeeRating()">
+          <component :is="likeCounter" :type="type" :id="plan.id"></component>
+        </div>
       </div>
     </div>
     <article>

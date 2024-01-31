@@ -13,7 +13,10 @@ import { groupsService } from "@/services/groupsService";
 import { statesService } from "@/services/statesService";
 import { plansService } from "@/services/plansService";
 import { store } from "@/store";
-import { cloneDeep, uniqueId } from "lodash";
+import { cloneDeep } from "lodash";
+import { union } from "@arcgis/core/geometry/geometryEngine.js";
+import { geojsonToArcGIS } from "@terraformer/arcgis";
+
 
 @Component({
   components: {
@@ -35,6 +38,7 @@ export default class Crowdplanning extends Vue {
   states: server.State[] = [];
   loading = true;
   workspaceId = "";
+  mapCenter: number[] | null = null;
 
   value!: server.Plan;
 
@@ -48,19 +52,6 @@ export default class Crowdplanning extends Vue {
     return store.getters.crowdplanning.getPlans();
   }
 
-  get mapCenter() {
-    // FIXME: the correct way should be to calculate all location centroid and use it
-    const locations = this.filteredPlans
-      .filter(p => p.location)
-      .map(p => ({ latitude: p.location?.latitude, longitude: p.location?.longitude }));
-
-    if (locations.length)
-      return [locations[0].longitude, locations[0].latitude];
-    else
-      return null;
-  }
-
-
   async mounted() {
     this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
 
@@ -68,6 +59,31 @@ export default class Crowdplanning extends Vue {
       this.openAuthModal();
 
     await this.getData();
+
+    MessageService.Instance.subscribe("OPEN_CROWDPLAN", this.openPlan, this);
+    
+    // Finding the map center
+    Promise.all(this.filteredPlans.map(async m => {
+      const res: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: m.id });
+      return res?.shape;
+    })).then(ss => {
+      const geoms = ss.filter(s => !!s).map(s => {
+        const geometry = geojsonToArcGIS(s);
+        return geometry;
+      });
+
+      const center = union(geoms as __esri.Geometry[]).extent.center;
+      this.mapCenter = [center.x, center.y];
+    });
+  }
+
+  beforeDestroy() {
+    MessageService.Instance.unsubscribe("OPEN_CROWDPLAN", this.openPlan);
+  }
+
+  private openPlan(id: string) {
+    const found = this.filteredPlans.find(p => p.id === id) ?? null;
+    this.setSelectedPlan(found);
   }
 
   private async openAuthModal(): Promise<void> {
@@ -117,8 +133,9 @@ export default class Crowdplanning extends Vue {
     return this.$can(`${CONFIGURATION.context}.${permission}`);
   }
 
+
   addPlanSec: boolean = false
-  addPlan() {
+  async addPlan() {
     this.editable = {
       attachmentsIds: [],
       coverImageIds: {
@@ -132,15 +149,6 @@ export default class Crowdplanning extends Vue {
       groupId: "",
       id: null,
       isPublic: true,
-      location: {
-        altitude: 0,
-        id: 0,
-        latitude: 0,
-        longitude: 0,
-        relationId: "",
-        relationType: "",
-        wkid: 0,
-      },
       rolesCanRate: [],
       rolesCanSeeOthersComments: [],
       rolesCanSeeOthersRatings: [],
@@ -150,17 +158,19 @@ export default class Crowdplanning extends Vue {
       title: "",
       userId: "",
       username: "",
-      visibleLayers: "",
+      visibleLayers: [],
       workspaceId: "",
       dueDate: undefined,
       lastUpdated: undefined,
       parentId: undefined,
       startDate: undefined,
       locationName: "",
+      planType: "simple",
     }
 
-    let ap = this.addPlanSec
-    this.addPlanSec = !ap
+    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "planWizard" */ '@/components/planWizard/planWizard.vue')) as never, this.editable)
+    // let ap = this.addPlanSec
+    // this.addPlanSec = !ap
   }
 
   editPlan: boolean = false

@@ -1,6 +1,4 @@
 declare namespace server {
-  declare type PlanType = 'proposal' | 'project';
-
   interface Plan {
     workspaceId: string;
     id: string | null;
@@ -17,7 +15,7 @@ declare namespace server {
     lastUpdated?: Date;
     groupId: string;
     visibleLayers: string[];
-    coverImageIds: SharedItemData;
+    coverImageIds: SharedItemData | null;
     attachmentsIds: SharedItemData[];
     isPublic: bool;
     rolesCanSeeOthersComments: string[];
@@ -26,12 +24,18 @@ declare namespace server {
     rolesCanRate: string[];
     subPlanCount: int;
     group: Group;
-    location: locations.Location;
+    planType: "simple" | "fromIssues"; 
   }
 
   interface SharedItemData {
     sharedToken: string;
     originalFileId: string;
     contentType: string;
+  }
+
+  interface createPlan {
+    plan: server.Plan;
+    tasks: string[] | null;
+    feature: locations.Feature
   }
 }

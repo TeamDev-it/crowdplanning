@@ -1,11 +1,18 @@
 .group-list {
-  padding: 8px; 
+  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   overflow-y: auto;
   height: 100%;
-  align-items: flex-end;
+  //align-items: stretch;
+
+  .childrens {
+    padding-left: 1rem;
+    display: flex;
+    flex-flow: column;
+    gap: .5rem;
+  }
 
   .item {
     display: flex;
@@ -25,7 +32,7 @@
     &.main {
       width: 100%;
 
-      .text{
+      .text {
         width: fit-content;
       }
     }
@@ -52,10 +59,11 @@
     &.main {
       width: 100%;
 
-      .text{
+      .text {
         width: fit-content !important;
       }
     }
+
     .text {
       width: 130px;
       overflow: hidden;

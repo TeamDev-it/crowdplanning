@@ -40,6 +40,10 @@ class PlansService extends baseRestService {
 
     store.actions.crowdplanning.deletePlan(id);
   }
+  
+  async importTask(id: string, taskId: string[]): Promise<void> {
+    await this.post(`/${id}/importTasks`, taskId)
+  }
 }
 
 export const plansService = new PlansService();
