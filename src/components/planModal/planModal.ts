@@ -225,10 +225,10 @@ export default class PlanModal extends Vue {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
       return false;
   }
-  if (!this.featureTest || this.featureTest == undefined) {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
-      return false;
-  }
+  // if (!this.featureTest || this.featureTest == undefined) {
+  //     MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
+  //     return false;
+  // }
   if (!this.plan?.startDate || this.plan.startDate == undefined) {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
       return false;
