@@ -27,6 +27,9 @@ export default class PlanDetail extends Vue {
   @Prop({ required: true })
   selectedPlan!: server.Plan | null;
 
+  @Prop()
+  plans?: server.Plan;
+
   get canSeeOthersComments() {
     // TODO: Check if user roles matches rolesCanSeeOthersComments
     return this.selectedPlan?.rolesCanSeeOthersComments
