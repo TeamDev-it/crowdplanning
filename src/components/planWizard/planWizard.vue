@@ -21,25 +21,25 @@
           <div class="circles">
             <div class="icon" :class="{ active: steplevel == 1, completed: steplevel > 1 }">
               <i v-if="steplevel == 1" class="ti ti-circle-dot"></i>
-              <i v-else="steplevel > 1" class="ti ti-circle-check"></i>
+              <i v-else-if="steplevel > 1" class="ti ti-circle-check"></i>
             </div>
             <div class="icon" :class="{ active: steplevel == 2, completed: steplevel > 2 }">
               <i v-if="steplevel < 2" class="ti ti-circle"></i>
               <i v-else-if="steplevel == 2" class="ti ti-circle-dot"></i>
-              <i v-else="steplevel > 2" class="ti ti-circle-check"></i>
+              <i v-else-if="steplevel > 2" class="ti ti-circle-check"></i>
             </div>
             <div class="icon" :class="{ active: steplevel == 3, completed: steplevel > 3 }">
               <i v-if="steplevel < 3" class="ti ti-circle"></i>
               <i v-else-if="steplevel == 3" class="ti ti-circle-dot"></i>
-              <i v-else="steplevel > 3" class="ti ti-circle-check"></i>
+              <i v-else-if="steplevel > 3" class="ti ti-circle-check"></i>
             </div>
             <div class="icon" :class="{ completed: steplevel == 4 }">
               <i v-if="steplevel < 4" class="ti ti-circle"></i>
-              <i v-else="steplevel == 4" class="ti ti-circle-check"></i>
+              <i v-else-if="steplevel == 4" class="ti ti-circle-check"></i>
             </div>
           </div>
           <div class="circles">
-            <span class="step" :class="step.class" v-for="step in steps">{{ step.title }}</span>
+            <span class="step" :class="step.class" v-for="step in steps" :key="step.idx">{{ step.title }}</span>
           </div>
         </div>
         <div class="step"></div>
@@ -78,7 +78,7 @@
             style="background-color: var(--background-color); height: 100%; display: grid"
           ></componenet>
           <div class="editor">
-            <inject name="note-editor" v-model="value.data.description" @keydown.native.stop> </inject>
+            <inject name="note-editor" v-model="value.data.description" @keydown.stop> </inject>
           </div>
         </div>
         <div v-show="steplevel == 2" class="field two">
@@ -89,7 +89,7 @@
             <fieldset class="area fixed">
               <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
               <div class="date-picker-container">
-                <date-picker v-model="value.data.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
+                <date-picker v-model="value.data.startDate" @keydown.stop mode="dateTime" timezone="utc" required>
                   <template v-slot="{ inputEvents }">
                     <date-time :value="value.data.startDate" :events="inputEvents"></date-time>
                   </template>
@@ -100,7 +100,7 @@
             <fieldset class="area fixed">
               <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
               <div class="date-picker-container">
-                <date-picker v-model="value.data.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
+                <date-picker v-model="value.data.dueDate" @keydown.stop mode="dateTime" timezone="utc">
                   <template v-slot="{ inputEvents }">
                     <date-time :value="value.data.dueDate" :events="inputEvents"></date-time>
                   </template>
@@ -112,7 +112,7 @@
           <div class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'Progetto pubblico') }}</span>
-              <toggle v-model="value.data.isPublic" @keydown.native.stop :default="true" />
+              <toggle v-model="value.data.isPublic" @keydown.stop :default="true" />
             </div>
           </div>
 
