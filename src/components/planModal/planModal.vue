@@ -112,7 +112,7 @@
             </div>
           </header>
 
-          <div class="fieldsets" v-if="!plan.isPublic">
+          <div class="fieldsets crowdplanning-roles-selector" v-if="!plan.isPublic">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
             </div>
@@ -254,4 +254,25 @@
     }
   }
 }
+
+.detail-container {
+  .crowdplanning-roles-selector {
+    button{
+    color: var(--crowdplanning-primary-color) !important;
+    width: 100%;
+    justify-content: space-between;
+    padding-left: 15px;
+
+    &:hover {
+      background-color: unset;
+      color: unset;
+    }
+  }
+
+  .select-role{
+    width: 100%;
+  }
+  }
+}
+
 </style>

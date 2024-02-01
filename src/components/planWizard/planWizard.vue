@@ -14,7 +14,7 @@
                 one: steplevel == 1,
                 two: steplevel == 2,
                 three: steplevel == 3,
-                four: steplevel == 4,
+                four: steplevel == 4
               }"
             ></div>
           </div>
@@ -116,7 +116,7 @@
             </div>
           </div>
 
-          <div class="fieldsets" v-if="!value.data.isPublic">
+          <div class="fieldsets crowdplanning-roles-selector" v-if="!value.data.isPublic">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
             </div>
@@ -152,7 +152,7 @@
               </select>
             </fieldset>
           </div>
-          <div v-if="value.data.planType == 'fromIssues'">
+          <div v-if="value.data.planType == 'fromIssues'" class="crowdplanning-task-selector">
             <component :is="taskSelector" :ref="taskSelector" style="height: 100%" v-model="tasksList"></component>
           </div>
         </div>
@@ -178,4 +178,40 @@
 <script src="./planWizard.ts" lang="ts"></script>
 <style lang="less" scoped>
 @import url(./planWizard.less);
+</style>
+
+<style lang="less">
+.crowdplanning-task-selector {
+  .container {
+    .head {
+      background-color: var(--crowdplanning-light-color);
+
+      button {
+        background-color: var(--crowdplanning-dark-color);
+      }
+    }
+
+    .search {
+      background-color: var(--crowdplanning-primary-color);
+    }
+  }
+}
+
+.crowdplanning-roles-selector {
+    button{
+    color: var(--crowdplanning-primary-color) !important;
+    width: 100% !important;
+    justify-content: space-between;
+    padding-left: 15px;
+
+    &:hover {
+      background-color: unset;
+      color: unset;
+    }
+  }
+
+  .select-role{
+    width: 100%;
+  }
+  }
 </style>
