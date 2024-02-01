@@ -8,7 +8,7 @@
 
       <div class="commands">
         <component v-if="canVote()" :is="likeButton" :type="type" :id="selectedPlan?.id" />
-        <button v-if="selectedPlan && $can('PLANS.plans.canedit')" class="success" @click="edit(selectedPlan)">
+        <button v-if="selectedPlan && $can('PLANS.plans.canedit')" class="success" @click="edit">
           <i class="ti ti-pencil"></i>
         </button>
       </div>
