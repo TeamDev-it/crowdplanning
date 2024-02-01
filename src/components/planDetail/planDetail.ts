@@ -8,7 +8,6 @@ import { CONFIGURATION } from "@/configuration";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
 import PlanMap from "../planMap/planMap.vue";
-import { create } from "lodash";
 
 
 @Component({
@@ -40,7 +39,7 @@ export default class PlanDetail extends Vue {
   liked: boolean = false
   count: number = 0
   async addLike() {
-    let l = this.liked
+    const l = this.liked
     this.liked = !l
 
     if (l == false) {
@@ -88,9 +87,9 @@ export default class PlanDetail extends Vue {
     return this.selectedPlan!.workspaceId
   }
 
-  edit(editable: server.Plan) {
+  edit() {
     this.back()
-    this.$emit('edit', editable)
+    this.$emit('edit', this.selectedPlan)
   }
 
   openCommentSection(): void {
