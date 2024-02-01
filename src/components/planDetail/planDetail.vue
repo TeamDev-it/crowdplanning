@@ -36,9 +36,7 @@
           />
         </div>
         <div class="issues-section" v-show="issues">
-          <div class="temp" v-for="t in 5">
-
-          </div>
+          <plan-card v-for="p in plans" :key="p"></plan-card>
         </div>
       </div>
     </div>
