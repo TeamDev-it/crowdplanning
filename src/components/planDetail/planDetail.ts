@@ -99,9 +99,13 @@ export default class PlanDetail extends Vue {
     shortId: number
   }[]
 
+  issuesButton: boolean = false
+
   async mounted() {
     this.tasksList = await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id)
-    console.log(this.tasksList)
+    if (this.tasksList.length) {
+      this.issuesButton = true
+    }
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
   }
 

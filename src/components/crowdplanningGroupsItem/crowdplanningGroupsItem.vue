@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="commands">
-        <div @click="addSubGroup">
+        <div v-if="hasPermission('groups.cancreate')" @click="addSubGroup" >
           <i class="ti ti-plus"></i>
         </div>
         <div v-if="hasPermission('groups.canedit')">
@@ -30,7 +30,6 @@
     </div>
   </div>
 </template>
-<!-- <div class="sub" v-for="c in value.children">CIAOOOO</div> -->
 
 <script lang="ts" src="./crowdplanningGroupsItem.ts" />
 

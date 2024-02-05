@@ -21,7 +21,7 @@
       <div class="third-column">
         <div class="togglebtn">
           <div @click="toggleSections('comments')" :class="{ active: comments }">Commenti</div>
-          <div @click="toggleSections('issues')" :class="{ active: issues }">Segnalazioni</div>
+          <div v-if="issuesButton" @click="toggleSections('issues')" :class="{ active: issues }">Segnalazioni</div>
         </div>
         <div class="comments-section" v-if="canSeeMsg()" v-show="comments">
           <component> </component>
