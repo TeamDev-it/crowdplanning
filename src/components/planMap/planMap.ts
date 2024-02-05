@@ -23,6 +23,8 @@ export default class PlanMap extends Vue {
     features: []
   }
 
+  issues: { location: locations.Location }[] = [];
+
   async mounted(): Promise<void> {
     await this.getData();
   }
@@ -137,12 +139,19 @@ export default class PlanMap extends Vue {
   @Watch("plans", { deep: true })
   async getData(): Promise<void> {
     this.datas.features.splice(0, this.datas.features.length);
+    this.issues.splice(0, this.issues.length);
 
     const features: { plan: server.Plan, feature: locations.Feature }[] = [];
     for (const item of this.plans) {
       const feature: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: item.id });
       if (feature && feature.shape)
         features.push({ plan: item, feature });
+
+      const issues: { location: locations.Location }[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", { referenceId: item.id });
+      if (issues && issues.length)
+        this.issues.push(...issues);
+
+
     }
 
     const coll = features.map(o => ({
