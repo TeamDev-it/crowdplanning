@@ -4,6 +4,15 @@ import { Prop, Watch } from "vue-property-decorator";
 import { HexToRGBA } from "@/utility/HexToRGBA";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 
+type taskLike = {
+  state: string;
+  id: string;
+  group: {
+    taskType: string;
+  };
+  location: locations.Location;
+};
+
 @Component
 export default class PlanMap extends Vue {
   @Prop({ default: [] })
@@ -23,11 +32,7 @@ export default class PlanMap extends Vue {
     features: []
   }
 
-  issues: { location: locations.Location }[] = [];
-
-  async mounted(): Promise<void> {
-    await this.getData();
-  }
+  locations: locations.Location[] = [];
 
   get values(): Array<locations.MapLayer> {
 
@@ -43,36 +48,16 @@ export default class PlanMap extends Vue {
     }];
 
     res.push({
-      id: `${this.group.id}-PLANS`,
-      name: this.group.name,
+      id: `PLANS`,
+      name: this.$t("crowdplanning.plans", "Progetti"),
       visible: true,
       data: this.datas,
       fields: [
-        {
-          name: "objectId",
-          type: "long",
-          alias: "objectId",
-        },
-        {
-          name: "typeId",
-          type: "string",
-          alias: "typeId",
-        },
-        {
-          name: "planId",
-          type: "string",
-          alias: "planId",
-        },
-        {
-          name: "title",
-          type: "string",
-          alias: "title",
-        },
-        {
-          name: "state",
-          type: "string",
-          alias: "state",
-        },
+        { name: "objectId", type: "long", alias: "objectId" },
+        { name: "typeId", type: "string", alias: "typeId" },
+        { name: "planId", type: "string", alias: "planId" },
+        { name: "title", type: "string", alias: "title" },
+        { name: "state", type: "string", alias: "state" },
       ],
       type: "geojson",
       geometryType: "polygon",
@@ -123,12 +108,61 @@ export default class PlanMap extends Vue {
       legendEnabled: true,
     });
 
+
+    res.push({
+      id: `ISSUES`,
+      name: this.$t('crowdplanning.issues', 'Segnalazioni'),
+      dataType: "ISSUES",
+      visible: true,
+      data: this.locations,
+      type: "managed",
+      fields: [
+        { name: 'id', alias: 'id', type: "long" },
+        { name: 'state', alias: 'state', type: "string" }
+      ],
+      symbols: {
+        field: "state",
+        symbols: [
+          {
+            value: "New",
+            symbol: {
+              color: HexToRGBA("#0000FF", .9),
+              size: "20",
+              outline: {
+                color: HexToRGBA("#000000", 1),
+                width: "1px"
+              }
+            }
+          }
+        ]
+      },
+      options: {
+        clustering: {
+          enable: false
+        }
+      },
+      dataMapping: (i: locations.Location & { task: { state: string } }, updateMap) => {
+        const data = { id: i.id, state: i.task.state };
+
+        // osservo l'oggetto in mappa.
+        this.$watch(() => i.task.state, (n) => {
+          data.state = n;
+          updateMap(i);
+        });
+
+        return data;
+      }
+    } as locations.ManagedMapLayer);
+
     return res;
   }
 
-
   get mapComponent() {
     return CommonRegistry.Instance.getComponent("map");
+  }
+
+  async mounted(): Promise<void> {
+    await this.getData();
   }
 
   @Watch("group")
@@ -139,7 +173,9 @@ export default class PlanMap extends Vue {
   @Watch("plans", { deep: true })
   async getData(): Promise<void> {
     this.datas.features.splice(0, this.datas.features.length);
-    this.issues.splice(0, this.issues.length);
+    const layerData = (this.values[1] as locations.ManagedMapLayer).data;
+
+    layerData.splice(0, this.locations.length);
 
     const features: { plan: server.Plan, feature: locations.Feature }[] = [];
     for (const item of this.plans) {
@@ -147,11 +183,18 @@ export default class PlanMap extends Vue {
       if (feature && feature.shape)
         features.push({ plan: item, feature });
 
-      const issues: { location: locations.Location }[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", { referenceId: item.id });
-      if (issues && issues.length)
-        this.issues.push(...issues);
+      const issues: taskLike[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", item.id);
+      if (issues && issues.length) {
+        layerData.push(...
+          issues.filter(i => !!i.location)
+            .map(t => Object.assign({
+              "id": 0,
+              "relationId": t.id,
+              "relationType": t.group.taskType,
+              task: t
+            }, t.location)));
 
-
+      }
     }
 
     const coll = features.map(o => ({

@@ -75,7 +75,7 @@ declare namespace locations {
   interface ManagedMapLayer extends BaseMapLayer {
     type: "managed",
     data: Array<locations.Location>,
-    dataMapping: { (item: locations.Location, updateMap: (item: locations.Location) => void): unknown }
+    dataMapping: (item: locations.Location, updateMap: (item: locations.Location) => void) => unknown;
     geometryType?: "point" | "multipoint" | "polyline" | "polygon" | "multipatch" | "mesh";
   }
 
