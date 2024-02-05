@@ -20,12 +20,12 @@
       </div>
       <div class="third-column">
         <div class="togglebtn">
-          <div @click="toggleSections('comments')" :class="{active:comments}">Commenti</div>
-          <div @click="toggleSections('issues')" :class="{active:issues}">Segnalazioni</div>
+          <div @click="toggleSections('comments')" :class="{ active: comments }">Commenti</div>
+          <div @click="toggleSections('issues')" :class="{ active: issues }">Segnalazioni</div>
         </div>
         <div class="comments-section" v-if="canSeeMsg()" v-show="comments">
+          <component> </component>
           <component
-            :canSeeOthersComments="canSeeOthersComments"
             :currentUser="currentUser"
             :is="discussionRoom"
             :type="type"
@@ -36,7 +36,31 @@
           />
         </div>
         <div class="issues-section" v-show="issues">
-          <plan-card v-for="p in plans" :key="p"></plan-card>
+          <div class="crowdplanning-task-card" v-for="(task, tidx) in tasksList" :key="`t-${tidx}-${task.id}`">
+            <div class="info">
+              <small>
+                <span>#{{ task.shortId }}</span>
+              </small>
+              <strong>{{ task.title }}</strong>
+              <div class="description" v-html="task.description" v-tooltip="task.description"></div>
+              <div class="state"><strong>{{ $t('taskgroupby.status') }}:</strong> {{ task.state }}</div>
+            </div>
+            <div class="icon">
+              <i class="ti ti-clock" v-tooltip=" date(task.creationDate, 'DD/MM/YYYY') "></i>
+            </div>
+          </div>
+          <!-- <component
+            v-if="$can('TASKS.canseeas.board')"
+            style="width: 100%"
+            :is="taskCardComponent"
+            v-for="(task, tidx) in tasksList"
+            :key="`t-${tidx}-${task.id}`"
+            :value="task"
+            :customFields="[]"
+          >
+          </component> -->
+          <!-- <component  style="width: 100%" :is="citizenTaskCardComponent" v-for="(task, tidx) in tasksList" :key="`t-${tidx}-${task.id}`" :task="task" :states="[]">
+          </component> -->
         </div>
       </div>
     </div>
