@@ -1,6 +1,6 @@
 import Component from "vue-class-component";
 import Vue from 'vue';
-import { Prop } from "vue-property-decorator";
+import { InjectReactive, Prop, ProvideReactive, Watch } from "vue-property-decorator";
 import PlanCard from "../plans/planCard/planCard.vue";
 import PlanSummary from "../planSummary/planSummary.vue";
 import CitizenInteraction from "../citizenInteraction/citizenInteraction.vue";
@@ -8,6 +8,7 @@ import { CONFIGURATION } from "@/configuration";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
 import PlanMap from "../planMap/planMap.vue";
+import moment from "moment";
 
 
 @Component({
@@ -30,9 +31,16 @@ export default class PlanDetail extends Vue {
   @Prop()
   plans?: server.Plan;
 
+  @ProvideReactive()
+  customFields?: any[] = [];
+
   get canSeeOthersComments() {
     // TODO: Check if user roles matches rolesCanSeeOthersComments
     return this.selectedPlan?.rolesCanSeeOthersComments
+  }
+
+  get canWriteComments() {
+    return this.selectedPlan?.rolesCanWriteComments
   }
 
   get likeButton() {
@@ -56,8 +64,54 @@ export default class PlanDetail extends Vue {
 
   }
 
+  get taskCardComponent() {
+    return CommonRegistry.Instance.getComponent("taskCardComponent"); 
+  }
+
+  get citizenTaskCardComponent() {
+    return CommonRegistry.Instance.getComponent("citizenTaskCardComponent"); 
+  }
+
+  tasksList?: {
+    id: number;
+    parentId: string;
+    parentType: string;
+    title: string;
+    description: string;
+    priority: number;
+    state: string;
+    isArchived: boolean;
+    source: string;
+    startDate: Date;
+    dueDate: Date;
+    userName: string;
+    creationDate: Date;
+    lastUpdated: Date;
+    groupId: string;
+    group: any;
+    assignedTo: any;
+    location?: locations.Location;
+    workspaceId?: string;
+    customFields: [];
+    subtaskCount?: { type: string, count: number }[];
+    isClusterRoot: boolean;
+    tags: string[];
+    shortId: number
+  }[]
+
+  issuesButton: boolean = false
+
   async mounted() {
+    this.tasksList = await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id)
+    if (this.tasksList.length) {
+      this.issuesButton = true
+    }
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
+  }
+
+
+  date(value: Date, format: string = "L") {
+    return moment(value).format(format)
   }
 
   commentSectionOpened = false;
@@ -111,35 +165,35 @@ export default class PlanDetail extends Vue {
     return this.$can(`${CONFIGURATION.context}.${permission}`);
   }
 
- userRoles: string[] = []
+  userRoles: string[] = []
 
   canVote() {
     if (this.selectedPlan && (!this.selectedPlan.rolesCanRate.length || this.selectedPlan.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
       return true
-    } 
+    }
   }
 
   canSeeMsg() {
     if (this.selectedPlan && (!this.selectedPlan.rolesCanSeeOthersComments.length || this.selectedPlan.rolesCanSeeOthersComments.some((r) => this.userRoles.includes(r)))) {
-      return true 
+      return true
     } else return false
   }
 
   canWriteMsg() {
     if (this.selectedPlan && (!this.selectedPlan.rolesCanWriteComments.length || this.selectedPlan.rolesCanWriteComments.some((r) => this.userRoles.includes(r)))) {
       return true
-    } 
+    }
   }
 
   comments = true
   issues = false
   toggleSections(s: string) {
     if (s == 'comments') {
-      this.comments = true 
+      this.comments = true
       this.issues = false
     }
     if (s == 'issues') {
-      this.comments = false 
+      this.comments = false
       this.issues = true
     }
   }

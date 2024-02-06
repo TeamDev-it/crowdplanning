@@ -1,5 +1,5 @@
 <template>
-  <div class="crowd-group-item">
+  <div class="crowd-group-item" v-if="value.id">
     <header @click="setSelectedCategory(value)" :class="{ active: selectedCategory?.id === value.id }">
       <div class="group-detail">
         <i :class="iconCode" v-if="treeLevel == 0"></i>
@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="commands">
-        <div @click="addSubGroup">
+        <div v-if="hasPermission('groups.cancreate')" @click="addSubGroup" >
           <i class="ti ti-plus"></i>
         </div>
         <div v-if="hasPermission('groups.canedit')">
@@ -30,7 +30,6 @@
     </div>
   </div>
 </template>
-<!-- <div class="sub" v-for="c in value.children">CIAOOOO</div> -->
 
 <script lang="ts" src="./crowdplanningGroupsItem.ts" />
 
