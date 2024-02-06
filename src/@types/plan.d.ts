@@ -1,40 +1,41 @@
 declare namespace server {
-    export interface Plan {
-        id: string;
-        parentId: string;
-        parentType: string;
-        title: string;
-        description: string;
-        priority: number;
-        state: string;
-        isArchived: boolean;
-        source: string;
-        startDate: Date;
-        dueDate: Date;
-        userName: string;
-        creationDate: Date;
-        lastUpdated: Date;
-        groupId: string;
-        group: Group;
-        assignedTo: TaskUser[];
-        location?: locations.Location;
-        locationName: string;
-        workspaceId?: string;
-        subtaskCount?: { type: string, count: number }[];
-        isClusterRoot: boolean;
-        planType: PlanType;
-        mapType: string;
-        visibleLayers: Array<String>;
-        coverImageIds: file.SharedRef | null;
-        attachmentsIds: Array<file.SharedRef>;
-        citizensCanSeeOthersComments: boolean;
-        citizensCanSeeOthersRatings: boolean;
-    }
+  interface Plan {
+    workspaceId: string;
+    id: string | null;
+    parentId?: string;
+    title: string;
+    description: string;
+    state: string;
+    startDate?: Date;
+    dueDate?: Date;
+    userId: string;
+    username: string;
+    locationName: string;
+    creationDate: Date;
+    lastUpdated?: Date;
+    groupId: string;
+    visibleLayers: string[];
+    coverImageIds: SharedItemData | null;
+    attachmentsIds: SharedItemData[];
+    isPublic: bool;
+    rolesCanSeeOthersComments: string[];
+    rolesCanWriteComments: string[];
+    rolesCanSeeOthersRatings: string[];
+    rolesCanRate: string[];
+    subPlanCount: int;
+    group: Group;
+    planType: "simple" | "fromIssues"; 
+  }
 
-    export interface TaskUser {
-        userId: string;
-        userName: string;
-    }
+  interface SharedItemData {
+    sharedToken: string;
+    originalFileId: string;
+    contentType: string;
+  }
 
-    declare type PlanType = 'proposal' | 'project';
+  interface createPlan {
+    plan: server.Plan;
+    tasks: string[] | null;
+    feature: locations.Feature
+  }
 }

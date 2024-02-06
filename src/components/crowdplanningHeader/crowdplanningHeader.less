@@ -40,8 +40,8 @@
         gap: 0.5rem;
 
         .plain {
-          color: var(--ok-color);
-          background-color: white;
+          color: var(--crowdplanning-primary-color) !important;
+          background-color: var(--white) !important;
         }
 
         .square {
@@ -88,7 +88,7 @@
             }
 
             div {
-              color: black;
+              color: var(--black);
               display: flex;
               align-items: center;
               gap: 10px;
@@ -100,6 +100,15 @@
                 font-weight: var(--font-weight-base);
               }
             }
+          }
+
+          &.list {
+            color: var(--white);
+            background: var(--crowdplanning-primary-color);
+          }
+
+          &.add {
+            background-color: var(--crowdplanning-primary-color);
           }
         }
       }

@@ -1,0 +1,224 @@
+.planWizard {
+  //min-height: 750px;
+  min-width: 1000px;
+  height: auto;
+  width: auto;
+  max-height: 95%;
+  max-width: 90%;
+
+  header {
+    background-color: var(--crowdplanning-primary-color);
+  }
+
+  section {
+    padding: 15px 30px;
+    overflow: auto;
+    gap: 40px;
+
+    .progressBar {
+      width: 100%;
+      padding: 15px 0;
+      position: sticky;
+      top: -15px;
+      height: 53px;
+      background-color: var(--white);
+      z-index: 1;
+
+      .bar {
+        width: 100%;
+        height: 38px;
+
+        .line {
+          &.outer {
+            padding: 0 5px;
+            width: 100%;
+            border: 1px solid var(--grey-semidark2);
+            height: 0;
+          }
+
+          &.inner {
+            transition: 0.5s;
+            border: 2px solid var(--crowdplanning-primary-color);
+            position: relative;
+            left: -2px;
+            top: -2px;
+
+            &.one {
+              width: 0%;
+            }
+            &.two {
+              width: 33%;
+            }
+            &.three {
+              width: 66%;
+            }
+            &.four {
+              width: 100%;
+            }
+          }
+        }
+
+        .circles {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          position: relative;
+          top: -17px;
+
+          .icon {
+            background: var(--modal-background-color);
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
+
+            i {
+              transition: 0.5s;
+              font-size: 30px;
+              color: var(--grey-semidark2);
+            }
+
+            &.active {
+              i {
+                color: var(--crowdplanning-primary-color);
+              }
+            }
+
+            &.completed {
+              i {
+                background-color: var(--crowdplanning-primary-color);
+                border-radius: 15px;
+                color: var(--white);
+              }
+            }
+          }
+
+          .step {
+            position: relative;
+
+            &.two {
+              right: 8px;
+            }
+
+            &.three {
+              right: 14px;
+            }
+          }
+        }
+      }
+    }
+    .data {
+      .field {
+        display: flex;
+        flex-flow: column;
+        padding: 15px 0;
+
+        &.one {
+          gap: 15px;
+
+          .row {
+            gap: 30px;
+            justify-content: space-between;
+
+            fieldset {
+              width: 100%;
+
+              .category {
+                width: 100%;
+
+                .opt {
+                  text-transform: uppercase;
+                  width: 100px;
+                  overflow-x: hidden;
+                  background-color: var(--white);
+                  color: var(--text-color);
+                }
+              }
+            }
+          }
+
+          .editor {
+            button {
+              color: var(--crowdplanning-primary-color);
+            }
+          }
+        }
+
+        &.three {
+          gap: 15px;
+
+          hr {
+            width: 100%;
+            border: 1px solid var(--grey-light);
+          }
+
+          .dates {
+            display: flex;
+            flex-flow: row;
+            justify-content: space-between;
+            gap: 30px;
+
+            .area {
+              width: 100%;
+            }
+          }
+
+          .toggle {
+            .row {
+              align-items: center;
+              gap: 30px;
+            }
+          }
+
+          .fieldsets {
+            display: flex;
+            flex-flow: column;
+            gap: 25px;
+
+            .row {
+              gap: 30px;
+              .noborder {
+                padding: 0;
+                width: 100%;
+
+                .bordered {
+                  width: 100%;
+                }
+              }
+            }
+          }
+
+          .opt {
+            text-transform: uppercase;
+            width: 100px;
+            overflow-x: hidden;
+            background-color: var(--white);
+            color: var(--text-color);
+          } 
+        }
+      }
+    }
+  }
+
+  footer {
+    justify-content: flex-end;
+    border: none;
+    background-color: var(--modal-background-color);
+    padding-right: 30px;
+    padding-left: 30px;
+
+    button {
+      background-color: var(--crowdplanning-primary-color);
+      gap: 1rem;
+
+      &.void {
+        background-color: transparent;
+        color: var(--black);
+        border: none;
+      }
+    }
+
+    &.canGoBack {
+      justify-content: space-between;
+    }
+  }
+}

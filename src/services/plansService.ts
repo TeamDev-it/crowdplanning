@@ -1,44 +1,49 @@
 import { CONFIGURATION } from "@/configuration";
 import { baseRestService } from "./baseRestService";
 import { store } from "@/store";
+
 class PlansService extends baseRestService {
-    constructor() {
-        super();
-        this.baseUrl = () => CONFIGURATION.PlansServiceUri;
-    }
+  constructor() {
+    super();
+    this.baseUrl = () => CONFIGURATION.PlansServiceUri;
+  }
 
-    public async Set(groupId: string, model: server.Plan): Promise<server.Plan | null> {
-        if (!model.id) return await this.Post<server.Plan>(`/group/${groupId}`, model);
+  async Set(groupId: string, model: server.Plan): Promise<server.Plan | null> {
+    if (!model.id) return await this.Post<server.Plan>(`/group/${groupId}`, model);
 
-        const result = await this.Put<server.Plan>(`/group/${groupId}`, model);
+    const result = await this.Put<server.Plan>(`/group/${groupId}`, model);
 
-        if (result)
-            store.actions.crowdplanning.setPlan(result);
+    if (result)
+      store.actions.crowdplanning.setPlan(result);
 
-        return result;
-    }
+    return result;
+  }
 
-    public async getPlans(): Promise<server.Plan[]> {
-        const result = await this.Get<server.Plan[]>(``) || [];
+  async getPlans(): Promise<server.Plan[]> {
+    const result = await this.Get<server.Plan[]>(``) || [];
 
-        store.actions.crowdplanning.setPlans(result);
+    store.actions.crowdplanning.setPlans(result);
 
-        return result;
-    }
+    return result;
+  }
 
-    public async getPublicPlans(workspaceId: string): Promise<server.Plan[]> {
-        const result = await this.Get<server.Plan[]>(`/${workspaceId}/getAllPublic`) || [];
+  async getPublicPlans(workspaceId: string): Promise<server.Plan[]> {
+    const result = await this.Get<server.Plan[]>(`/${workspaceId}/getAllPublic`) || [];
 
-        store.actions.crowdplanning.setPlans(result);
+    store.actions.crowdplanning.setPlans(result);
 
-        return result;
-    }
+    return result;
+  }
 
-    async deleteTask(id: string): Promise<void> {
-        await this.delete(`/${id}`);
+  async deletePlan(id: string): Promise<void> {
+    await this.delete(`/${id}`);
 
-        store.actions.crowdplanning.deletePlan(id);
-    }
+    store.actions.crowdplanning.deletePlan(id);
+  }
+  
+  async importTask(id: string, taskId: string[]): Promise<void> {
+    await this.post(`/${id}/importTasks`, taskId)
+  }
 }
 
 export const plansService = new PlansService();

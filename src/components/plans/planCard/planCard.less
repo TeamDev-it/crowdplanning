@@ -1,0 +1,91 @@
+.plan-card {
+  min-width: 330px;
+  max-width: 330px;
+  height: 350px;
+  width: 330px;
+  display: grid;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+
+  .image {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    justify-content: center;
+    height: 160px;
+    flex-flow: column;
+
+    .group-icon-card {
+      position: absolute;
+      left: 0.5rem;
+      top: 0.5rem;
+      border-radius: var(--border-radius);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--white);
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+
+  .card-content {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    grid-template-rows: 1fr auto;
+    width: 100%;
+    overflow: hidden;
+
+    .commands {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 24px;
+    }
+
+    .description {
+      max-height: 100px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+      -webkit-box-orient: vertical;
+      height: fit-content;
+    }
+
+    .commands:hover {
+      .go-detail {
+        .text {
+          font-weight: var(--font-weight-bold);
+        }
+      }
+    }
+
+    .plan-data {
+      display: grid;
+      gap: 0.5rem;
+      min-height: 120px;
+      width: 100%;
+      overflow: hidden;
+
+      .title {
+        overflow: hidden;
+        font-weight: var(--font-weight-bold);
+        text-overflow: ellipsis;
+        max-width: 100%;
+
+      }
+    }
+
+    .colrow {
+      display: grid;
+      grid-template-columns: max-content max-content;
+      align-items: center;
+      justify-content: flex-end;
+    }
+  }
+}

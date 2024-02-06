@@ -4,14 +4,14 @@
       <div class="back" @click="back">
         <i class="ti ti-arrow-left"></i>
       </div>
-      <div v-if="editable" class="title">{{ $t('taskDetail.modify.title', 'Modifica post') }}</div>
-      <div v-else class="title">{{ $t('taskDetail.publish.title', 'Inserisci nuovo post') }}</div>
+      <div v-if="editable" class="title">{{ $t('planDetail.modify.title', 'Modifica post') }}</div>
+      <div v-else class="title">{{ $t('planDetail.publish.title', 'Inserisci nuovo post') }}</div>
       <div class="commands">
         <button class="publish" @click="confirm" type="submit" v-if="!editable">
           <i class="ti ti-presentation"></i>
-          <span class="text">{{ $t('taskDetail.publish', 'Pubblica') }} </span>
+          <span class="text">{{ $t('planDetail.publish', 'Pubblica') }} </span>
         </button>
-        <button class="danger" v-tooltip="$t('taskDetail.delete', 'doppio click per eliminare')" v-if="editable" @dblclick="remove">
+        <button class="danger" v-tooltip="$t('planDetail.delete', 'doppio click per eliminare')" v-if="editable" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </button>
         <button class="warning" v-tooltip="'annulla modifiche'" v-if="editable" @click="back">
@@ -19,22 +19,24 @@
         </button>
         <button class="publish" @click="confirm" type="submit" v-if="editable">
           <i class="ti ti-presentation"></i>
-          <span class="text">{{ $t('taskDetail.saveMod', 'Salva') }} </span>
+          <span class="text">{{ $t('planDetail.saveMod', 'Salva') }} </span>
         </button>
       </div>
     </div>
     <div class="content" v-if="plan">
-      <div class="task-summary-cont">
-        <div class="summary-container">
-          <header>
-            <input class="title" type="text" placeholder="Inserisci titolo del post" v-model="plan.title" />
-          </header>
-          <div class="cover-image" v-if="(plan && plan.description) || !editable">
+      <div class="third-column">
+        <div class="fieldsets" v-if="(plan && plan.description) || !editable">
+          <fieldset>
+            <small>{{ $t('plans.modal.title', 'titolo') }}*</small>
+            <input class="layer" v-model="plan.title" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
+          </fieldset>
+          <fieldset style="height: 100%; max-height: 250px">
+            <small>{{ $t('plans.modal.copertina', 'copertina') }}*</small>
             <componenet
               :ref="coverMediaGalleryRef"
               :is="mediaGallery"
               :fileLimit="1"
-              :titleText="{ key: 'modal.cover-image-addPlan', value: `` }"
+              :titleText="{ key: 'modal.cover-image-addPlan-null', value: `` }"
               :subtitleText="{ key: 'modal.cover-image-description-addPlan', value: `` }"
               :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
               :type="`${context}-COVER`"
@@ -42,48 +44,34 @@
               :id="plan.id ?? ''"
               @filesUploaded="coverUploaded"
               @fileRemoved="coverRemoved"
-              style="background-color: #e5e5e5; height: 100%; display: grid"
+              style="background-color: var(--white); height: 100%; display: grid"
             ></componenet>
-          </div>
-          <div class="info-case"></div>
-          <article v-if="(plan && plan.description) || !editable">
-            <!-- <article v-if="plan" > -->
-            <div class="description">
-              <header class="content-editor">
-                <div class="cont">
-                  <content-editor v-model="plan.description" @keydown.native.stop style="width: 100%; height: 100%" />
-                </div>
-              </header>
-            </div>
-          </article>
-        </div>
-      </div>
-      <div class="third-column">
-        <div class="fieldsets">
+          </fieldset>
           <fieldset>
-            <small>{{ $t('plans.modal.categoria', 'categoria*') }}</small>
+            <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
             <select v-model="plan.groupId" class="category">
-              <option value="" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
+              <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
               <option class="opt" v-for="group in groups.children" :key="group.id" :value="group.id">
                 {{ group.name }}
               </option>
             </select>
           </fieldset>
-          <fieldset class="position">
+          <!-- <fieldset class="position">
             <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-            <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.native.stop @keydown.native.enter.prevent="$event.preventDefault()"></component>
-          </fieldset>
-          <fieldset>
-            <small>{{ $t('plans.modal.visible-layers').toLocaleUpperCase() }}</small>
-            <input class="layer" type="url" v-model="tmpVisibleLayer" :placeholder="$t('plans.modal.visible-layers-placeholder', 'Inserisci il link qui...')" @keydown.enter="confirmVisibleLayer()" />
+            <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.stop @keydown.enter.prevent="$event.preventDefault()" />
+          </fieldset> -->
+
+          <fieldset class="edit-map">
+            <small>{{ $t('plans.modal.plan-area', 'Area progetto').toLocaleUpperCase() }}</small>
+            <component class="featureMap" :is="editFeatureMap" type="PLANS" v-model="featureTest" :id="plan ? plan.id : null" />
           </fieldset>
 
-          <fieldset class="area fixed">
+          <fieldset>
             <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
             <div class="date-picker-container">
-              <date-picker v-model="plan.startDate" @keydown.native.stop mode="dateTime" timezone="utc" required>
+              <date-picker v-model="plan.startDate" @keydown.stop mode="dateTime" timezone="utc" required>
                 <template v-slot="{ inputEvents }">
-                  <date-time :value="plan.startDate" :events="inputEvents"></date-time>
+                  <date-time :value="plan ? plan.startDate : null" :events="inputEvents"></date-time>
                 </template>
               </date-picker>
             </div>
@@ -92,45 +80,76 @@
           <fieldset class="area fixed">
             <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
             <div class="date-picker-container">
-              <date-picker v-model="plan.dueDate" @keydown.native.stop mode="dateTime" timezone="utc">
+              <date-picker v-model="plan.dueDate" @keydown.stop mode="dateTime" timezone="utc">
                 <template v-slot="{ inputEvents }">
-                  <date-time :value="plan.dueDate" :events="inputEvents"></date-time>
+                  <date-time :value="plan ? plan.dueDate : null" :events="inputEvents"></date-time>
                 </template>
               </date-picker>
             </div>
           </fieldset>
 
-          <header v-if="plans" class="cluster">
-            <div class="row"> 
+          <!-- <header v-if="plans" class="cluster">
+            <div class="row">
               <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
               <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
             </div>
             <div v-if="hasClusterParent" class="autocomplete">
               <autocomplete
-                v-model="plan.parentId"
-                :inputValues="plans"
-                :filterFunction="autocompleteFilterFunction"
-                :placeholderKey=" $t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
-                :showThisPropertyAsItemName="'title'"
-                @valueChanged="valueChanged"
+              v-model="plan.parentId"
+              :inputValues="plans"
+              :filterFunction="autocompleteFilterFunction"
+              :placeholderKey="$t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
+              :showThisPropertyAsItemName="'title'"
+              @valueChanged="valueChanged"
               ></autocomplete>
+            </div>
+          </header> -->
+
+          <header class="toggle">
+            <div class="row">
+              <span>{{ $t('plans.modal.isPublic', 'progetto pubblico') }}</span>
+              <toggle v-model="plan.isPublic" @keydown.stop :default="true" />
             </div>
           </header>
 
-          <header class="toggle">
+          <div class="fieldsets crowdplanning-roles-selector" v-if="!plan.isPublic">
+            <div class="row">
+              <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
+            </div>
+            <fieldset class="noborder">
+              <small>{{ $t('plans.modal.roles-can-write', 'scrivere commenti').toLocaleUpperCase() }}</small>
+              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanWriteComments"> </inject>
+            </fieldset>
+            <fieldset class="noborder">
+              <small>{{ $t('plans.modal.roles-can-see-comments', 'leggere i commenti altrui').toLocaleUpperCase() }}</small>
+              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersComments"> </inject>
+            </fieldset>
+            <fieldset class="noborder">
+              <small>{{ $t('plans.modal.roles-can-rate', 'votare il progetto').toLocaleUpperCase() }}</small>
+              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanRate"> </inject>
+            </fieldset>
+            <fieldset class="noborder">
+              <small>{{ $t('plans.modal.roles-can-see-ratings', 'vedere il totale di voti').toLocaleUpperCase() }}</small>
+              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersRatings"> </inject>
+            </fieldset>
+          </div>
+          <!-- <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
               <toggle v-model="plan.citizensCanSeeOthersComments" @keydown.native.stop />
             </div>
           </header>
-
+          
           <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI').toUpperCase() }}</span>
               <toggle v-model="plan.citizensCanSeeOthersRatings" @keydown.native.stop />
             </div>
-          </header>
+          </header> -->
         </div>
+      </div>
+      <div class="editor" v-if="(plan && plan.description) || !editable">
+        <inject name="note-editor" v-model="plan.description" @keydown.stop> </inject>
       </div>
     </div>
   </div>
@@ -145,6 +164,18 @@
 <style lang="less">
 .third-column {
   .fieldsets {
+    .media-gallery {
+      .image-container,
+      .preview {
+        width: 100%;
+
+        small {
+          top: 0;
+          bottom: auto;
+        }
+      }
+    }
+
     .position {
       .position-input {
         .esri-search__sources-button {
@@ -158,6 +189,10 @@
           padding: 0;
         }
       }
+    }
+
+    .select-role {
+      right: auto !important;
     }
   }
 }
@@ -219,4 +254,25 @@
     }
   }
 }
+
+.detail-container {
+  .crowdplanning-roles-selector {
+    button{
+    color: var(--crowdplanning-primary-color) !important;
+    width: 100%;
+    justify-content: space-between;
+    padding-left: 15px;
+
+    &:hover {
+      background-color: unset;
+      color: unset;
+    }
+  }
+
+  .select-role{
+    width: 100%;
+  }
+  }
+}
+
 </style>

@@ -1,0 +1,128 @@
+.crowd-group-item {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  position: relative;
+
+  .children {
+    margin-left: 1rem;
+    border-left: 1px solid var(--grey-semidark2);
+    margin-top: .25rem;
+    position: relative;
+  }
+
+  &.child {
+
+    &:last-child::after {
+      content: "";
+      background: var(--aside-background-color);
+      position: absolute;
+      width: 1rem;
+      left: -2px;
+      top: 16px;
+      bottom: 0;
+      height: auto;
+    }
+
+    .children {
+      margin-left: 2rem;
+    }
+
+    header {
+      background-color: unset;
+      min-height: unset;
+      margin-left: 1rem;
+      height: 30px;
+
+      .active {
+        background-color: var(--crowdplanning-primary-color);
+        color: var(--white);
+      }
+
+      &::before {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 1rem;
+        border-bottom: 1px solid var(--grey-semidark2);
+        left: 0;
+      }
+    }
+  }
+
+  header {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 40px;
+    height: 40px;
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    padding: 10px;
+    cursor: pointer;
+
+    &.active {
+      background-color: var(--crowdplanning-primary-color);
+      color: var(--white);
+    }
+
+    &:hover {
+      .text {
+        width: auto !;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .commands {
+        display: flex;
+        flex-flow: row nowrap;
+        gap: 0.5rem;
+      }
+    }
+
+    .group-detail {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 0.5rem;
+
+      .detail-cont {
+        display: flex;
+        flex-flow: column;
+        overflow: hidden;
+        max-width: 140px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        .description {
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    .commands {
+      display: none;
+    }
+
+    .text {
+      width: auto;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+  }
+
+}
+
+@media (max-width: var(--low-res-tablet-max-width)) {
+  .item {
+    width: fit-content;
+  }
+
+  .text {
+    padding: 0.5rem 1rem;
+  }
+}
