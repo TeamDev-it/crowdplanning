@@ -33,6 +33,7 @@ export default class PlanMap extends Vue {
   }
 
   locations: locations.Location[] = [];
+  issuesStates: server.State[] = [];
 
   get values(): Array<locations.MapLayer> {
 
@@ -122,19 +123,17 @@ export default class PlanMap extends Vue {
       ],
       symbols: {
         field: "state",
-        symbols: [
-          {
-            value: "New",
-            symbol: {
-              color: HexToRGBA("#0000FF", .9),
-              size: "20",
-              outline: {
-                color: HexToRGBA("#000000", 1),
-                width: "1px"
-              }
+        symbols: this.issuesStates.map(s => ({
+          value: s.shortName,
+          symbol: {
+            color: HexToRGBA(s.color ?? "#0000FF", .9),
+            size: "20",
+            outline: {
+              color: HexToRGBA("#000000", 1),
+              width: "1px"
             }
           }
-        ]
+        })),
       },
       options: {
         clustering: {
@@ -183,6 +182,7 @@ export default class PlanMap extends Vue {
       if (feature && feature.shape)
         features.push({ plan: item, feature });
 
+      this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STSATES_BYREF", item.id);
       const issues: taskLike[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", item.id);
       if (issues && issues.length) {
         layerData.push(...
