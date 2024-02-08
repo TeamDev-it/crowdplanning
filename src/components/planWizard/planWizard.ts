@@ -199,7 +199,7 @@ export default class PlanWizard extends Vue {
         // Update plan with new properties
         await plansService.Set(this.value.data!.groupId, this.value.data);
 
-        if (this.tasksList != null) {
+        if (this.value.data.planType == 'fromIssues') {
             await plansService.importTask(this.value.data.id!, this.tasksList!);
         }
 
