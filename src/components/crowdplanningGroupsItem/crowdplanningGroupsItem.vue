@@ -1,6 +1,6 @@
 <template>
   <div class="crowd-group-item" v-if="value.id">
-    <header @click="setSelectedCategory(value)" :class="{ active: selectedCategory?.id === value.id }">
+    <header @click="setSelectedCategory(value)" class="category" :class="{ active: selectedCategory?.id === value.id }">
       <div class="group-detail">
         <i :class="iconCode" v-if="treeLevel == 0"></i>
         <div class="detail-cont">
