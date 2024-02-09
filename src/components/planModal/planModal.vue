@@ -11,7 +11,7 @@
           <i class="ti ti-presentation"></i>
           <span class="text">{{ $t('planDetail.publish', 'Pubblica') }} </span>
         </button>
-        <button class="danger" v-tooltip="$t('planDetail.delete', 'doppio click per eliminare')" v-if="editable" @dblclick="remove">
+        <button class="danger" v-if="hasPermission('plans.candelete')" v-tooltip="$t('planDetail.delete', 'doppio click per eliminare')" v-if="editable" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </button>
         <button class="warning" v-tooltip="'annulla modifiche'" v-if="editable" @click="back">

@@ -21,7 +21,9 @@ export default ModuleInitializer({
       meta: {
         themeColor: 'var(--crowdplanning-primary-color)'
       },
-      featureflags: []
+      featureflags: [
+        "PLANS.plans.enabled"
+      ]
     }, { section: menuType.drawer });
 
     mainstore.registerModule(crowdplanningStore.PREFIX, crowdplanningStore);
