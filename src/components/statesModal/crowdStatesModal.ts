@@ -6,6 +6,7 @@ import ValidateDirective from 'vue-mf-module';
 import { Drag, Drop } from 'vue-drag-drop';
 import { store } from "@/store";
 import { statesService } from "@/services/statesService";
+import { CONFIGURATION } from "@/configuration";
 
 @Component({
   directives: {
@@ -79,5 +80,9 @@ export default class crowdStatesModal extends Vue {
     states.push({ generalStatus: s } as server.State)
     this.recalcIndex(states);
     store.actions.crowdplanning.setStates({ groupId: this.value.data.id, states });
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.$can(`${CONFIGURATION.context}.${permission}`);
   }
 }
