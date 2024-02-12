@@ -29,8 +29,31 @@
     .header-content {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: space-between;
       padding: 0 1rem;
+
+      .group-name {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        gap: 1rem;
+
+        button{
+          color: var(--crowdplanning-primary-color);
+
+          &:hover {
+            background-color: var(--crowdplanning-primary-color);
+            color: var(--white);
+          }
+        }
+
+        .text {
+          display: flex;
+          flex-flow: column;
+          justify-content: center;
+          //align-items: center;
+        }
+      }
 
       .btn {
         position: relative;

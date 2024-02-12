@@ -18,13 +18,12 @@
       <div class="plan-summary-cont">
         <plan-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count" />
       </div>
-      <div class="third-column">
+      <div class="third-column" v-if="canSeeMsg() || canWriteMsg() || issuesButton">
         <div class="togglebtn">
-          <div @click="toggleSections('comments')" :class="{ active: comments }">Commenti</div>
+          <div v-if="canSeeMsg() || canWriteMsg()" @click="toggleSections('comments')" :class="{ active: comments }">Commenti</div>
           <div v-if="issuesButton" @click="toggleSections('issues')" :class="{ active: issues }">Segnalazioni</div>
         </div>
         <div class="comments-section" v-if="canSeeMsg()" v-show="comments">
-          <component> </component>
           <component
             :currentUser="currentUser"
             :is="discussionRoom"
@@ -46,7 +45,7 @@
               <div class="state"><strong>{{ $t('taskgroupby.status') }}:</strong> {{ task.state }}</div>
             </div>
             <div class="icon">
-              <i class="ti ti-clock" v-tooltip=" date(task.creationDate, 'DD/MM/YYYY') "></i>
+              <i class="ti ti-clock" v-tooltip="date(task.creationDate, 'DD/MM/YYYY')"></i>
             </div>
           </div>
           <!-- <component

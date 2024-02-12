@@ -53,10 +53,21 @@
               <small>{{ $t('plans.modal.title', 'titolo') }}*</small>
               <input class="layer" v-model="value.data.title" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
             </fieldset>
+          </div>
+          <div class="row">
+            <fieldset>
+              <small>{{ $t('plans.modal.stato', 'stato') }}</small>
+              <select v-model="value.data.groupId" class="category">
+                <option class="opt" disabled value="">{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
+                <option class="opt" v-for="state in states" :key="state.id" :value="state.shortName">
+                  {{ state.shortName }}
+                </option>
+              </select>
+            </fieldset>
             <fieldset>
               <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
               <select v-model="value.data.groupId" class="category">
-                <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
+                <option class="opt" disabled value="">{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
                 <option class="opt" v-for="group in plansGroupRoot.children" :key="group.id" :value="group.id">
                   {{ group.name }}
                 </option>

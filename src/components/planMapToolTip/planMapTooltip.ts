@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
 import PlanCard from "../plans/planCard/planCard.vue";
 import { store } from "@/store";
 import { Shared } from "@/utility/Shared";
@@ -18,7 +18,7 @@ export default class ObjectMapTooltip extends Vue {
   value!: {
     objectId: number,
     planId: string,
-    state: string,
+    state: any,
     title: string,
     typeId: string
   };
@@ -45,6 +45,12 @@ export default class ObjectMapTooltip extends Vue {
   async mounted() {
     if (this.plan.coverImageIds?.sharedToken)
       this.coverImage = await Shared.getShared(this.plan.coverImageIds.sharedToken);
+  }
+
+  @Watch('value.planId')
+  async changeImg() {
+    console.log('ce passo')
+    this.coverImage = await Shared.getShared(this.plan.coverImageIds!.sharedToken)
   }
 
   openPlan() {

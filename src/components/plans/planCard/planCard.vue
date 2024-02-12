@@ -5,14 +5,16 @@
         <i :class="iconCode"></i>
       </div>
       <div class="state">
-        <svg>
-          <g>
-            <circle cx="10" cy="10" r="5" :fill="state.color"></circle>
-          </g>
-        </svg>
-        <span>
-          {{ value.state }}
-        </span>
+        <div class="state_circle">
+          <svg>
+            <g>
+              <circle cx="10" cy="10" r="5" :fill="state.color"></circle>
+            </g>
+          </svg>
+        </div>
+        <div class="value_text" v-tooltip="value.state">
+          {{ state.name }}
+        </div>
       </div>
       <img :src="CoverImage" />
     </div>
@@ -21,14 +23,16 @@
         <i :class="iconCode"></i>
       </div>
       <div class="state">
-        <svg>
-          <g>
-            <circle cx="10" cy="10" r="5" :fill="state.color"></circle>
-          </g>
-        </svg>
-        <span>
+        <div class="state_circle">
+          <svg>
+            <g>
+              <circle cx="10" cy="10" r="5" :fill="state.color"></circle>
+            </g>
+          </svg>
+        </div>
+        <div class="value_text" v-tooltip="value.state">
           {{ value.state }}
-        </span>
+        </div>
       </div>
       <img src="@/assets/images/placeholder-img.png" />
     </div>

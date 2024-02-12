@@ -30,24 +30,39 @@
     }
 
     .state {
+      
       position: absolute;
-      left: 35%;
-      top: 80%;
+  top: 85%;
+  left: 50%;
+  transform: translate(-50%, -50%);
       border-radius: var(--border-radius);
       display: flex;
       flex-flow: row nowrap;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
       background-color: var(--white);
-      width: fit-content;
+      width: auto;
+      max-width: 150px;
       height: 1.5rem;
-      gap: 1rem;
+      gap: .5rem;
       padding: 0 0.5rem;
+      text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
 
-      svg {
+      .state_circle {
         height: 100%;
-        width: 20px;
-        padding-top: 2px;
+        svg {
+          height: 100%;
+          width: 20px;
+          padding-top: 2px;
+        }
+      }
+
+      .value_text {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
     }
   }
@@ -99,7 +114,6 @@
         font-weight: var(--font-weight-bold);
         text-overflow: ellipsis;
         max-width: 100%;
-
       }
     }
 

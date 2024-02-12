@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="commands">
-        <div v-if="hasPermission('groups.cancreate')" @click="addSubGroup" >
+        <div v-if="hasPermission('groups.cancreate') && treeLevel < 3" @click="addSubGroup" >
           <i class="ti ti-plus"></i>
         </div>
         <div v-if="hasPermission('groups.canedit')">

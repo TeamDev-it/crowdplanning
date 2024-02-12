@@ -6,6 +6,19 @@
       </div>
     </div>
     <div class="header-content">
+      <div class="group-name">
+        <button class="square void" @click="">
+          <i class="ti ti-chevron-left"></i>
+          <!-- <i class="ti ti-chevron-right"></i> -->
+        </button>
+        <div class="text" v-if="group">
+          <span><strong>{{ group.name }}</strong></span>
+          <span>{{ group.description }}</span>
+        </div>
+        <div v-if="!group">
+          <span><strong>{{ $t('plans.groups.see_all', 'Tutte le categorie') }}</strong></span>
+        </div>
+      </div>
       <div class="btn">
         <button class="success list" :class="{ plain: !showListOpened }" @click="toggleOpened()" @blur="showListOpened = false">
           <i class="ti ti-eye"></i>
