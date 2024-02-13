@@ -65,6 +65,10 @@ export default class PlanModal extends Vue {
 
   }
 
+  hasPermission(permission: string): boolean {
+    return this.$can(`PLANS.${permission}`);
+  }
+
   // @Watch("featureTest")
   // featureChanged(n: unknown) {
   //   console.log(n);
