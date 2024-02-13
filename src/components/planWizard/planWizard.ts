@@ -26,6 +26,15 @@ export default class PlanWizard extends Vue {
     @Prop()
     value!: IProjectableModel<server.Plan>;
 
+    @Watch('value.data.isPublic')
+    onIsPublicChanged() {
+        if (this.value.data.isPublic) {
+            this.value.data.rolesCanRate = [];
+            this.value.data.rolesCanSeeOthersComments = [];
+            this.value.data.rolesCanSeeOthersRatings = [];
+            this.value.data.rolesCanWriteComments = [];
+        }
+    }
 
 
     currentUser!: server.Myself | null
@@ -63,10 +72,6 @@ export default class PlanWizard extends Vue {
         this.steplevel = 1
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
         await this.getData();
-
-        // if (this.newPlan) {
-        //     this.plan = this.newPlan
-        // }
     }
 
     private async getData(): Promise<void> {
@@ -237,6 +242,12 @@ export default class PlanWizard extends Vue {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
             return false;
         }
+        if (this.value.data.dueDate) {
+            if (this.value.data.dueDate < this.value.data.startDate) {
+                MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error_before_start', 'La data di scadenza del progetto non può essere inferiore alla data di inizio'));
+                return false;
+            }
+        }
         // if (!this.value.data?.dueDate || this.value.data.dueDate == undefined) {
         //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
         //     return false;
@@ -298,6 +309,12 @@ export default class PlanWizard extends Vue {
             if (!this.value.data?.startDate || this.value.data.startDate == undefined) {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
                 return false;
+            }
+            if (this.value.data.dueDate) {
+                if (this.value.data.dueDate < this.value.data.startDate) {
+                    MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error_before_start', 'La data di scadenza del progetto non può essere inferiore alla data di inizio'));
+                    return false;
+                }
             }
             if (this.value.data.planType == 'fromIssues') {
                 if (this.tasksList && this.tasksList.length == 0) {

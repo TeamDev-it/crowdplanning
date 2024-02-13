@@ -35,6 +35,16 @@ export default class PlanModal extends Vue {
   @Prop()
   newPlan?: server.Plan
 
+  @Watch('plan.isPublic')
+  onIsPublicChanged() {
+      if (this.plan?.isPublic) {
+          this.plan.rolesCanRate = [];
+          this.plan.rolesCanSeeOthersComments = [];
+          this.plan.rolesCanSeeOthersRatings = [];
+          this.plan.rolesCanWriteComments = [];
+      }
+  }
+
   plan: server.Plan | null = null;
   coverImage: File | null = null;
   tmpVisibleLayer = "";
@@ -239,6 +249,12 @@ export default class PlanModal extends Vue {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
       return false;
   }
+  if (this.plan.dueDate) {
+    if (this.plan.dueDate < this.plan.startDate) {
+        MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error_before_start', 'La data di scadenza del progetto non può essere inferiore alla data di inizio'));
+        return false;
+    }
+}
   // if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
   //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
   //     return false;
