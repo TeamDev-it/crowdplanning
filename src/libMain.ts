@@ -41,6 +41,4 @@ export default ModuleInitializer({
   routes
 });
 
-// MessageService.Instance.reply("OPEN_PLANS_WIZARD", (group: server.Group) => {
-//   Projector.Instance.projectAsyncTo((() => import('@/components/planWizard/planWizard.vue')) as never, group)
-// })
+

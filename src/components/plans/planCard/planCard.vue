@@ -1,14 +1,38 @@
 <template>
   <div class="plan-card" v-if="!loading">
     <div class="image" v-if="coverImage && CoverImage">
-      <div v-if="iconCode != ''" class="group-icon-card">
+      <div v-if="iconCode" class="group-icon-card">
         <i :class="iconCode"></i>
+      </div>
+      <div class="state">
+        <div class="state_circle">
+          <svg>
+            <g>
+              <circle cx="10" cy="10" r="5" :fill="state.color"></circle>
+            </g>
+          </svg>
+        </div>
+        <div class="value_text" v-tooltip="value.state">
+          {{ state.name }}
+        </div>
       </div>
       <img :src="CoverImage" />
     </div>
     <div v-else-if="!coverImage && !CoverImage" class="image">
-      <div v-if="iconCode != ''" class="group-icon-card">
+      <div v-if="iconCode" class="group-icon-card">
         <i :class="iconCode"></i>
+      </div>
+      <div class="state">
+        <div class="state_circle">
+          <svg>
+            <g>
+              <circle cx="10" cy="10" r="5" :fill="state.color"></circle>
+            </g>
+          </svg>
+        </div>
+        <div class="value_text" v-tooltip="value.state">
+          {{ value.state }}
+        </div>
       </div>
       <img src="@/assets/images/placeholder-img.png" />
     </div>
@@ -21,7 +45,7 @@
       </div>
       <div class="commands" v-if="showCommands">
         <div>
-          <component v-if="canVote()" :is="likeViewer" :type="type" :id="value.id" ></component>
+          <component v-if="canVote()" :is="likeViewer" :type="type" :id="value.id"></component>
         </div>
         <div class="go-detail colrow">
           <div class="text" @click.prevent.stop="selectPlan">

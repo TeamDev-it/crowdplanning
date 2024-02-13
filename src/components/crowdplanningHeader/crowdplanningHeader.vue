@@ -1,11 +1,24 @@
 <template>
-  <header>
-    <div>
+  <header :class="{'noGroups': noGroups}">
+    <div v-if="!noGroups">
       <div class="search">
         <input type="text" :placeholder="$t(`plan.search`, 'cerca')" v-model.trim="searchedValue" />
       </div>
     </div>
     <div class="header-content">
+      <div class="group-name">
+        <button class="square" @click="toggleMenu()">
+          <i v-if="!noGroups" class="ti ti-chevron-left"></i>
+          <i v-if="noGroups" class="ti ti-chevron-right"></i>
+        </button>
+        <div class="text" v-if="group">
+          <span><strong>{{ group.name }}</strong></span>
+          <span>{{ group.description }}</span>
+        </div>
+        <div v-if="!group">
+          <span><strong>{{ $t('plans.groups.see_all', 'Tutte le categorie') }}</strong></span>
+        </div>
+      </div>
       <div class="btn">
         <button class="success list" :class="{ plain: !showListOpened }" @click="toggleOpened()" @blur="showListOpened = false">
           <i class="ti ti-eye"></i>

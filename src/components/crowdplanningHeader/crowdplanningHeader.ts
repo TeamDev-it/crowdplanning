@@ -2,11 +2,15 @@ import Component from "vue-class-component";
 import Vue from "vue";
 import { store } from "@/store";
 import { Prop, Watch } from "vue-property-decorator";
+import { groupsService } from "@/services/groupsService";
 
 @Component({})
 export default class CrowdplanningHeader extends Vue {
   @Prop({})
   currentUser!: server.Myself | null;
+
+  @Prop()
+  group?: server.Group | null;
 
   seeMap: boolean = true
   showListOpened: boolean = false
@@ -40,5 +44,12 @@ export default class CrowdplanningHeader extends Vue {
   toggleOpened() {
     let v = this.showListOpened;
     this.showListOpened = !v;
+  }
+
+  noGroups: boolean = false
+  toggleMenu() {
+    let nG = this.noGroups
+    this.noGroups = !nG
+    this.$emit('toggleMenu')
   }
 }

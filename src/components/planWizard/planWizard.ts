@@ -55,6 +55,10 @@ export default class PlanWizard extends Vue {
         return CONFIGURATION.context;
     }
 
+    get states(): server.State[] {
+        return Array.from(store.getters.crowdplanning.getStates(this.plansGroupRoot.id) || []);
+    }
+
     async mounted() {
         this.steplevel = 1
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");

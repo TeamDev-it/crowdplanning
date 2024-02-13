@@ -12,6 +12,10 @@
     // overflow-x: auto;
     background-color: var(--background-color);
 
+    &.noGroups {
+      grid-template-columns: 1fr;
+    }
+
     .search {
       height: 100%;
       width: 100%;
@@ -29,8 +33,33 @@
     .header-content {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: space-between;
       padding: 0 1rem;
+
+      .group-name {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        gap: 1rem;
+
+        button{
+          color: var(--crowdplanning-primary-color);
+          background-color: transparent;
+          border: none;
+          color: var(--grey-dark);
+
+          &:hover {
+            color: var(--crowdplanning-primary-color)
+          }
+        }
+
+        .text {
+          display: flex;
+          flex-flow: column;
+          justify-content: center;
+          //align-items: center;
+        }
+      }
 
       .btn {
         position: relative;

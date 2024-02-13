@@ -133,6 +133,10 @@
                   color: var(--text-color);
                 }
               }
+
+              &.error {
+                border: solid red 1px;
+              }
             }
           }
 
@@ -220,5 +224,16 @@
     &.canGoBack {
       justify-content: space-between;
     }
+  }
+  
+  select:has(option[value=""]:checked) {
+    color: var(--text-color);
+    opacity: 0.5;
+  }
+  
+  input::placeholder {
+    padding-left: 4px;
+    color: var(--text-color);
+    opacity: 0.5;
   }
 }
