@@ -11,10 +11,10 @@
           <i class="ti ti-presentation"></i>
           <span class="text">{{ $t('planDetail.publish', 'Pubblica') }} </span>
         </button>
-        <button class="danger" v-tooltip="$t('planDetail.delete', 'doppio click per eliminare')" v-if="editable" @dblclick="remove">
+        <button class="danger" v-if="hasPermission('plans.candelete')" v-tooltip="$t('planDetail.delete', 'doppio click per eliminare')" v-if="editable" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </button>
-        <button class="warning" v-tooltip="'annulla modifiche'" v-if="editable" @click="back">
+        <button class="warning" v-tooltip="$t('planDetail.back', 'annulla modifiche')" v-if="editable" @click="back">
           <i class="ti ti-arrow-back"></i>
         </button>
         <button class="publish" @click="confirm" type="submit" v-if="editable">
@@ -47,6 +47,7 @@
               style="background-color: var(--white); height: 100%; display: grid"
             ></componenet>
           </fieldset>
+
           <fieldset>
             <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
             <select v-model="plan.groupId" class="category">
@@ -56,10 +57,16 @@
               </option>
             </select>
           </fieldset>
-          <!-- <fieldset class="position">
-            <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-            <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.stop @keydown.enter.prevent="$event.preventDefault()" />
-          </fieldset> -->
+
+          <fieldset>
+            <small>{{ $t('plans.modal.states', 'stato') }}*</small>
+            <select v-model="plan.state" class="category">
+              <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
+              <option class="opt" v-for="state in states" :key="state.id" :value="state.shortName">
+                {{ state.shortName }}
+              </option>
+            </select>
+          </fieldset>
 
           <fieldset class="edit-map">
             <small>{{ $t('plans.modal.plan-area', 'Area progetto').toLocaleUpperCase() }}</small>

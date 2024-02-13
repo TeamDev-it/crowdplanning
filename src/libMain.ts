@@ -21,7 +21,9 @@ export default ModuleInitializer({
       meta: {
         themeColor: 'var(--crowdplanning-primary-color)'
       },
-      featureflags: []
+      featureflags: [
+        "PLANS.plans.enabled"
+      ]
     }, { section: menuType.drawer });
 
     mainstore.registerModule(crowdplanningStore.PREFIX, crowdplanningStore);
@@ -41,6 +43,4 @@ export default ModuleInitializer({
   routes
 });
 
-// MessageService.Instance.reply("OPEN_PLANS_WIZARD", (group: server.Group) => {
-//   Projector.Instance.projectAsyncTo((() => import('@/components/planWizard/planWizard.vue')) as never, group)
-// })
+

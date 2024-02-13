@@ -19,9 +19,15 @@ export default class PlanCard extends Vue {
   @Prop({ required: true })
   selectedPlan!: server.Plan
 
+  // @Prop()
+  // groups?: server.Group;
+
   coverImage: string | null = null;
   loading = true;
-  group: server.Group | null = null;
+  group!: server.Group;
+  state!: server.State;
+  states?: server.State[];
+  // currentState?: server.State;
 
   get likeViewer() {
     return CommonRegistry.Instance.getComponent("likeViewer");
@@ -36,13 +42,20 @@ export default class PlanCard extends Vue {
   }
 
   async mounted() {
-
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
 
     if (this.value.coverImageIds?.sharedToken)
       this.coverImage = await Shared.getShared(this.value.coverImageIds.sharedToken);
 
-    this.group = store.getters.crowdplanning.getGroupById(this.value.groupId);
+    if (this.value.groupId) {
+      this.group = this.value.group;
+    }
+
+    if (this.value.id) {
+      this.states = store.getters.crowdplanning.getStates(this.value.group.parentGroupId);
+    }
+
+    this.state = this.states?.find(x => x.shortName === this.value.state) as server.State; 
 
     this.loading = false;
   }
@@ -65,6 +78,6 @@ export default class PlanCard extends Vue {
   canVote() {
     if (this.value && (!this.value.rolesCanRate.length || this.value.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
       return true
-    } 
+    }
   }
 }

@@ -52,8 +52,10 @@ export default class PlanModal extends Vue {
     return CommonRegistry.Instance.getComponent("editfeature-map");
   }
 
+  get states(): server.State[] {
+    return Array.from(store.getters.crowdplanning.getStates(this.groups.id) || []);
+  }
   mounted() {
-
     if (this.editable) {
       this.plan = this.editable
     }
@@ -61,6 +63,10 @@ export default class PlanModal extends Vue {
       this.plan = this.newPlan
     }
 
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.$can(`PLANS.${permission}`);
   }
 
   // @Watch("featureTest")

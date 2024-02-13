@@ -101,12 +101,29 @@ export default class PlanDetail extends Vue {
 
   issuesButton: boolean = false
 
+  comments = true
+  issues = false
+  toggleSections(s: string) {
+    if (s == 'comments') {
+      this.comments = true
+      this.issues = false
+    }
+    if (s == 'issues') {
+      this.comments = false
+      this.issues = true
+    }
+  }
+
   async mounted() {
     this.tasksList = await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id)
     if (this.tasksList.length) {
       this.issuesButton = true
     }
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
+
+    if( !this.canSeeMsg() && !this.canWriteMsg() ) {
+      this.toggleSections('issues')
+    }
   }
 
 
@@ -185,16 +202,5 @@ export default class PlanDetail extends Vue {
     }
   }
 
-  comments = true
-  issues = false
-  toggleSections(s: string) {
-    if (s == 'comments') {
-      this.comments = true
-      this.issues = false
-    }
-    if (s == 'issues') {
-      this.comments = false
-      this.issues = true
-    }
-  }
+
 }
