@@ -63,7 +63,7 @@
             <select v-model="plan.state" class="category">
               <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
               <option class="opt" v-for="state in states" :key="state.id" :value="state.shortName">
-                {{ state.shortName }}
+                {{ state.name }}
               </option>
             </select>
           </fieldset>
