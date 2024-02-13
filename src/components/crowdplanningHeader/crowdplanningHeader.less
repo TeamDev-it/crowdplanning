@@ -12,6 +12,10 @@
     // overflow-x: auto;
     background-color: var(--background-color);
 
+    &.noGroups {
+      grid-template-columns: 1fr;
+    }
+
     .search {
       height: 100%;
       width: 100%;
@@ -40,10 +44,12 @@
 
         button{
           color: var(--crowdplanning-primary-color);
+          background-color: transparent;
+          border: none;
+          color: var(--grey-dark);
 
           &:hover {
-            background-color: var(--crowdplanning-primary-color);
-            color: var(--white);
+            color: var(--crowdplanning-primary-color)
           }
         }
 

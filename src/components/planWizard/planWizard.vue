@@ -57,10 +57,10 @@
           <div class="row">
             <fieldset>
               <small>{{ $t('plans.modal.stato', 'stato') }}</small>
-              <select v-model="value.data.groupId" class="category">
+              <select v-model="value.data.state" class="category">
                 <option class="opt" disabled value="">{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
                 <option class="opt" v-for="state in states" :key="state.id" :value="state.shortName">
-                  {{ state.shortName }}
+                  {{ state.shortName.toUpperCase() }}
                 </option>
               </select>
             </fieldset>

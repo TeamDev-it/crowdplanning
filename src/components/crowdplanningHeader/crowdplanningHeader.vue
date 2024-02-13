@@ -1,15 +1,15 @@
 <template>
-  <header>
-    <div>
+  <header :class="{'noGroups': noGroups}">
+    <div v-if="!noGroups">
       <div class="search">
         <input type="text" :placeholder="$t(`plan.search`, 'cerca')" v-model.trim="searchedValue" />
       </div>
     </div>
     <div class="header-content">
       <div class="group-name">
-        <button class="square void" @click="">
-          <i class="ti ti-chevron-left"></i>
-          <!-- <i class="ti ti-chevron-right"></i> -->
+        <button class="square" @click="toggleMenu()">
+          <i v-if="!noGroups" class="ti ti-chevron-left"></i>
+          <i v-if="noGroups" class="ti ti-chevron-right"></i>
         </button>
         <div class="text" v-if="group">
           <span><strong>{{ group.name }}</strong></span>

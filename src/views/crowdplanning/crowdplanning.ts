@@ -232,6 +232,10 @@ export default class Crowdplanning extends Vue {
     this.editPlan = false;
   }
 
-
+  noGroups: boolean = false
+  toggleMenu() {
+    let nG = this.noGroups
+    this.noGroups = !nG
+  }
 
 }

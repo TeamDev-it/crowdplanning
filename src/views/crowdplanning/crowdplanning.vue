@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div id="crowdplanning" :class="{ 'plan-selected': selectedPlan, 'plan-added': addPlanSec || editPlan }">
-    <crowdplanning-header :currentUser="currentUser" @addPlan="addPlan()" @changeView="changeView()" @expiredPrj="noExpiredPrj" :group="selectedGroup"/>
-    <div class="crowdplanning-content" v-if="!loading">
+    <crowdplanning-header :currentUser="currentUser" @addPlan="addPlan()" @changeView="changeView()" @expiredPrj="noExpiredPrj" :group="selectedGroup" @toggleMenu="toggleMenu()"/>
+    <div class="crowdplanning-content" v-if="!loading" :class="{ noGroups: noGroups }">
       <div class="groups" v-if="!selectedPlan && !addPlanSec && !editPlan">
         <crowdplanning-group-list
           :key="componentKey"

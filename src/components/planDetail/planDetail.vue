@@ -23,9 +23,10 @@
           <div v-if="canSeeMsg() || canWriteMsg()" @click="toggleSections('comments')" :class="{ active: comments }">Commenti</div>
           <div v-if="issuesButton" @click="toggleSections('issues')" :class="{ active: issues }">Segnalazioni</div>
         </div>
-        <div class="comments-section" v-if="canSeeMsg()" v-show="comments">
+        <div class="comments-section" v-if="canSeeMsg() || canWriteMsg()" v-show="comments">
           <component
-            :currentUser="currentUser"
+            :canSeeMsg="canSeeMsg()"
+            :canWriteMsg="canWriteMsg()"
             :is="discussionRoom"
             :type="type"
             :id="planId"
