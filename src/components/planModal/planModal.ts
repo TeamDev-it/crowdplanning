@@ -81,6 +81,10 @@ export default class PlanModal extends Vue {
 
   }
 
+  hasPermission(permission: string): boolean {
+    return this.$can(`PLANS.${permission}`);
+  }
+
   back() {
     this.$emit('goback')
   }
