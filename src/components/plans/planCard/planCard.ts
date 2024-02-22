@@ -24,9 +24,9 @@ export default class PlanCard extends Vue {
 
   coverImage: string | null = null;
   loading = true;
-  group!: server.Group;
-  state!: server.State;
-  states?: server.State[];
+  group: server.Group | null = null;
+  state: server.State | null = null;
+  states: server.State[]= [];
   // currentState?: server.State;
 
   get likeViewer() {
@@ -52,7 +52,7 @@ export default class PlanCard extends Vue {
     }
 
     if (this.value.id) {
-      this.states = store.getters.crowdplanning.getStates(this.value.group.parentGroupId);
+      this.states = store.getters.crowdplanning.getStates(this.value.group.parentGroupId ?? this.value.groupId);
     }
 
     this.state = this.states?.find(x => x.shortName === this.value.state) as server.State; 

@@ -4,7 +4,25 @@
       <div v-if="iconCode" class="group-icon-card">
         <i :class="iconCode"></i>
       </div>
-      <div class="state">
+      <div class="state" v-if="state">
+        <div class="state_circle">
+          <svg>
+            <g>
+              <circle cx="10" cy="10" r="5" :fill="state.color"></circle>
+            </g>
+          </svg>
+        </div>
+        <div class="value_text" v-tooltip="state.name">
+          {{ state.name }}
+        </div>
+      </div>
+      <img :src="CoverImage" />
+    </div>
+    <div class="image" v-else-if="!coverImage && !CoverImage">
+      <div v-if="iconCode" class="group-icon-card">
+        <i :class="iconCode"></i>
+      </div>
+      <div class="state" v-if="state">
         <div class="state_circle">
           <svg>
             <g>
@@ -14,24 +32,6 @@
         </div>
         <div class="value_text" v-tooltip="value.state">
           {{ state.name }}
-        </div>
-      </div>
-      <img :src="CoverImage" />
-    </div>
-    <div v-else-if="!coverImage && !CoverImage" class="image">
-      <div v-if="iconCode" class="group-icon-card">
-        <i :class="iconCode"></i>
-      </div>
-      <div class="state">
-        <div class="state_circle">
-          <svg>
-            <g>
-              <circle cx="10" cy="10" r="5" :fill="state.color"></circle>
-            </g>
-          </svg>
-        </div>
-        <div class="value_text" v-tooltip="value.state">
-          {{ value.state }}
         </div>
       </div>
       <img src="@/assets/images/placeholder-img.png" />

@@ -11,7 +11,7 @@
         </span>
       </div>
     </div>
-    <div class="childrens">
+    <div class="childrens" v-if="rootGroup">
       <crowdplanning-groups-item
         v-for="group in rootGroup.children"
         :idx="0"

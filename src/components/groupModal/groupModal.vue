@@ -27,7 +27,7 @@
           <toggle v-model="copyValue.public" />
         </div>
       </template>
-      <template>
+      <template v-if="value.data.parentGroupId != 'PLANS'">
         <div class="area">
           <small class="title">{{ $t('plan.group.create.icon.label', 'icona') }}</small>
           <input v-model="copyValue.iconCode" :placeholder="$t('plan.group.create.icon.placeholder', 'Inserisci un codice tabler icon')" />

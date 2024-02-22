@@ -49,7 +49,6 @@ export default class ObjectMapTooltip extends Vue {
 
   @Watch('value.planId')
   async changeImg() {
-    console.log('ce passo')
     this.coverImage = await Shared.getShared(this.plan.coverImageIds!.sharedToken)
   }
 
