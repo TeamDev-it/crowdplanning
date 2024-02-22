@@ -30,7 +30,8 @@ export default class CrowdplanningGroupsItem extends Vue {
   }
 
   async getChildren() {
-    this.children = await groupsService.getGroupChildren(this.value.id);
+    this.value.children = await groupsService.getGroupChildren(this.value.id);
+    this.children = this.value.children;
   }
 
   hasPermission(value: string): boolean {
@@ -40,9 +41,6 @@ export default class CrowdplanningGroupsItem extends Vue {
   async edit(): Promise<void> {
     const updatedGroup = await Projector.Instance.projectAsyncTo(groupModal as never, this.value);
 
-    if (updatedGroup) {
-      this.$emit("changedGroup", updatedGroup);
-    }
   }
 
   setSelectedCategory(item: server.Group) {
@@ -52,6 +50,7 @@ export default class CrowdplanningGroupsItem extends Vue {
   async addSubGroup(): Promise<void> {
     const g = {} as server.Group;
     g.parentGroupId = this.value.id;
+    g.iconCode = this.value.iconCode;
     const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
 
     if (result) {

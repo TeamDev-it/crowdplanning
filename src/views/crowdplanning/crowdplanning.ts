@@ -187,7 +187,7 @@ export default class Crowdplanning extends Vue {
     this.toggleMap = !tm
   }
 
-  expiredPrj: boolean = true
+  expiredPrj: boolean = false
   noExpiredPrj() {
     const eP = this.expiredPrj
     this.expiredPrj = !eP
@@ -204,7 +204,10 @@ export default class Crowdplanning extends Vue {
     }
 
     if (this.selectedGroup) {
-      result = result.filter(x => x.groupId === this.selectedGroup?.id);
+
+      const groups = this.flatten([this.selectedGroup], (g: server.Group) => g.children) as server.Group[];
+
+      result = result.filter(x => groups.some(y => y.id === x.groupId));
     }
 
     if (this.searchedValue) {
@@ -238,4 +241,9 @@ export default class Crowdplanning extends Vue {
     this.noGroups = !nG
   }
 
+
+  flatten = <T>(items: T[], extractChildren: (item: T) => T[]): T[] => Array.prototype.concat.apply(
+    items,
+    items.map(x => this.flatten(extractChildren(x) || [], extractChildren)) 
+  ) ;
 }

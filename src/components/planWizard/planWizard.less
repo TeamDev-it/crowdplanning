@@ -131,6 +131,8 @@
                   overflow-x: hidden;
                   background-color: var(--white);
                   color: var(--text-color);
+                  display: flex;
+                  flex-flow: column;
                 }
               }
 
@@ -197,7 +199,7 @@
             overflow-x: hidden;
             background-color: var(--white);
             color: var(--text-color);
-          } 
+          }
         }
       }
     }
@@ -225,15 +227,24 @@
       justify-content: space-between;
     }
   }
-  
-  select:has(option[value=""]:checked) {
+
+  select:has(option[value='']:checked) {
     color: var(--text-color);
     opacity: 0.5;
   }
-  
+
   input::placeholder {
-    padding-left: 4px;
+    padding-left: 0;
     color: var(--text-color);
     opacity: 0.5;
+  }
+
+  input {
+    padding-left: 4px !important;
+  }
+  select {
+    padding: 0 !important;
   }
 }
+
+

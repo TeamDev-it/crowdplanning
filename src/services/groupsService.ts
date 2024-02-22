@@ -1,6 +1,7 @@
 import { CONFIGURATION } from "@/configuration";
 import { baseRestService } from "./baseRestService";
 import { store } from "@/store";
+import { forEach } from "lodash";
 
 class GroupsService extends baseRestService {
   constructor() {

@@ -55,7 +55,7 @@
       </drop>
     </section>
     <footer>
-      <button @click="close()" disabled>
+      <button @click="confirm()">
         <i class="ti ti-check"></i>
         <span>
           {{ $t('task.confirm', 'conferma e salva') }}
