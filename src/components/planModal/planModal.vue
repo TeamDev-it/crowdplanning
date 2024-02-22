@@ -50,22 +50,12 @@
 
           <fieldset>
             <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
-            <select v-model="plan.groupId" class="category">
-              <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-              <option class="opt" v-for="group in groups.children" :key="group.id" :value="group.id">
-                {{ group.name }}
-              </option>
-            </select>
+            <group-button v-model="plan.group" :showAsSelect="true" @groupChanged="groupChanged"></group-button>
           </fieldset>
 
           <fieldset>
             <small>{{ $t('plans.modal.states', 'stato') }}*</small>
-            <select v-model="plan.state" class="category">
-              <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-              <option class="opt" v-for="state in states" :key="state.id" :value="state.shortName">
-                {{ state.name }}
-              </option>
-            </select>
+            <status-button v-model="plan.state" :showAsSelect="true" @stateChanged="stateChanged"></status-button>
           </fieldset>
 
           <fieldset class="edit-map">
@@ -264,22 +254,21 @@
 
 .detail-container {
   .crowdplanning-roles-selector {
-    button{
-    color: var(--crowdplanning-primary-color) !important;
-    width: 100%;
-    justify-content: space-between;
-    padding-left: 15px;
+    button {
+      color: var(--crowdplanning-primary-color) !important;
+      width: 100%;
+      justify-content: space-between;
+      padding-left: 15px;
 
-    &:hover {
-      background-color: unset;
-      color: unset;
+      &:hover {
+        background-color: unset;
+        color: unset;
+      }
+    }
+
+    .select-role {
+      width: 100%;
     }
   }
-
-  .select-role{
-    width: 100%;
-  }
-  }
 }
-
 </style>

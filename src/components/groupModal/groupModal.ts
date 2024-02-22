@@ -1,7 +1,7 @@
 import Component from "vue-class-component";
 import Vue from 'vue';
 import { Prop } from "vue-property-decorator";
-import { IProjectableModel } from "vue-mf-module";
+import { IProjectableModel, MessageService } from "vue-mf-module";
 import { groupsService } from "@/services/groupsService";
 
 @Component
@@ -31,9 +31,9 @@ export default class GroupModal extends Vue {
 
       if (updatedGroup)
         this.value.resolve(updatedGroup);
-
-      this.close();
     }
+
+    MessageService.Instance.send("CHANGED_GROUP")
   }
 
   close(): void {
@@ -47,12 +47,15 @@ export default class GroupModal extends Vue {
   }
 
   async deleteGroup(): Promise<void> {
+    
     await groupsService.deleteGroup(this.value.data.id);
     Vue.set(this.value.data, 'deleted', true);
     this.value.resolve(this.value.data);
 
+    MessageService.Instance.send("CHANGED_GROUP");
+
     try {
-      this.value?.reject();
+      this.value.resolve(this.value.data);
     } catch {
       //
     }

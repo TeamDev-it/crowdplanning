@@ -79,7 +79,7 @@ export default class PlanDetail extends Vue {
     title: string;
     description: string;
     priority: number;
-    state: string;
+    state: any;
     isArchived: boolean;
     source: string;
     startDate: Date;

@@ -9,6 +9,8 @@ import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
 import { groupsService } from "@/services/groupsService";
+import groupButton from "@/components/groupButton/groupButton.vue";
+import statusButton from "@/components/statusButton/statusButton.vue";
 
 
 @Component({
@@ -16,6 +18,8 @@ import { groupsService } from "@/services/groupsService";
         datePicker,
         dateTime,
         Autocomplete,
+        groupButton,
+        statusButton
     }
 })
 export default class PlanWizard extends Vue {
@@ -24,15 +28,17 @@ export default class PlanWizard extends Vue {
     public readonly mediaGalleryRef: string = 'media-gallery';
 
     @Prop()
-    value!: IProjectableModel<server.Plan>;
+    value!: IProjectableModel<unknown>;
 
-    @Watch('value.data.isPublic')
+    plan:server.Plan = {} as server.Plan;
+
+    @Watch('plan.isPublic')
     onIsPublicChanged() {
-        if (this.value.data.isPublic) {
-            this.value.data.rolesCanRate = [];
-            this.value.data.rolesCanSeeOthersComments = [];
-            this.value.data.rolesCanSeeOthersRatings = [];
-            this.value.data.rolesCanWriteComments = [];
+        if (this.plan.isPublic) {
+            this.plan.rolesCanRate = [];
+            this.plan.rolesCanSeeOthersComments = [];
+            this.plan.rolesCanSeeOthersRatings = [];
+            this.plan.rolesCanWriteComments = [];
         }
     }
 
@@ -86,7 +92,15 @@ export default class PlanWizard extends Vue {
         this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
 
         if (this.plansGroupRoot) {
-            this.plansGroupRoot.children = allGroups.filter(x => x.parentGroupId === this.plansGroupRoot?.id);
+            // x.parentGroupId === this.plansGroupRoot?.id  (trova tutti i gruppi principali)
+            // x.parentGroupId !== null  (trova tutti i gruppi (principali e figli))
+            // x.parentGroupId !== this.plansGroupRoot?.id (trova solo gruppi figli e PLANS)
+            this.plansGroupRoot.children = this.buildTree(allGroups.filter(x => x.parentGroupId !== null));
+            // this.plansChildrenGroupRoot.children = allGroups.filter(x => x.parentGroupId !== this.plansGroupRoot?.id && x.parentGroupId !== null);
+
+            // this.tipregodio.children = this.mergeArrays(this.plansGroupRoot.children, this.plansChildrenGroupRoot.children);
+
+
         }
 
         if (this.plansGroupRoot?.id) {
@@ -98,6 +112,25 @@ export default class PlanWizard extends Vue {
         }
     }
 
+    buildTree(objects: server.Group[]): server.Group[] {
+        const tree: server.Group[] = [];
+        const objectMap: { [key: string]: server.Group } = {};
+
+        objects.forEach(obj => {
+            objectMap[obj.id] = obj;
+            obj.children = [];
+        });
+
+        objects.forEach(obj => {
+            if (obj.parentGroupId !== null && objectMap[obj.parentGroupId]) {
+                objectMap[obj.parentGroupId].children.push(obj);
+            } else {
+                tree.push(obj);
+            }
+        });
+        return tree;
+    }
+
     close() {
         try {
             this.value?.reject();
@@ -105,7 +138,7 @@ export default class PlanWizard extends Vue {
             // 
         }
 
-        this.value.resolve(this.value.data);
+        this.value.resolve(this.plan);
     }
 
 
@@ -137,7 +170,7 @@ export default class PlanWizard extends Vue {
     }
 
     async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
-        if (file && this.value.data) {
+        if (file && this.plan) {
             let cover = null;
             if (Array.isArray(file)) {
                 cover = file[0];
@@ -145,13 +178,13 @@ export default class PlanWizard extends Vue {
                 cover = file;
             }
 
-            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.value.data.id!, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
 
-            this.value.data.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
+            this.plan.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 
-            if (this.value.data.id)
+            if (this.plan.id)
                 //update plan
-                await plansService.Set(this.value.data!.groupId, this.value.data);
+                await plansService.Set(this.plan!.groupId, this.plan);
         }
     }
 
@@ -166,13 +199,13 @@ export default class PlanWizard extends Vue {
     }
 
     async coverRemoved(file: server.FileAttach): Promise<void> {
-        if (this.value.data) {
+        if (this.plan) {
 
-            this.value.data.coverImageIds = null;
+            this.plan.coverImageIds = null;
 
-            if (this.value.data.id)
+            if (this.plan.id)
                 //update plan
-                await plansService.Set(this.value.data!.groupId, this.value.data);
+                await plansService.Set(this.plan!.groupId, this.plan);
         }
     }
 
@@ -180,20 +213,20 @@ export default class PlanWizard extends Vue {
     async confirm(): Promise<void> {
 
         this.disablePublishButton = true
-        // this.value.resolve(this.value.data)
+        // this.value.resolve(this.plan)
 
         if (!this.requiredFieldsSatisfied()) {
             return;
         }
 
-        if (this.value.data && !this.value.data?.id) {
-            //   this.value.data.workspaceId = this.value.data.workspaceId;
+        if (this.plan && !this.plan?.id) {
+            //   this.plan.workspaceId = this.plan.workspaceId;
             // Save new plan
-            this.value.data.id = null;
-            this.value.data = await plansService.Set(this.value.data.groupId, this.value.data) as server.Plan;
+            this.plan.id = null;
+            this.plan = await plansService.Set(this.plan.groupId, this.plan) as server.Plan;
         }
 
-        if (!this.value.data) {
+        if (!this.plan) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
         }
@@ -201,18 +234,18 @@ export default class PlanWizard extends Vue {
         this.disablePublishButton = false
 
         // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-        await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.value.data.id);
+        await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.plan.id);
 
         // await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
 
         // Update plan with new properties
-        await plansService.Set(this.value.data!.groupId, this.value.data);
+        await plansService.Set(this.plan!.groupId, this.plan);
 
-        if (this.value.data.planType == 'fromIssues') {
-            await plansService.importTask(this.value.data.id!, this.tasksList!);
+        if (this.plan.planType == 'fromIssues') {
+            await plansService.importTask(this.plan.id!, this.tasksList!);
         }
 
-        this.setPlan(this.value.data);
+        this.setPlan(this.plan);
 
         this.close();
     }
@@ -222,15 +255,15 @@ export default class PlanWizard extends Vue {
     }
 
     private requiredFieldsSatisfied(): boolean {
-        if (!this.value.data?.title || this.value.data.title == "") {
+        if (!this.plan?.title || this.plan.title == "") {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
             return false;
         }
-        if (!this.value.data?.groupId || this.value.data.groupId == "") {
+        if (!this.plan?.groupId || this.plan.groupId == "") {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
             return false;
         }
-        if (!this.value.data?.description || this.value.data.description == "") {
+        if (!this.plan?.description || this.plan.description == "") {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
             return false;
         }
@@ -238,21 +271,21 @@ export default class PlanWizard extends Vue {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
             return false;
         }
-        if (!this.value.data?.startDate || this.value.data.startDate == undefined) {
+        if (!this.plan?.startDate || this.plan.startDate == undefined) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
             return false;
         }
-        if (this.value.data.dueDate) {
-            if (this.value.data.dueDate < this.value.data.startDate) {
+        if (this.plan.dueDate) {
+            if (this.plan.dueDate < this.plan.startDate) {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error_before_start', 'La data di scadenza del progetto non può essere inferiore alla data di inizio'));
                 return false;
             }
         }
-        // if (!this.value.data?.dueDate || this.value.data.dueDate == undefined) {
+        // if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
         //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
         //     return false;
         // }
-        if (this.value.data.planType == 'fromIssues') {
+        if (this.plan.planType == 'fromIssues') {
             if (this.tasksList && this.tasksList.length == 0) {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
                 return false;
@@ -260,7 +293,7 @@ export default class PlanWizard extends Vue {
         }
 
         //deve stare giu
-        let titleLength = this.value.data?.title.length as number
+        let titleLength = this.plan?.title.length as number
         if (titleLength > 106) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
             return false;
@@ -271,24 +304,24 @@ export default class PlanWizard extends Vue {
 
     goNext() {
         if (this.steplevel == 1) {
-            if (!this.value.data?.title || this.value.data.title == "") {
+            if (!this.plan?.title || this.plan.title == "") {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
                 return false;
             }
-            if (this.value.data.title.charAt(0) == ' ') {
+            if (this.plan.title.charAt(0) == ' ') {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error2', 'La prima lettera del titolo non può essere uno spazio vuoto'))
                 return false;
             }
-            let titleLength = this.value.data?.title.length as number
+            let titleLength = this.plan?.title.length as number
             if (titleLength > 106) {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
                 return false;
             }
-            if (!this.value.data?.groupId || this.value.data.groupId == "") {
+            if (!this.plan?.groupId || this.plan.groupId == "") {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
                 return false;
             }
-            if (!this.value.data?.description || this.value.data.description == "") {
+            if (!this.plan?.description || this.plan.description == "") {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
                 return false;
             }
@@ -306,17 +339,17 @@ export default class PlanWizard extends Vue {
         }
 
         if (this.steplevel == 3) {
-            if (!this.value.data?.startDate || this.value.data.startDate == undefined) {
+            if (!this.plan?.startDate || this.plan.startDate == undefined) {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
                 return false;
             }
-            if (this.value.data.dueDate) {
-                if (this.value.data.dueDate < this.value.data.startDate) {
+            if (this.plan.dueDate) {
+                if (this.plan.dueDate < this.plan.startDate) {
                     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error_before_start', 'La data di scadenza del progetto non può essere inferiore alla data di inizio'));
                     return false;
                 }
             }
-            if (this.value.data.planType == 'fromIssues') {
+            if (this.plan.planType == 'fromIssues') {
                 if (this.tasksList && this.tasksList.length == 0) {
                     MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
                     return false;
@@ -325,5 +358,25 @@ export default class PlanWizard extends Vue {
 
             return this.steplevel++
         }
+    }
+
+    groupChanged(val: server.Group) {
+        this.plan.group = val;
+        this.plan.groupId = val.id;
+    }
+
+    stateChanged(val: string) {
+        this.plan.state = val ;
+    }
+
+    @Watch('plan.state') 
+    prov() {
+        console.log(this.plan.state, 'state in wizard')
+    }
+
+
+    @Watch('plan.group') 
+    prob() {
+        console.log(this.plan.group, 'group in wizard')
     }
 }

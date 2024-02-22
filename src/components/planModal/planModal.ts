@@ -8,12 +8,16 @@ import { plansService } from "@/services/plansService";
 import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
+import groupButton from "@/components/groupButton/groupButton.vue";
+import statusButton from "@/components/statusButton/statusButton.vue";
 
 @Component({
   components: {
     datePicker,
     dateTime,
     Autocomplete,
+    groupButton,
+    statusButton,
   }
 })
 export default class PlanModal extends Vue {
@@ -37,12 +41,12 @@ export default class PlanModal extends Vue {
 
   @Watch('plan.isPublic')
   onIsPublicChanged() {
-      if (this.plan?.isPublic) {
-          this.plan.rolesCanRate = [];
-          this.plan.rolesCanSeeOthersComments = [];
-          this.plan.rolesCanSeeOthersRatings = [];
-          this.plan.rolesCanWriteComments = [];
-      }
+    if (this.plan?.isPublic) {
+      this.plan.rolesCanRate = [];
+      this.plan.rolesCanSeeOthersComments = [];
+      this.plan.rolesCanSeeOthersRatings = [];
+      this.plan.rolesCanWriteComments = [];
+    }
   }
 
   plan: server.Plan | null = null;
@@ -73,12 +77,9 @@ export default class PlanModal extends Vue {
       this.plan = this.newPlan
     }
 
-  }
+    console.log(this.plan, 'plan in modal')
 
-  // @Watch("featureTest")
-  // featureChanged(n: unknown) {
-  //   console.log(n);
-  // }
+  }
 
   back() {
     this.$emit('goback')
@@ -228,43 +229,43 @@ export default class PlanModal extends Vue {
     if (!this.plan?.title || this.plan.title == "") {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
       return false;
-  }
-  if (!this.plan?.groupId || this.plan.groupId == "") {
+    }
+    if (!this.plan?.groupId || this.plan.groupId == "") {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
       return false;
-  }
-  if (!this.plan?.description || this.plan.description == "") {
+    }
+    if (!this.plan?.description || this.plan.description == "") {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
       return false;
-  }
-  // if (!this.featureTest || this.featureTest == undefined) {
-  //     MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
-  //     return false;
-  // }
-  if (!this.plan?.startDate || this.plan.startDate == undefined) {
+    }
+    // if (!this.featureTest || this.featureTest == undefined) {
+    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
+    //     return false;
+    // }
+    if (!this.plan?.startDate || this.plan.startDate == undefined) {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
       return false;
-  }
-  if (this.plan.dueDate) {
-    if (this.plan.dueDate < this.plan.startDate) {
+    }
+    if (this.plan.dueDate) {
+      if (this.plan.dueDate < this.plan.startDate) {
         MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error_before_start', 'La data di scadenza del progetto non può essere inferiore alla data di inizio'));
         return false;
+      }
     }
-}
-  // if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
-  //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-  //     return false;
-  // }
+    // if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
+    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
+    //     return false;
+    // }
 
-  //deve stare giu
-  let titleLength = this.plan?.title.length as number
-  if (titleLength > 106) {
+    //deve stare giu
+    let titleLength = this.plan?.title.length as number
+    if (titleLength > 106) {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
       return false;
-  }
+    }
 
-  return true;
-}
+    return true;
+  }
 
   private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
     return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
@@ -275,5 +276,14 @@ export default class PlanModal extends Vue {
 
   //         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
   //     }
+
+  groupChanged(val: server.Group) {
+    this.plan!.group = val;
+    this.plan!.groupId = val.id;
+}
+
+stateChanged(val: string) {
+    this.plan!.state = val ;
+}
 
 }
