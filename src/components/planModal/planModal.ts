@@ -76,9 +76,6 @@ export default class PlanModal extends Vue {
     if (this.newPlan) {
       this.plan = this.newPlan
     }
-
-    console.log(this.plan, 'plan in modal')
-
   }
 
   hasPermission(permission: string): boolean {
