@@ -182,9 +182,15 @@ export default class Crowdplanning extends Vue {
   }
 
   toggleMap: boolean = true
-  changeView() {
+  changeViewMap() {
     const tm = this.toggleMap
     this.toggleMap = !tm
+  }
+
+  toggleProj: boolean = true
+  changeViewProj() {
+    const tp = this.toggleProj
+    this.toggleProj = !tp
   }
 
   expiredPrj: boolean = false
