@@ -26,13 +26,13 @@
           <div class="viewOpt" v-show="showListOpened">
             <div class="viewCont">
               <div class="view">
-                <label for="default">{{ $t(`crowdplanning.changeview.map`, `Mostra mappa`) }}</label>
-                <toggle type="checkbox" id="default" name="changeView" v-model="seeMap" />
+                <label for="map">{{ $t(`crowdplanning.changeview.map`, `Mostra mappa`) }}</label>
+                <toggle type="checkbox" id="map" name="changeView" v-model="seeMap" :disabled="!seeProjects"/>
               </div>
-              <!-- <div class="view">
-                <label for="default">{{ $t(`crowdplanning.changeview.progetti`, `Mostra progetti scaduti`) }}</label>
-                <toggle type="checkbox" id="default" name="" v-model="expiredPrj" />
-              </div> -->
+              <div class="view">
+                <label for="proj">{{ $t(`crowdplanning.changeview.projects`, `Mostra progetti`) }}</label>
+                <toggle type="checkbox" id="proj" name="changeView" v-model="seeProjects" :disabled="!seeMap"/>
+              </div>
             </div>
           </div>
         </button>

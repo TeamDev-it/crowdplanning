@@ -13,6 +13,7 @@ export default class CrowdplanningHeader extends Vue {
   group?: server.Group | null;
 
   seeMap: boolean = true
+  seeProjects: boolean = true
   showListOpened: boolean = false
   expiredPrj: boolean = true
 
@@ -23,10 +24,35 @@ export default class CrowdplanningHeader extends Vue {
     store.actions.crowdplanning.setSearchedValue(value);
   }
 
-  @Watch("seeMap")
-  changeView() {
-    this.$emit("changeView")
+  @Watch("seeProjects")
+  changeViewProj() {
+    this.$emit("changeViewProj")
   }
+
+  @Watch("seeMap")
+  changeViewMap() {
+    this.$emit("changeViewMap")
+  }
+
+  mounted() {
+    if (window.innerHeight < 800) {
+      this.seeMap = false
+    }
+
+    window.addEventListener("resize", () => {
+      if (window.innerHeight < 800) {
+        this.seeMap = false
+      }
+      if (window.innerHeight > 800) {
+        this.seeMap = true
+      }
+    });
+  };
+  unmounted() {
+    window.removeEventListener("resize", () => {
+
+    });
+  };
 
   @Watch("expiredPrj")
   async noExpiredPrj() {
