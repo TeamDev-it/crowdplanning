@@ -84,24 +84,6 @@
               </date-picker>
             </div>
           </fieldset>
-
-          <!-- <header v-if="plans" class="cluster">
-            <div class="row">
-              <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
-              <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
-            </div>
-            <div v-if="hasClusterParent" class="autocomplete">
-              <autocomplete
-              v-model="plan.parentId"
-              :inputValues="plans"
-              :filterFunction="autocompleteFilterFunction"
-              :placeholderKey="$t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
-              :showThisPropertyAsItemName="'title'"
-              @valueChanged="valueChanged"
-              ></autocomplete>
-            </div>
-          </header> -->
-
           <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'progetto pubblico') }}</span>
@@ -130,19 +112,18 @@
               <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersRatings"> </inject>
             </fieldset>
           </div>
-          <!-- <header class="toggle">
+
+          <div class="toggle">
+            <!-- <div class="toggle" v-if="$can('PLANS.join.issues')"> -->
             <div class="row">
-              <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
-              <toggle v-model="plan.citizensCanSeeOthersComments" @keydown.native.stop />
+              <span>{{ $t('plans.modal-typeOf', 'Il progetto contiene segnalazioni') }}</span>
+              <toggle type="checkbox" id="fromIssues" name="changeType" v-model="toggleType"></toggle>
             </div>
-          </header>
-          
-          <header class="toggle">
-            <div class="row">
-              <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI').toUpperCase() }}</span>
-              <toggle v-model="plan.citizensCanSeeOthersRatings" @keydown.native.stop />
-            </div>
-          </header> -->
+          </div>
+          <div v-if="plan.planType == 'fromIssues'" class="crowdplanning-task-selector">
+            <!-- <component :is="taskSelector" :ref="taskSelector" style="height: 100%" v-model="tasksList"></component> -->
+            <button @click="openTaskSelectorModal()">{{ $t('plans.modal.addIssues', 'Aggiungi segnalazioni') }}</button>
+          </div>
         </div>
       </div>
       <div class="editor" v-if="(plan && plan.description) || !editable">

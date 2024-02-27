@@ -34,10 +34,14 @@ export default ModuleInitializer({
 
     MessageService.Instance.subscribe("OPEN_PLANS_STATES_MODAL", (group: server.Group) => {
       Projector.Instance.projectAsyncTo((() => import('@/components/statesModal/crowdStatesModal.vue')) as never, group)
+    },
+
+    MessageService.Instance.subscribe("OPEN_TASK_SELECTOR_MODAL", (planId: string) => {
+      Projector.Instance.projectAsyncTo((() => import('@/components/taskSelectorModal/taskSelectorModal.vue')) as never, planId)
     }
     
     
-    );
+    ))
     
   },
   routes

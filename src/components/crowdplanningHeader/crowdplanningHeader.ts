@@ -49,9 +49,7 @@ export default class CrowdplanningHeader extends Vue {
     });
   };
   unmounted() {
-    window.removeEventListener("resize", () => {
-
-    });
+    window.removeEventListener("resize", () => {});
   };
 
   @Watch("expiredPrj")

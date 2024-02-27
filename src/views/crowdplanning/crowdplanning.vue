@@ -1,6 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div id="crowdplanning" :class="{ 'plan-selected': selectedPlan, 'plan-added': addPlanSec || editPlan }">
+    
     <crowdplanning-header :currentUser="currentUser" @addPlan="addPlan()" @changeViewMap="changeViewMap()" @changeViewProj="changeViewProj()" :group="selectedGroup" @toggleMenu="toggleMenu()"/>
     <div class="crowdplanning-content" v-if="!loading" :class="{ noGroups: noGroups }">
       <div class="groups" v-if="!selectedPlan && !addPlanSec && !editPlan">
@@ -15,11 +16,12 @@
         />
       </div>
       <div class="plan-and-map" :class="{ noMap: !toggleMap, noProj: !toggleProj }" @goback="goBack">
-        <div class="plans" v-if="filteredPlans && !selectedPlan && !addPlanSec && !editPlan" :class="{ noMap: !toggleMap }" v-show="toggleProj">
+        <div class="plans" v-if="filteredPlans && !selectedPlan && !addPlanSec && !editPlan && states.length" :class="{ noMap: !toggleMap }" v-show="toggleProj">
           <scrollableContainer :class="{ noMap: !toggleMap }">
-            <plan-list :plans="filteredPlans" :class="{ noMap: !toggleMap }" @selectPlan="setSelectedPlan" />
+            <plan-list :plans="filteredPlans" :class="{ noMap: !toggleMap }" @selectPlan="setSelectedPlan" :plansGroupRoot="plansGroupRoot"/>
           </scrollableContainer>
         </div>
+        
         <div class="plan-detail" v-if="selectedPlan">
           <plan-detail :currentUser="currentUser" :selectedPlan="selectedPlan" :key="selectedPlan.id" @goback="goBack" @edit="edit" />
         </div>

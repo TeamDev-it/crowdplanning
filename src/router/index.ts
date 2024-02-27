@@ -9,4 +9,10 @@ export const routes: Array<RouteConfig> = [
     claims: ['PLANS.plans.enabled']
   },
   component: () => import(/* webpackChunkName: "crowdplanning" */ '@/views/crowdplanning/crowdplanning.vue')
+},
+{
+  path: '/crowdplanning/project/:id',
+  name: 'crowdplanning-project',
+  component: () => import('@/views/crowdplanning/crowdplanning.vue'),
+  props: true
 }];

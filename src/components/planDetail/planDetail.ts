@@ -5,10 +5,11 @@ import PlanCard from "../plans/planCard/planCard.vue";
 import PlanSummary from "../planSummary/planSummary.vue";
 import CitizenInteraction from "../citizenInteraction/citizenInteraction.vue";
 import { CONFIGURATION } from "@/configuration";
-import { CommonRegistry, MessageService } from "vue-mf-module";
+import { CommonRegistry, MessageService, Projector } from "vue-mf-module";
 import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
 import PlanMap from "../planMap/planMap.vue";
 import moment from "moment";
+import { plansService } from "@/services/plansService";
 
 
 @Component({
@@ -124,6 +125,17 @@ export default class PlanDetail extends Vue {
     if( !this.canSeeMsg() && !this.canWriteMsg() ) {
       this.toggleSections('issues')
     }
+  }
+
+  async createIssue() {
+
+    let editor = CommonRegistry.Instance.getComponent("taskEditor");
+    let model = await MessageService.Instance.ask("TASK-MODEL") as any;
+
+    let result = (await Projector.Instance.projectAsyncTo(editor as any, model))
+      await plansService.importTask(this.selectedPlan!.id!, [result!.id]);
+debugger
+      this.tasksList?.splice(0,this.tasksList.length,... await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id) as any);
   }
 
 
