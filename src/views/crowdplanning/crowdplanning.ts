@@ -17,6 +17,16 @@ import { cloneDeep } from "lodash";
 import { union } from "@arcgis/core/geometry/geometryEngine.js";
 import { geojsonToArcGIS } from "@terraformer/arcgis";
 
+import createRouter from "vue-router";
+import createWebHistory from "vue-router";
+
+
+
+// const router = new createRouter({
+//   routes: [
+//     {path: '/project', name: 'project', component: PlanModal}
+//   ],
+// });
 
 @Component({
   components: {
@@ -26,7 +36,7 @@ import { geojsonToArcGIS } from "@terraformer/arcgis";
     PlanList,
     PlanModal,
     PlanMap,
-    PlanDetail
+    PlanDetail,
   },
   name: "crowdplanning-component"
 })
@@ -61,7 +71,7 @@ export default class Crowdplanning extends Vue {
     await this.getData();
 
     MessageService.Instance.subscribe("OPEN_CROWDPLAN", this.openPlan, this);
-    
+
     // Finding the map center
     Promise.all(this.filteredPlans.map(async m => {
       const res: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: m.id });
@@ -169,8 +179,7 @@ export default class Crowdplanning extends Vue {
     }
 
     await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "planWizard" */ '@/components/planWizard/planWizard.vue')) as never, this.editable)
-    // let ap = this.addPlanSec
-    // this.addPlanSec = !ap
+
   }
 
   editPlan: boolean = false
@@ -250,6 +259,6 @@ export default class Crowdplanning extends Vue {
 
   flatten = <T>(items: T[], extractChildren: (item: T) => T[]): T[] => Array.prototype.concat.apply(
     items,
-    items.map(x => this.flatten(extractChildren(x) || [], extractChildren)) 
-  ) ;
+    items.map(x => this.flatten(extractChildren(x) || [], extractChildren))
+  );
 }

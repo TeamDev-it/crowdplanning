@@ -35,32 +35,27 @@
             :showCommentsCount="true"
           />
         </div>
-        <div class="issues-section" v-show="issues">
-          <div class="crowdplanning-task-card" v-for="(task, tidx) in tasksList" :key="`t-${tidx}-${task.id}`">
-            <div class="info">
-              <small>
-                <span>#{{ task.shortId }}</span>
-              </small>
-              <strong>{{ task.title }}</strong>
-              <div class="description" v-html="task.description" v-tooltip="task.description"></div>
-              <div class="state"><strong>{{ $t('taskgroupby.status') }}:</strong> {{ task.state }}</div>
-            </div>
-            <div class="icon">
-              <i class="ti ti-clock" v-tooltip="date(task.creationDate, 'DD/MM/YYYY')"></i>
+        <div class="issues-container" v-show="issues">
+          <div  class="issues-section">
+            <div class="crowdplanning-task-card" v-for="(task, tidx) in tasksList" :key="`t-${tidx}-${task.id}`">
+              <div class="info">
+                <small>
+                  <span>#{{ task.shortId }}</span>
+                </small>
+                <strong>{{ task.title }}</strong>
+                <div class="description" v-html="task.description" v-tooltip="task.description"></div>
+                <div class="state">
+                  <strong>{{ $t('taskgroupby.status') }}:</strong> {{ task.state }}
+                </div>
+              </div>
+              <div class="icon">
+                <i class="ti ti-clock" v-tooltip="date(task.creationDate, 'DD/MM/YYYY')"></i>
+              </div>
             </div>
           </div>
-          <!-- <component
-            v-if="$can('TASKS.canseeas.board')"
-            style="width: 100%"
-            :is="taskCardComponent"
-            v-for="(task, tidx) in tasksList"
-            :key="`t-${tidx}-${task.id}`"
-            :value="task"
-            :customFields="[]"
-          >
-          </component> -->
-          <!-- <component  style="width: 100%" :is="citizenTaskCardComponent" v-for="(task, tidx) in tasksList" :key="`t-${tidx}-${task.id}`" :task="task" :states="[]">
-          </component> -->
+          <div class="button-section" v-show="issues">
+            <button v-if="selectedPlan?.planType == 'fromIssues'" @click="createIssue" class="sendIssue">{{$t('plans.newissues.create', 'Invia nuova segnalazione')}}</button>
+          </div>
         </div>
       </div>
     </div>

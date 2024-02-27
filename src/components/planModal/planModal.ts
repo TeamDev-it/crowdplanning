@@ -69,12 +69,24 @@ export default class PlanModal extends Vue {
   get states(): server.State[] {
     return Array.from(store.getters.crowdplanning.getStates(this.groups.id) || []);
   }
-  mounted() {
+
+  get taskSelector() {
+    return CommonRegistry.Instance.getComponent('task-selector');
+}
+
+openTaskSelectorModal():void {
+  MessageService.Instance.send("OPEN_TASK_SELECTOR_MODAL", this.plan)
+  console.log(this.plan?.id, 'id plan from planModal')
+}
+ async mounted() {
     if (this.editable) {
       this.plan = this.editable
     }
     if (this.newPlan) {
       this.plan = this.newPlan
+    }
+    if (this.plan?.planType == 'fromIssues') {
+        this.toggleType = true
     }
   }
 
@@ -140,6 +152,10 @@ export default class PlanModal extends Vue {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
       return;
     }
+
+    if ((this.plan.planType == 'fromIssues') && (this.tasksList != null)) {
+      await plansService.importTask(this.plan.id!, this.tasksList!);
+  }
 
     // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
     if (this.plan.id)
@@ -253,6 +269,12 @@ export default class PlanModal extends Vue {
         return false;
       }
     }
+    if (this.plan.planType == 'fromIssues') {
+      if (this.tasksList && this.tasksList.length == 0) {
+          MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
+          return false;
+      }
+    }
     // if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
     //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
     //     return false;
@@ -287,4 +309,15 @@ stateChanged(val: string) {
     this.plan!.state = val ;
 }
 
+tasksList?: string[]
+toggleType: boolean = false
+@Watch('toggleType') 
+pro() {
+    if (this.toggleType) {
+        this.plan!.planType = 'fromIssues';
+    } else {
+        this.plan!.planType = 'simple';
+        this.tasksList = []
+    }
+}
 }

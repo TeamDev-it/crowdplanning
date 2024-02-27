@@ -19,22 +19,21 @@ export default class PlanCard extends Vue {
   @Prop({ required: true })
   selectedPlan!: server.Plan
 
-  // @Prop()
-  // groups?: server.Group;
+  @Prop()
+  plansGroupRoot: server.Group = {} as server.Group;
 
   coverImage: string | null = null;
   loading = true;
   group: server.Group | null = null;
   state: server.State | null = null;
   states: server.State[]= [];
-  // currentState?: server.State;
 
   get likeViewer() {
     return CommonRegistry.Instance.getComponent("likeViewer");
   }
 
   get iconCode(): string {
-    return Icon.getIconCode(this.group?.iconCode ?? '');
+    return Icon.getIconCode(this.value.group.iconCode);
   }
 
   get imagePreview() {
@@ -52,7 +51,7 @@ export default class PlanCard extends Vue {
     }
 
     if (this.value.id) {
-      this.states = store.getters.crowdplanning.getStates(this.value.group.parentGroupId ?? this.value.groupId);
+      this.states = store.getters.crowdplanning.getStates(this.plansGroupRoot.id ?? this.value.groupId);
     }
 
     this.state = this.states?.find(x => x.shortName === this.value.state) as server.State; 

@@ -246,8 +246,10 @@ export default class PlanWizard extends Vue {
         }
 
         this.setPlan(this.plan);
-
+        
         this.close();
+        
+        MessageService.Instance.send("OPEN_CROWDPLAN", this.plan.id);
     }
 
     private setPlan(plan: server.Plan): void {
@@ -350,7 +352,7 @@ export default class PlanWizard extends Vue {
                 }
             }
             if (this.plan.planType == 'fromIssues') {
-                if (this.tasksList && this.tasksList.length == 0) {
+                if (!this.tasksList || this.tasksList.length == 0) {
                     MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
                     return false;
                 }
@@ -369,14 +371,14 @@ export default class PlanWizard extends Vue {
         this.plan.state = val ;
     }
 
-    @Watch('plan.state') 
-    prov() {
-        console.log(this.plan.state, 'state in wizard')
-    }
-
-
-    @Watch('plan.group') 
-    prob() {
-        console.log(this.plan.group, 'group in wizard')
+    toggleType: boolean = false
+    @Watch('toggleType') 
+    pro() {
+        if (this.toggleType) {
+            this.plan.planType = 'fromIssues';
+        } else {
+            this.plan.planType = 'simple';
+            this.tasksList = []
+        }
     }
 }
