@@ -66,11 +66,11 @@ export default class PlanDetail extends Vue {
   }
 
   get taskCardComponent() {
-    return CommonRegistry.Instance.getComponent("taskCardComponent"); 
+    return CommonRegistry.Instance.getComponent("taskCardComponent");
   }
 
   get citizenTaskCardComponent() {
-    return CommonRegistry.Instance.getComponent("citizenTaskCardComponent"); 
+    return CommonRegistry.Instance.getComponent("citizenTaskCardComponent");
   }
 
   tasksList?: {
@@ -122,7 +122,7 @@ export default class PlanDetail extends Vue {
     }
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
 
-    if( !this.canSeeMsg() && !this.canWriteMsg() ) {
+    if (!this.canSeeMsg() && !this.canWriteMsg()) {
       this.toggleSections('issues')
     }
   }
@@ -133,9 +133,14 @@ export default class PlanDetail extends Vue {
     let model = await MessageService.Instance.ask("TASK-MODEL") as any;
 
     let result = (await Projector.Instance.projectAsyncTo(editor as any, model))
-      await plansService.importTask(this.selectedPlan!.id!, [result!.id]);
-debugger
-      this.tasksList?.splice(0,this.tasksList.length,... await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id) as any);
+    await plansService.importTask(this.selectedPlan!.id!, [result!.id]);
+
+    // this.tasksList = await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id)
+    this.tasksList?.splice(0, this.tasksList.length, ... await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id) as any);
+  }
+
+  async removeTask(id: string, taskId: any) {
+    await plansService.removeTask(id, [taskId]);
   }
 
 
@@ -213,6 +218,4 @@ debugger
       return true
     }
   }
-
-
 }

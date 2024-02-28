@@ -113,15 +113,13 @@
             </fieldset>
           </div>
 
-          <div class="toggle">
-            <!-- <div class="toggle" v-if="$can('PLANS.join.issues')"> -->
+          <div class="toggle" v-if="$can('PLANS.canjoin.issues')">
             <div class="row">
               <span>{{ $t('plans.modal-typeOf', 'Il progetto contiene segnalazioni') }}</span>
               <toggle type="checkbox" id="fromIssues" name="changeType" v-model="toggleType"></toggle>
             </div>
           </div>
           <div v-if="plan.planType == 'fromIssues'" class="crowdplanning-task-selector">
-            <!-- <component :is="taskSelector" :ref="taskSelector" style="height: 100%" v-model="tasksList"></component> -->
             <button @click="openTaskSelectorModal()">{{ $t('plans.modal.addIssues', 'Aggiungi segnalazioni') }}</button>
           </div>
         </div>

@@ -44,6 +44,10 @@ class PlansService extends baseRestService {
   async importTask(id: string, taskId: string[]): Promise<void> {
     await this.post(`/${id}/importTasks`, taskId)
   }
+
+  async removeTask(id: string, taskId: string[]): Promise<void> {
+    await this.post(`/${id}/importTasks`, taskId)
+  }
 }
 
 export const plansService = new PlansService();

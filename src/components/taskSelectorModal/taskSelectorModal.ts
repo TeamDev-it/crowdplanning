@@ -20,10 +20,6 @@ export default class TaskSelectorModal extends Vue {
 
     tasksList?: string[]
 
-
-    mounted() {
-        console.log(this.value.data)
-    }
     close() {
         this.value.resolve(this.value.data)
     }

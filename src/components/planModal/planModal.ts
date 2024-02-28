@@ -76,7 +76,6 @@ export default class PlanModal extends Vue {
 
 openTaskSelectorModal():void {
   MessageService.Instance.send("OPEN_TASK_SELECTOR_MODAL", this.plan)
-  console.log(this.plan?.id, 'id plan from planModal')
 }
  async mounted() {
     if (this.editable) {

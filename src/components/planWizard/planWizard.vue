@@ -142,8 +142,7 @@
             </div>
           </div>
           <hr />
-          <!-- <div class="toggle" v-if="$can('PLANS.join.issues')"> -->
-          <div class="toggle">
+          <div class="toggle" v-if="$can('PLANS.canjoin.issues')">
             <div class="row">
               <span>{{ $t('plans.modal-typeOf', 'Il progetto contiene segnalazioni') }}</span>
               <toggle type="checkbox" id="fromIssues" name="changeType" v-model="toggleType"></toggle>
@@ -160,13 +159,12 @@
         <i class="ti ti-arrow-left"></i>
         <span>{{ $t('plan.wizard-go-back', 'Indietro') }}</span>
       </button>
-      <!-- <button v-if="steplevel != 4" @click="goNext"> -->
-        <button v-if="steplevel != 4" @click="steplevel++">
+      <button v-if="steplevel != 4" @click="goNext">
         <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
         <i class="ti ti-arrow-right"></i>
       </button>
       <button v-if="steplevel == 4" @click="confirm()" :disabled="disablePublishButton">
-        <span>{{ $t('plan.wizard-publish', 'Pubblica') }}</span>
+        <span>{{ $t('plan.wizard-publish&see', 'Pubblica e visualizza') }}</span>
         <i class="ti ti-confetti"></i>
       </button>
     </footer>

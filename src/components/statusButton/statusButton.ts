@@ -129,14 +129,11 @@ export default class StatusButton extends Vue {
     let listButton = this.listOpened;
     MessageService.Instance.send("closeCrowdPopup");
     this.listOpened = !listButton;
-    // if (this.listOpened)
-    // setTimeout(() => { this.listOpened = false; }, 5000);
   }
 
 
 
   emitState(val: string) {
-    //  console.log(this.value, 'PROVAMOCEccececece')
     this.$emit("stateChanged", val)
   }
 

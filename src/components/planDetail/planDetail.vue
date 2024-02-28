@@ -48,9 +48,15 @@
                   <strong>{{ $t('taskgroupby.status') }}:</strong> {{ task.state }}
                 </div>
               </div>
-              <div class="icon">
+              <div class="icon" >
                 <i class="ti ti-clock" v-tooltip="date(task.creationDate, 'DD/MM/YYYY')"></i>
+                <div class="actions" style="display: absolute;">
+                <button v-if="selectedPlan && selectedPlan.id" class="square none" @click="removeTask(selectedPlan.id, task.id)">
+                  <i class="ti ti-unlink"></i>
+                </button>
               </div>
+              </div>
+              
             </div>
           </div>
           <div class="button-section" v-show="issues">
