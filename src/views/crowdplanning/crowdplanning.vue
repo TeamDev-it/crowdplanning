@@ -2,7 +2,7 @@
 <template>
   <div id="crowdplanning" :class="{ 'plan-selected': selectedPlan, 'plan-added': addPlanSec || editPlan }">
     
-    <crowdplanning-header :currentUser="currentUser" @addPlan="addPlan()" @changeViewMap="changeViewMap()" @changeViewProj="changeViewProj()" :group="selectedGroup" @toggleMenu="toggleMenu()"/>
+    <crowdplanning-header :currentUser="currentUser" @addPlan="addPlan()" @changeViewMap="changeViewMap()" @changeViewProj="changeViewProj()" :group="selectedGroup" @toggleMenu="toggleMenu()" @changeViewSimple="changeViewSimple()" @changeViewFromIssue="changeViewFromIssue()"/>
     <div class="crowdplanning-content" v-if="!loading" :class="{ noGroups: noGroups }">
       <div class="groups" v-if="!selectedPlan && !addPlanSec && !editPlan">
         <crowdplanning-group-list

@@ -19,6 +19,7 @@ import { geojsonToArcGIS } from "@terraformer/arcgis";
 
 import createRouter from "vue-router";
 import createWebHistory from "vue-router";
+import { Watch } from "vue-property-decorator";
 
 
 
@@ -229,6 +230,14 @@ export default class Crowdplanning extends Vue {
       result = result.filter(x => x.title?.includes(this.searchedValue) || x.description?.includes(this.searchedValue));
     }
 
+    if (!this.simple) {
+      result = result.filter(x => x.planType !== 'simple')
+    }
+
+    if (!this.fromIssue) {
+      result = result.filter(x => x.planType !== 'fromIssues')
+    }
+
     return result;
   }
 
@@ -261,4 +270,16 @@ export default class Crowdplanning extends Vue {
     items,
     items.map(x => this.flatten(extractChildren(x) || [], extractChildren))
   );
+
+  simple: boolean = true
+  changeViewSimple() {
+    const s = this.simple
+    this.simple = !s
+  }
+
+  fromIssue: boolean = true
+  changeViewFromIssue() {
+    const fI= this.fromIssue
+    this.fromIssue = !fI
+  }
 }

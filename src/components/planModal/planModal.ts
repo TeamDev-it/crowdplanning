@@ -246,6 +246,10 @@ openTaskSelectorModal():void {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
       return false;
     }
+    if (!this.plan?.state || this.plan.state == "") {
+      MessageService.Instance.send("ERROR", this.$t('plans.modal.state_error', 'Inserisci uno stato'))
+      return false;
+  }
     if (!this.plan?.groupId || this.plan.groupId == "") {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
       return false;

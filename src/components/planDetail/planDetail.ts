@@ -12,6 +12,36 @@ import moment from "moment";
 import { plansService } from "@/services/plansService";
 
 
+type taskType = {
+  id: number;
+  parentId: string;
+  parentType: string;
+  title: string;
+  description: string;
+  priority: number;
+  state: any;
+  isArchived: boolean;
+  source: string;
+  startDate: Date;
+  dueDate: Date;
+  userName: string;
+  creationDate: Date;
+  lastUpdated: Date;
+  groupId: string;
+  group: any;
+  assignedTo: any;
+  location?: locations.Location;
+  workspaceId?: string;
+  customFields: [];
+  subtaskCount?: {
+    type: string;
+    count: number;
+  }[];
+  isClusterRoot: boolean;
+  tags: string[];
+  shortId: number;
+};
+
 @Component({
   components: {
     PlanCard,
@@ -73,32 +103,7 @@ export default class PlanDetail extends Vue {
     return CommonRegistry.Instance.getComponent("citizenTaskCardComponent");
   }
 
-  tasksList?: {
-    id: number;
-    parentId: string;
-    parentType: string;
-    title: string;
-    description: string;
-    priority: number;
-    state: any;
-    isArchived: boolean;
-    source: string;
-    startDate: Date;
-    dueDate: Date;
-    userName: string;
-    creationDate: Date;
-    lastUpdated: Date;
-    groupId: string;
-    group: any;
-    assignedTo: any;
-    location?: locations.Location;
-    workspaceId?: string;
-    customFields: [];
-    subtaskCount?: { type: string, count: number }[];
-    isClusterRoot: boolean;
-    tags: string[];
-    shortId: number
-  }[] = [];
+  tasksList?: taskType[] = [];
 
   issuesButton: boolean = false
 
@@ -116,14 +121,22 @@ export default class PlanDetail extends Vue {
   }
 
   async mounted() {
-    this.tasksList = await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id)
-    if (this.tasksList.length) {
-      this.issuesButton = true
-    }
+    this.getPlanTasks();
+
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
 
     if (!this.canSeeMsg() && !this.canWriteMsg()) {
       this.toggleSections('issues')
+    }
+  }
+
+  async getPlanTasks() {
+    let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
+    let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, this.selectedPlan?.id)));
+    this.tasksList = tasks.flat();
+
+    if (this.tasksList.length) {
+      this.issuesButton = true
     }
   }
 
@@ -137,7 +150,7 @@ export default class PlanDetail extends Vue {
 
 
     // this.tasksList = await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id)
-    this.tasksList?.splice(0, this.tasksList.length, ... await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id) as any);
+    this.getPlanTasks();
   }
 
   async removeTask(id: string, taskId: any) {

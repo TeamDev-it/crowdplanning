@@ -56,7 +56,6 @@
                 </button>
               </div>
               </div>
-              
             </div>
           </div>
           <div class="button-section" v-show="issues">

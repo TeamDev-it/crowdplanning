@@ -242,8 +242,13 @@ export default class PlanWizard extends Vue {
         await plansService.Set(this.plan!.groupId, this.plan);
 
         if (this.plan.planType == 'fromIssues') {
-            await plansService.importTask(this.plan.id!, this.tasksList!);
+            // await plansService.importTask(this.plan.id!, this.tasksList!);
+            MessageService.Instance.send("CHANGE_TASKS_REFERENCE", this.tasksList!, null);
         }
+        if (this.plan.planType == null) {
+            this.plan.planType = 'simple';
+        }
+            
 
         this.setPlan(this.plan);
         
@@ -259,6 +264,10 @@ export default class PlanWizard extends Vue {
     private requiredFieldsSatisfied(): boolean {
         if (!this.plan?.title || this.plan.title == "") {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
+            return false;
+        }
+        if (!this.plan?.state || this.plan.state == "") {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.state_error', 'Inserisci uno stato'))
             return false;
         }
         if (!this.plan?.groupId || this.plan.groupId == "") {
@@ -317,6 +326,10 @@ export default class PlanWizard extends Vue {
             let titleLength = this.plan?.title.length as number
             if (titleLength > 106) {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
+                return false;
+            }
+            if (!this.plan?.state || this.plan.state == "") {
+                MessageService.Instance.send("ERROR", this.$t('plans.modal.state_error', 'Inserisci uno stato'))
                 return false;
             }
             if (!this.plan?.groupId || this.plan.groupId == "") {

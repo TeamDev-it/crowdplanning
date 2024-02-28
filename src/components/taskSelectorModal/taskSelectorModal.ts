@@ -25,7 +25,8 @@ export default class TaskSelectorModal extends Vue {
     }
 
     async confirm() {
-        await plansService.importTask(this.value.data.id!, this.tasksList!);
+        // await plansService.importTask(this.value.data.id!, this.tasksList!);
+        await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", this.tasksList!, this.value.data.id!)
         this.value.resolve(this.value.data)
     }
 }
