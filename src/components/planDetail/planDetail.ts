@@ -98,7 +98,7 @@ export default class PlanDetail extends Vue {
     isClusterRoot: boolean;
     tags: string[];
     shortId: number
-  }[]
+  }[] = [];
 
   issuesButton: boolean = false
 
@@ -134,6 +134,7 @@ export default class PlanDetail extends Vue {
 
     let result = (await Projector.Instance.projectAsyncTo(editor as any, model))
     await plansService.importTask(this.selectedPlan!.id!, [result!.id]);
+
 
     // this.tasksList = await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id)
     this.tasksList?.splice(0, this.tasksList.length, ... await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id) as any);
