@@ -105,8 +105,6 @@ export default class PlanDetail extends Vue {
 
   tasksList?: taskType[] = [];
 
-  issuesButton: boolean = false
-
   comments = true
   issues = false
   toggleSections(s: string) {
@@ -134,10 +132,6 @@ export default class PlanDetail extends Vue {
     let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
     let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, this.selectedPlan?.id)));
     this.tasksList = tasks.flat();
-
-    if (this.tasksList.length) {
-      this.issuesButton = true
-    }
   }
 
   async createIssue() {
@@ -146,15 +140,14 @@ export default class PlanDetail extends Vue {
     let model = await MessageService.Instance.ask("TASK-MODEL") as any;
 
     let result = (await Projector.Instance.projectAsyncTo(editor as any, model))
-    await plansService.importTask(this.selectedPlan!.id!, [result!.id]);
+    await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [result.id], this.selectedPlan!.id!)
 
-
-    // this.tasksList = await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id)
     this.getPlanTasks();
   }
 
   async removeTask(id: string, taskId: any) {
-    await plansService.removeTask(id, [taskId]);
+    await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [taskId], null)
+    this.getPlanTasks();
   }
 
 

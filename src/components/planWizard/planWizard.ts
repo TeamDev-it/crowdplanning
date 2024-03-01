@@ -241,15 +241,13 @@ export default class PlanWizard extends Vue {
         // Update plan with new properties
         await plansService.Set(this.plan!.groupId, this.plan);
 
-        if (this.plan.planType == 'fromIssues') {
-            // await plansService.importTask(this.plan.id!, this.tasksList!);
-            MessageService.Instance.send("CHANGE_TASKS_REFERENCE", this.tasksList!, null);
+        if (this.plan.planType == 'fromIssues' && this.tasksList) {
+            MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", this.tasksList, this.plan.id);
         }
         if (this.plan.planType == null) {
             this.plan.planType = 'simple';
         }
-            
-
+        
         this.setPlan(this.plan);
         
         this.close();

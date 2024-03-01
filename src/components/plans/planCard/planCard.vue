@@ -48,12 +48,12 @@
           <component v-if="canVote()" :is="likeViewer" :type="type" :id="value.id"></component>
         </div>
         <div class="go-detail colrow">
-       
-            <div class="text" @click.prevent.stop="selectPlan">
+       <!-- <router-link :to="'/crowdplanning/project/' + value.id" :refType="'selectedPlan'"> -->
+            <div class="text" @click="selectPlan">
               {{ $t('plans.card.go-to-details', 'Vai al dettaglio').toUpperCase() }}
             </div>
             <i class="ti ti-chevron-right"></i>
-         
+          <!-- </router-link> -->
         </div>
       </div>
     </div>

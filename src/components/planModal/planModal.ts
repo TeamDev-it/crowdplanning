@@ -11,6 +11,38 @@ import { store } from "@/store";
 import groupButton from "@/components/groupButton/groupButton.vue";
 import statusButton from "@/components/statusButton/statusButton.vue";
 
+
+type taskType = {
+  id: number;
+  parentId: string;
+  parentType: string;
+  title: string;
+  description: string;
+  priority: number;
+  state: any;
+  isArchived: boolean;
+  source: string;
+  startDate: Date;
+  dueDate: Date;
+  userName: string;
+  creationDate: Date;
+  lastUpdated: Date;
+  groupId: string;
+  group: any;
+  assignedTo: any;
+  location?: locations.Location;
+  workspaceId?: string;
+  customFields: [];
+  subtaskCount?: {
+    type: string;
+    count: number;
+  }[];
+  isClusterRoot: boolean;
+  tags: string[];
+  shortId: number;
+};
+
+
 @Component({
   components: {
     datePicker,
@@ -29,9 +61,6 @@ export default class PlanModal extends Vue {
 
   @Prop()
   selectedPlan?: server.Plan;
-
-  @Prop()
-  plans?: server.Plan;
 
   @Prop()
   groups!: server.Group;
@@ -87,6 +116,7 @@ openTaskSelectorModal():void {
     if (this.plan?.planType == 'fromIssues') {
         this.toggleType = true
     }
+    this.getPlanTasks()
   }
 
   hasPermission(permission: string): boolean {
@@ -109,13 +139,6 @@ openTaskSelectorModal():void {
   get mediaGallery() {
     return CommonRegistry.Instance.getComponent('media-gallery');
   }
-
-  // locationSelected(value: locations.Location & { name: string }) {
-  //   if (this.plan) {
-  //     this.featureTest = value as locations.Feature;
-  //     this.plan.locationName = value.name;
-  //   }
-  // }
 
   confirmVisibleLayer() {
     if (!this.tmpVisibleLayer) return;
@@ -152,9 +175,9 @@ openTaskSelectorModal():void {
       return;
     }
 
-    if ((this.plan.planType == 'fromIssues') && (this.tasksList != null)) {
-      await plansService.importTask(this.plan.id!, this.tasksList!);
-  }
+  //   if ((this.plan.planType == 'fromIssues') && (this.tasksList != null)) {
+  //     await plansService.importTask(this.plan.id!, this.tasksList);
+  // }
 
     // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
     if (this.plan.id)
@@ -170,7 +193,19 @@ openTaskSelectorModal():void {
     this.back();
   }
 
+  tasks: any = [];
+  async getPlanTasks() {
+    let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
+    let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, this.plan?.id)));
+    this.tasksList = tasks.flat();
+    this.tasks = this.tasksList?.map(t => t.id) ?? []
+  }
+
   async remove(): Promise<void> {
+    if (this.tasksList?.length) {
+      await MessageService.Instance.ask('CHANGE_TASKS_REFERENCE', this.tasks, null)
+    }
+     
     await plansService.deletePlan(this.plan!.id!);
     this.back()
   }
@@ -273,7 +308,7 @@ openTaskSelectorModal():void {
       }
     }
     if (this.plan.planType == 'fromIssues') {
-      if (this.tasksList && this.tasksList.length == 0) {
+      if (!this.tasksList) {
           MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
           return false;
       }
@@ -312,7 +347,7 @@ stateChanged(val: string) {
     this.plan!.state = val ;
 }
 
-tasksList?: string[]
+tasksList?: taskType[] = []
 toggleType: boolean = false
 @Watch('toggleType') 
 pro() {
