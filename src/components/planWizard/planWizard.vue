@@ -57,20 +57,10 @@
           <div class="row">
             <fieldset>
               <small>{{ $t('plans.modal.stato', 'stato') }}</small>
-              <!-- <select v-model="plan.state" class="category">
-                <option class="opt" disabled value="">{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-                <option class="opt" v-for="state in states" :key="state.id" :value="state.shortName">
-                  {{ state.shortName.toUpperCase() }}
-                </option>
-              </select> -->
               <status-button v-model="plan.state" :showAsSelect="true" @stateChanged="stateChanged"></status-button>
             </fieldset>
             <fieldset>
               <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
-              <!-- <select v-model="plan.groupId" class="category">
-                <option class="opt" disabled value="">{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-                <option class="opt" v-for="group in plansGroupRoot.children" :key="group.id" :value="group.id"> {{ group.name }} </option>
-              </select> -->
               <group-button v-model="plan.group" :showAsSelect="true" @groupChanged="groupChanged"></group-button>
             </fieldset>
           </div>
@@ -126,7 +116,6 @@
               <toggle v-model="plan.isPublic" @keydown.stop :default="true" />
             </div>
           </div>
-
           <div class="fieldsets crowdplanning-roles-selector" v-if="!plan.isPublic">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
@@ -153,15 +142,11 @@
             </div>
           </div>
           <hr />
-          <div class="row">
-            <fieldset>
-              <small>{{ $t('plans.modal.typeOf', 'tipo di progetto') }}*</small>
-              <select v-model="plan.planType" class="typeOf">
-                <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-                <option class="opt" value="simple">{{ $t('plans.wizard-planType-simple', 'Descrittivo') }}</option>
-                <option class="opt" value="fromIssues">{{ $t('plans.wizard-planType-fromIssues', 'Raccolta segnalazioni') }}</option>
-              </select>
-            </fieldset>
+          <div class="toggle" v-if="$can('PLANS.canjoin.issues')">
+            <div class="row">
+              <span>{{ $t('plans.modal-typeOf', 'Il progetto contiene segnalazioni') }}</span>
+              <toggle type="checkbox" id="fromIssues" name="changeType" v-model="toggleType"></toggle>
+            </div>
           </div>
           <div v-if="plan.planType == 'fromIssues'" class="crowdplanning-task-selector">
             <component :is="taskSelector" :ref="taskSelector" style="height: 100%" v-model="tasksList"></component>
@@ -175,12 +160,11 @@
         <span>{{ $t('plan.wizard-go-back', 'Indietro') }}</span>
       </button>
       <button v-if="steplevel != 4" @click="goNext">
-        <!-- <button v-if="steplevel != 4" @click="steplevel++"> -->
         <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
         <i class="ti ti-arrow-right"></i>
       </button>
       <button v-if="steplevel == 4" @click="confirm()" :disabled="disablePublishButton">
-        <span>{{ $t('plan.wizard-publish', 'Pubblica') }}</span>
+        <span>{{ $t('plan.wizard-publish&see', 'Pubblica e visualizza') }}</span>
         <i class="ti ti-confetti"></i>
       </button>
     </footer>

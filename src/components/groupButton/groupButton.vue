@@ -52,14 +52,14 @@
             v-for="(fg, idx) in g.children"
             :key="idx"
             @click.stop="
+              fg.iconCode = g.iconCode;
               value = fg;
               listOpened = false;
-              fg.iconCode = g.iconCode;
             "
             @keydown.enter="
+              fg.iconCode = g.iconCode;
               value = fg;
               listOpened = false;
-              fg.iconCode = g.iconCode;
             "
           >
             <div class="first text" :class="{ active: value == fg }">{{ fg.name }}</div>
@@ -74,9 +74,9 @@
                 sg.iconCode = g.iconCode;
               "
               @keydown.enter="
+                sg.iconCode = g.iconCode;
                 value = sg;
                 listOpened = false;
-                sg.iconCode = g.iconCode;
               "
             >
               <div class="second text" :class="{ active: value == sg }">{{ sg.name }}</div>
@@ -86,14 +86,14 @@
                 v-for="(tg, idx) in sg.children"
                 :key="idx"
                 @click.stop="
+                  tg.iconCode = g.iconCode;
                   value = tg;
                   listOpened = false;
-                  tg.iconCode = g.iconCode;
                 "
                 @keydown.enter="
+                  tg.iconCode = g.iconCode;
                   value = tg;
                   listOpened = false;
-                  tg.iconCode = g.iconCode;
                 "
               >
                 <div class="third text" :class="{ active: value == tg }">{{ tg.name }}</div>

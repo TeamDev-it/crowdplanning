@@ -1,6 +1,6 @@
 <template>
   <div class="plan-list">
-    <plan-card v-for="plan in plans" :key="plan.id" :value="plan" @selectPlan="selectPlan" />
+    <plan-card v-for="plan in plans" :key="plan.id" :value="plan" @selectPlan="selectPlan" :plansGroupRoot="plansGroupRoot"/>
   </div>
 </template>
 

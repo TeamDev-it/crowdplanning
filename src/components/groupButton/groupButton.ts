@@ -76,10 +76,6 @@ export default class GroupButton extends Vue {
             tree.push(obj);
         }
     });
-
-    // this.tipregodio.children = tree
-    // console.log( this.tipregodio.children, 'ciolone')
-
     return tree;
 }
 
@@ -145,15 +141,12 @@ export default class GroupButton extends Vue {
     let listButton = this.listOpened;
     MessageService.Instance.send("closeCrowdPopup");
     this.listOpened = !listButton;
-    // if (this.listOpened)
-    // setTimeout(() => { this.listOpened = false; }, 5000);
   }
 
 
 
   @Watch('value')
   emitGroup() {
-    //  console.log(this.value, 'PROVAMOCEccececece')
     this.$emit("groupChanged",  this.value)
   }
 

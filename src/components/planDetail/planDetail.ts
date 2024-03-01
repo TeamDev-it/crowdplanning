@@ -5,11 +5,42 @@ import PlanCard from "../plans/planCard/planCard.vue";
 import PlanSummary from "../planSummary/planSummary.vue";
 import CitizenInteraction from "../citizenInteraction/citizenInteraction.vue";
 import { CONFIGURATION } from "@/configuration";
-import { CommonRegistry, MessageService } from "vue-mf-module";
+import { CommonRegistry, MessageService, Projector } from "vue-mf-module";
 import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
 import PlanMap from "../planMap/planMap.vue";
 import moment from "moment";
+import { plansService } from "@/services/plansService";
 
+
+type taskType = {
+  id: number;
+  parentId: string;
+  parentType: string;
+  title: string;
+  description: string;
+  priority: number;
+  state: any;
+  isArchived: boolean;
+  source: string;
+  startDate: Date;
+  dueDate: Date;
+  userName: string;
+  creationDate: Date;
+  lastUpdated: Date;
+  groupId: string;
+  group: any;
+  assignedTo: any;
+  location?: locations.Location;
+  workspaceId?: string;
+  customFields: [];
+  subtaskCount?: {
+    type: string;
+    count: number;
+  }[];
+  isClusterRoot: boolean;
+  tags: string[];
+  shortId: number;
+};
 
 @Component({
   components: {
@@ -65,41 +96,14 @@ export default class PlanDetail extends Vue {
   }
 
   get taskCardComponent() {
-    return CommonRegistry.Instance.getComponent("taskCardComponent"); 
+    return CommonRegistry.Instance.getComponent("taskCardComponent");
   }
 
   get citizenTaskCardComponent() {
-    return CommonRegistry.Instance.getComponent("citizenTaskCardComponent"); 
+    return CommonRegistry.Instance.getComponent("citizenTaskCardComponent");
   }
 
-  tasksList?: {
-    id: number;
-    parentId: string;
-    parentType: string;
-    title: string;
-    description: string;
-    priority: number;
-    state: any;
-    isArchived: boolean;
-    source: string;
-    startDate: Date;
-    dueDate: Date;
-    userName: string;
-    creationDate: Date;
-    lastUpdated: Date;
-    groupId: string;
-    group: any;
-    assignedTo: any;
-    location?: locations.Location;
-    workspaceId?: string;
-    customFields: [];
-    subtaskCount?: { type: string, count: number }[];
-    isClusterRoot: boolean;
-    tags: string[];
-    shortId: number
-  }[]
-
-  issuesButton: boolean = false
+  tasksList?: taskType[] = [];
 
   comments = true
   issues = false
@@ -115,15 +119,35 @@ export default class PlanDetail extends Vue {
   }
 
   async mounted() {
-    this.tasksList = await MessageService.Instance.ask('GET_TASKS_GROUPS', this.selectedPlan?.id)
-    if (this.tasksList.length) {
-      this.issuesButton = true
-    }
+    this.getPlanTasks();
+
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
 
-    if( !this.canSeeMsg() && !this.canWriteMsg() ) {
+    if (!this.canSeeMsg() && !this.canWriteMsg()) {
       this.toggleSections('issues')
     }
+  }
+
+  async getPlanTasks() {
+    let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
+    let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, this.selectedPlan?.id)));
+    this.tasksList = tasks.flat();
+  }
+
+  async createIssue() {
+
+    let editor = CommonRegistry.Instance.getComponent("taskEditor");
+    let model = await MessageService.Instance.ask("TASK-MODEL") as any;
+
+    let result = (await Projector.Instance.projectAsyncTo(editor as any, model))
+    await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [result.id], this.selectedPlan!.id!)
+
+    this.getPlanTasks();
+  }
+
+  async removeTask(id: string, taskId: any) {
+    await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [taskId], null)
+    this.getPlanTasks();
   }
 
 
@@ -201,6 +225,4 @@ export default class PlanDetail extends Vue {
       return true
     }
   }
-
-
 }

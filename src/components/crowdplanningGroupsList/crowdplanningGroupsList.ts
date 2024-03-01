@@ -57,7 +57,7 @@ export default class CrowdplanningGroupList extends Vue {
     return this.$can(`${CONFIGURATION.context}.${permission}`);
   }
 
-   changedGroup(group: server.Group) {
+  changedGroup(group: server.Group) {
     const idxChildrenGroup = this.rootGroup!.children.findIndex((x) => x.id === group.id);
 
     if (idxChildrenGroup !== -1) {

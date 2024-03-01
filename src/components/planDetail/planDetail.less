@@ -90,7 +90,7 @@
     .plan-summary-cont {
       overflow-y: auto;
       max-height: 100%;
-      background-color: var(--white)
+      background-color: var(--white);
     }
 
     .second-column {
@@ -183,7 +183,6 @@
           height: 40px;
           justify-content: center;
           display: flex;
-          justify-content: center;
           align-items: center;
           border-top-left-radius: 5px;
           border-top-right-radius: 5px;
@@ -198,6 +197,20 @@
     }
   }
 }
+
+.issues-container {
+  height: calc(100% - 40px);
+  display: flex;
+  flex-flow: column;
+
+  .button-section {
+    .sendIssue {
+      background-color: var(--crowdplanning-primary-color);
+      width: 100%;
+    }
+  }
+}
+
 
 .issues-section {
   display: flex;

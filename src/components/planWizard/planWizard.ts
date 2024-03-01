@@ -241,13 +241,18 @@ export default class PlanWizard extends Vue {
         // Update plan with new properties
         await plansService.Set(this.plan!.groupId, this.plan);
 
-        if (this.plan.planType == 'fromIssues') {
-            await plansService.importTask(this.plan.id!, this.tasksList!);
+        if (this.plan.planType == 'fromIssues' && this.tasksList) {
+            MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", this.tasksList, this.plan.id);
         }
-
+        if (this.plan.planType == null) {
+            this.plan.planType = 'simple';
+        }
+        
         this.setPlan(this.plan);
-
+        
         this.close();
+        
+        MessageService.Instance.send("OPEN_CROWDPLAN", this.plan.id);
     }
 
     private setPlan(plan: server.Plan): void {
@@ -257,6 +262,10 @@ export default class PlanWizard extends Vue {
     private requiredFieldsSatisfied(): boolean {
         if (!this.plan?.title || this.plan.title == "") {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
+            return false;
+        }
+        if (!this.plan?.state || this.plan.state == "") {
+            MessageService.Instance.send("ERROR", this.$t('plans.modal.state_error', 'Inserisci uno stato'))
             return false;
         }
         if (!this.plan?.groupId || this.plan.groupId == "") {
@@ -317,6 +326,10 @@ export default class PlanWizard extends Vue {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
                 return false;
             }
+            if (!this.plan?.state || this.plan.state == "") {
+                MessageService.Instance.send("ERROR", this.$t('plans.modal.state_error', 'Inserisci uno stato'))
+                return false;
+            }
             if (!this.plan?.groupId || this.plan.groupId == "") {
                 MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
                 return false;
@@ -350,7 +363,7 @@ export default class PlanWizard extends Vue {
                 }
             }
             if (this.plan.planType == 'fromIssues') {
-                if (this.tasksList && this.tasksList.length == 0) {
+                if (!this.tasksList || this.tasksList.length == 0) {
                     MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
                     return false;
                 }
@@ -369,14 +382,14 @@ export default class PlanWizard extends Vue {
         this.plan.state = val ;
     }
 
-    @Watch('plan.state') 
-    prov() {
-        console.log(this.plan.state, 'state in wizard')
-    }
-
-
-    @Watch('plan.group') 
-    prob() {
-        console.log(this.plan.group, 'group in wizard')
+    toggleType: boolean = false
+    @Watch('toggleType') 
+    pro() {
+        if (this.toggleType) {
+            this.plan.planType = 'fromIssues';
+        } else {
+            this.plan.planType = 'simple';
+            this.tasksList = []
+        }
     }
 }
