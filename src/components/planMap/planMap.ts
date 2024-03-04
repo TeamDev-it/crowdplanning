@@ -109,7 +109,6 @@ export default class PlanMap extends Vue {
       legendEnabled: true,
     });
 
-
     res.push({
       id: `ISSUES`,
       name: this.$t('crowdplanning.issues', 'Segnalazioni'),
@@ -117,6 +116,8 @@ export default class PlanMap extends Vue {
       visible: true,
       data: this.locations,
       type: "managed",
+      tocVisible: true,
+      legendEnabled: true,
       fields: [
         { name: 'id', alias: 'id', type: "long" },
         { name: 'state', alias: 'state', type: "string" }
@@ -153,8 +154,6 @@ export default class PlanMap extends Vue {
       }
     } as locations.ManagedMapLayer);
 
-    console.log("Planmap", res);
-
     return res;
   }
 
@@ -185,7 +184,7 @@ export default class PlanMap extends Vue {
         features.push({ plan: item, feature });
 
       this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STATES");
-      
+
       const issues: taskLike[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", item.id);
 
       if (issues && issues.length) {
