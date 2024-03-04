@@ -77,7 +77,7 @@ export default class PlanModal extends Vue {
       this.plan.rolesCanWriteComments = [];
     }
   }
-
+  copyPlan: server.Plan | null = null;
   plan: server.Plan | null = null;
   coverImage: File | null = null;
   tmpVisibleLayer = "";
@@ -117,14 +117,22 @@ openTaskSelectorModal():void {
         this.toggleType = true
     }
     this.getPlanTasks()
+
+    this.copyPlan = JSON.parse(JSON.stringify(this.plan));
   }
 
   hasPermission(permission: string): boolean {
     return this.$can(`PLANS.${permission}`);
   }
 
-  back() {
-    this.$emit('goback')
+  back(noMod: boolean) {
+    if (noMod) {
+      Object.assign(this.plan!, this.copyPlan)
+      this.$emit('goback')
+    }
+    else {
+      this.$emit('goback')
+    }
   }
 
 
@@ -174,11 +182,6 @@ openTaskSelectorModal():void {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
       return;
     }
-
-  //   if ((this.plan.planType == 'fromIssues') && (this.tasksList != null)) {
-  //     await plansService.importTask(this.plan.id!, this.tasksList);
-  // }
-
     // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
     if (this.plan.id)
       await (this.$refs[this.coverMediaGalleryRef] as unknown as { save(id: string): Promise<void> })?.save(this.plan.id);
@@ -190,7 +193,7 @@ openTaskSelectorModal():void {
 
     this.setPlan(this.plan);
 
-    this.back();
+    this.back(false);
   }
 
   tasks: any = [];
@@ -207,7 +210,7 @@ openTaskSelectorModal():void {
     }
      
     await plansService.deletePlan(this.plan!.id!);
-    this.back()
+    this.back(false)
   }
 
   async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
