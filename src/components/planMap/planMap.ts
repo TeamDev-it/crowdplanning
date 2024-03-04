@@ -153,6 +153,8 @@ export default class PlanMap extends Vue {
       }
     } as locations.ManagedMapLayer);
 
+    console.log("Planmap", res);
+
     return res;
   }
 
@@ -182,8 +184,10 @@ export default class PlanMap extends Vue {
       if (feature && feature.shape)
         features.push({ plan: item, feature });
 
-      this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STSATES_BYREF", item.id);
+      this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STATES");
+      
       const issues: taskLike[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", item.id);
+
       if (issues && issues.length) {
         layerData.push(...
           issues.filter(i => !!i.location)

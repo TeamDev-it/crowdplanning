@@ -14,7 +14,7 @@
         <button class="danger" v-if="hasPermission('plans.candelete')" v-tooltip="$t('planDetail.delete', 'doppio click per eliminare')" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </button>
-        <button class="warning" v-tooltip="$t('planDetail.back', 'annulla modifiche')" v-if="editable" @click="back">
+        <button class="warning" v-tooltip="$t('planDetail.back', 'annulla modifiche')" v-if="editable" @click="back(true)">
           <i class="ti ti-arrow-back"></i>
         </button>
         <button class="publish" @click="confirm" type="submit" v-if="editable">

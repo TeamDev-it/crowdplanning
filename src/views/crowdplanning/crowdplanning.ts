@@ -76,11 +76,11 @@ export default class Crowdplanning extends Vue {
       return
     } 
     this.selectedPlan = null
-    
+
     if (this.groupId) {
       this.selectedGroup =  (this.flatten([this.plansGroupRoot], (g: server.Group) => g.children) as server.Group[]).find(x => x.id === this.groupId) ?? null;
       return
-    }
+    } 
     this.selectedGroup = null
   }
 
@@ -301,7 +301,7 @@ export default class Crowdplanning extends Vue {
 
   @Watch('selectedPlan')
   selectedPlanChanged() {
-    if (this.selectedPlan) {
+    if (this.selectedPlan) { 
       this.planId = this.selectedPlan.id
       this.$router.push({ name: 'crowdplanning', params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id } })
     } else {

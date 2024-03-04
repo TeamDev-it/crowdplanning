@@ -49,9 +49,8 @@
                   </div>
                 </div>
                 <div class="icon">
-                  <i class="ti ti-clock" v-tooltip="date(task.creationDate, 'DD/MM/YYYY')"></i>
                   <div class="actions" style="display: absolute">
-                    <button v-if="selectedPlan && selectedPlan.id" class="square none" @click="removeTask(selectedPlan.id, task.id)">
+                    <button v-if="selectedPlan && selectedPlan.id" class="square none" @dblclick="removeTask(selectedPlan.id, task.id)" v-tooltip="$t('plans.issues.delete', 'Doppio click per scollegare la segnalazione dal progetto')">
                       <i class="ti ti-unlink"></i>
                     </button>
                   </div>
