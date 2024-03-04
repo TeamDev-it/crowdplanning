@@ -8,7 +8,7 @@ declare let process: any;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
 __webpack_public_path__ = process.env.BASE_URL;
-
+const menuimage = new URL("@/assets/crowdplanning.png", import.meta.url);
 export default ModuleInitializer({
   async init(menu, mainstore, configuration) {
     menu.addMenuDefinition({
@@ -19,7 +19,8 @@ export default ModuleInitializer({
       class: "main",
       routeName: "crowdplanning",
       meta: {
-        themeColor: 'var(--crowdplanning-primary-color)'
+        themeColor: 'var(--crowdplanning-primary-color)', 
+        image: menuimage
       },
       featureflags: [
         "PLANS.plans.enabled"
