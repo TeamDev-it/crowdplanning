@@ -95,8 +95,6 @@ export default class Crowdplanning extends Vue {
   async mounted() {
     this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
 
-    if (!this.currentUser)
-      this.openAuthModal();
 
     await this.getData();
 
