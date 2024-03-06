@@ -17,9 +17,9 @@ export const CONFIGURATION = {
     { id: 0, name: 'priority.none', icon: '', color: '#dce0e2' }
   ],
   context: "PLANS",
-  domainWorkspaceMap: new Map<string, string>([
-    ["web.wise.town", "12345678-a111-b222-c333-123456789abd"],
-    ["localhost", "12345678-a111-b222-c333-123456789abd"], 
-    ["localhost.local", "12345678-a111-b222-c333-123456789abc"], 
-  ])
+  domainWorkspaceMap: {
+    "web.wise.town": "12345678-a111-b222-c333-123456789abd",
+    "localhost": "12345678-a111-b222-c333-123456789abd",
+    "localhost.local": "12345678-a111-b222-c333-123456789abc",
+  }
 };
