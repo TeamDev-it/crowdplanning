@@ -95,8 +95,8 @@ export default class Crowdplanning extends Vue {
   async mounted() {
     this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
 
-    if (!this.currentUser)
-      this.openAuthModal();
+    // if (!this.currentUser)
+    //   this.openAuthModal();
 
     await this.getData();
 
@@ -253,7 +253,7 @@ export default class Crowdplanning extends Vue {
 
   get filteredPlans() {
     let result: server.Plan[] = cloneDeep(store.getters.crowdplanning.getPlans());
-
+debugger
     if (this.selectedPlan) {
       return result.filter(x => x.id === this.selectedPlan?.id);
     }
@@ -290,12 +290,14 @@ export default class Crowdplanning extends Vue {
 
   @Watch('selectedGroup')
   selectedGroupChanged() {
+
+    
     if (this.selectedGroup) {
       this.groupId = this.selectedGroup.id
-      this.$router.push({ name: 'crowdplanning', params: { groupId: this.selectedGroup.id } })
+      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedGroup.id } })
     } else {
       this.groupId = null
-      this.$router.push({ name: 'crowdplanning' })
+      this.$router.push({ name: this.$router.currentRoute.name! })
     }
   }
 
@@ -303,11 +305,11 @@ export default class Crowdplanning extends Vue {
   selectedPlanChanged() {
     if (this.selectedPlan) { 
       this.planId = this.selectedPlan.id
-      this.$router.push({ name: 'crowdplanning', params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id } })
+      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id } })
     } else {
       this.groupId = null
       this.planId = null
-      this.$router.push({ name: 'crowdplanning' })
+      this.$router.push({ name: this.$router.currentRoute.name! })
     }
   }
 
