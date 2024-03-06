@@ -55,10 +55,10 @@ export default class Crowdplanning extends Vue {
 
   componentKey = 0;
 
-  @Prop({default: null})
+  @Prop({ default: null })
   groupId?: string | null;
 
-  @Prop({default: null})
+  @Prop({ default: null })
   planId?: string | null;
 
   @Prop({ default: null })
@@ -70,15 +70,15 @@ export default class Crowdplanning extends Vue {
     if (!this.plansGroupRoot?.id) return
 
     if (!this.plans || this.plans.length == 0) return
-      
+
     if (this.planId) {
       this.selectedPlan = this.plans.find(x => x.id === this.planId) ?? null
       return
-    } 
+    }
     this.selectedPlan = null
 
     if (this.groupId) {
-      this.selectedGroup =  (this.flatten([this.plansGroupRoot], (g: server.Group) => g.children) as server.Group[]).find(x => x.id === this.groupId) ?? null;
+      this.selectedGroup = (this.flatten([this.plansGroupRoot], (g: server.Group) => g.children) as server.Group[]).find(x => x.id === this.groupId) ?? null;
       return
     } 
     this.selectedGroup = null
@@ -95,8 +95,8 @@ export default class Crowdplanning extends Vue {
   async mounted() {
     this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
 
-    // if (!this.currentUser)
-    //   this.openAuthModal();
+    if (!this.currentUser)
+      this.openAuthModal();
 
     await this.getData();
 
@@ -134,7 +134,7 @@ export default class Crowdplanning extends Vue {
     this.workspaceId = (await MessageService.Instance.ask("MY_WORKSPACE") as { id: string })?.id ?? '';
 
     if (!this.workspaceId)
-      this.workspaceId = (CONFIGURATION.domainWorkspaceMap as Map<string, string>).get(window.location.hostname) || "";
+      this.workspaceId = (CONFIGURATION.domainWorkspaceMap as { [id: string]: string })[window.location.hostname] || "";
 
     if (!this.workspaceId) return;
 
@@ -253,7 +253,7 @@ export default class Crowdplanning extends Vue {
 
   get filteredPlans() {
     let result: server.Plan[] = cloneDeep(store.getters.crowdplanning.getPlans());
-debugger
+
     if (this.selectedPlan) {
       return result.filter(x => x.id === this.selectedPlan?.id);
     }
@@ -290,14 +290,12 @@ debugger
 
   @Watch('selectedGroup')
   selectedGroupChanged() {
-
-    
     if (this.selectedGroup) {
       this.groupId = this.selectedGroup.id
-      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedGroup.id } })
+      this.$router.push({ name: 'crowdplanning', params: { groupId: this.selectedGroup.id } })
     } else {
       this.groupId = null
-      this.$router.push({ name: this.$router.currentRoute.name! })
+      this.$router.push({ name: 'crowdplanning' })
     }
   }
 
@@ -305,11 +303,11 @@ debugger
   selectedPlanChanged() {
     if (this.selectedPlan) { 
       this.planId = this.selectedPlan.id
-      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id } })
+      this.$router.push({ name: 'crowdplanning', params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id } })
     } else {
       this.groupId = null
       this.planId = null
-      this.$router.push({ name: this.$router.currentRoute.name! })
+      this.$router.push({ name: 'crowdplanning' })
     }
   }
 
@@ -343,7 +341,7 @@ debugger
 
   fromIssue: boolean = true
   changeViewFromIssue() {
-    const fI= this.fromIssue
+    const fI = this.fromIssue
     this.fromIssue = !fI
   }
 
