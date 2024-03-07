@@ -1,10 +1,10 @@
 <template>
-  <div class="modal planWizard" :class="{}">
+  <div class="modal planWizard" :class="{ lastStep: steplevel == 4 }">
     <header>
       <h3>{{ $t('plan.wizard-create-new-project', 'Crea nuovo progetto') }}</h3>
       <button class="square none" @click="close"><i class="ti ti-x"></i></button>
     </header>
-    <section>
+    <section @scroll="closeCrowdPopup()">
       <div class="progressBar">
         <div class="bar">
           <div class="outer line">
@@ -56,7 +56,7 @@
           </div>
           <div class="row">
             <fieldset>
-              <small>{{ $t('plans.modal.stato', 'stato') }}</small>
+              <small>{{ $t('plans.modal.stato', 'stato') }}*</small>
               <status-button v-model="plan.state" :showAsSelect="true" @stateChanged="stateChanged"></status-button>
             </fieldset>
             <fieldset>
@@ -113,10 +113,10 @@
           <div class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'Progetto pubblico') }}</span>
-              <toggle v-model="plan.isPublic" @keydown.stop :default="true" />
+              <toggle v-model="isPublic"/>
             </div>
           </div>
-          <div class="fieldsets crowdplanning-roles-selector" v-if="!plan.isPublic">
+          <div class="fieldsets crowdplanning-roles-selector" :class="{ disabled : isPublic}">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
             </div>
@@ -207,6 +207,39 @@
 
   .select-role {
     width: 100%;
+  }
+}
+
+.planWizard {
+  .editor {
+    
+      button {
+        &.void {
+          color: var(--crowdplanning-primary-color);
+
+          &:hover {
+            color: var(--crowdplanning-dark-color) !important ;
+          }
+
+          &.is-active {
+            background: var(--crowdplanning-light-color) !important;
+            border-color: var(--crowdplanning-light-color) !important;
+            color: var(--white);
+          }
+        }
+
+        &.square:focus {
+          border: 1px solid var(--crowdplanning-primary-color) !important;
+        }
+      }
+
+      .content-editor-container{
+      .content-editor {
+        max-height: 300px;
+        min-height: 200px;
+        overflow-y: auto;
+      }
+    }
   }
 }
 </style>

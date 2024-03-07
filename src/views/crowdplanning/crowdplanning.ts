@@ -92,9 +92,14 @@ export default class Crowdplanning extends Vue {
     return store.getters.crowdplanning.getPlans();
   }
 
+  loggedIn!: boolean
   async mounted() {
+    if (await MessageService.Instance.ask('AM_I_LOGGEDIN')) {
+      this.loggedIn = true 
+    } else {
+      this.loggedIn = false
+    }
     this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
-
 
     await this.getData();
 

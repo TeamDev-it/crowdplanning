@@ -25,11 +25,6 @@
     <div
       class="list can-scroll-y"
       v-if="listOpened"
-      :style="{
-        left: `${horizontalPosition}px`,
-        top: `${topPosition}px`,
-        width: `${width}px`
-      }"
     >
       <!-- <div
         class="status"

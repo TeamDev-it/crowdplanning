@@ -100,4 +100,8 @@ export default class StatusButton extends Vue {
     this.$emit("stateChanged", val)
   }
 
+  unmounted() {
+    MessageService.Instance.unsubscribe("closeCrowdPopup");
+  }
+
 }
