@@ -46,7 +46,7 @@ export default class PlanWizard extends Vue {
         MessageService.Instance.send("closeCrowdPopup");
     }
 
-    currentUser!: server.Myself | null
+    currentUser!: server.Myself 
 
     steplevel: number = 1
     workspaceId = "";
@@ -77,7 +77,7 @@ export default class PlanWizard extends Vue {
         return Array.from(store.getters.crowdplanning.getStates(this.plansGroupRoot.id) || []);
     }
 
-    isPublic: boolean = true 
+    isPublic: boolean = true
 
     @Watch('isPublic')
     planIsPublic() {
@@ -92,17 +92,13 @@ export default class PlanWizard extends Vue {
         this.steplevel = 1
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
         await this.getData();
-        this.onIsPublicChanged()
     }
 
     private async getData(): Promise<void> {
 
         let allGroups = [];
-        if (this.currentUser) {
-            allGroups = await groupsService.getGroups();
-        } else {
-            allGroups = await groupsService.getPublicGroups(this.workspaceId);
-        }
+
+        allGroups = await groupsService.getGroups();
 
         this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
 
@@ -111,19 +107,10 @@ export default class PlanWizard extends Vue {
             // x.parentGroupId !== null  (trova tutti i gruppi (principali e figli))
             // x.parentGroupId !== this.plansGroupRoot?.id (trova solo gruppi figli e PLANS)
             this.plansGroupRoot.children = this.buildTree(allGroups.filter(x => x.parentGroupId !== null));
-            // this.plansChildrenGroupRoot.children = allGroups.filter(x => x.parentGroupId !== this.plansGroupRoot?.id && x.parentGroupId !== null);
-
-            // this.tipregodio.children = this.mergeArrays(this.plansGroupRoot.children, this.plansChildrenGroupRoot.children);
-
-
         }
 
         if (this.plansGroupRoot?.id) {
-            if (this.currentUser) {
-                await plansService.getPlans();
-            } else {
-                await plansService.getPublicPlans(this.workspaceId);
-            }
+            await plansService.getPlans();
         }
     }
 
@@ -262,7 +249,7 @@ export default class PlanWizard extends Vue {
         if (this.plan.planType == null) {
             this.plan.planType = 'simple';
         }
-        
+
         this.plan.isPublic = this.isPublic;
         this.setPlan(this.plan);
 

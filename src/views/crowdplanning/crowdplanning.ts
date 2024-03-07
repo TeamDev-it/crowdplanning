@@ -295,10 +295,10 @@ export default class Crowdplanning extends Vue {
   selectedGroupChanged() {
     if (this.selectedGroup) {
       this.groupId = this.selectedGroup.id
-      this.$router.push({ name: 'crowdplanning', params: { groupId: this.selectedGroup.id } })
+      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedGroup.id } })
     } else {
       this.groupId = null
-      this.$router.push({ name: 'crowdplanning' })
+      this.$router.push({ name: this.$router.currentRoute.name! })
     }
   }
 
@@ -306,11 +306,11 @@ export default class Crowdplanning extends Vue {
   selectedPlanChanged() {
     if (this.selectedPlan) { 
       this.planId = this.selectedPlan.id
-      this.$router.push({ name: 'crowdplanning', params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id } })
+      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id! } })
     } else {
       this.groupId = null
       this.planId = null
-      this.$router.push({ name: 'crowdplanning' })
+      this.$router.push({ name: this.$router.currentRoute.name! })
     }
   }
 

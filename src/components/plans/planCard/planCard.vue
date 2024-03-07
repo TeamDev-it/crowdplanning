@@ -44,10 +44,10 @@
         <div class="description" v-if="value.description" v-html="value.description"></div>
       </div>
       <div class="commands" v-if="showCommands">
-        <div v-if="!loggedIn">
+        <div v-if="loggedIn">
           <component v-if="canVote()" :is="likeViewer" :type="type" :id="value.id"></component>
         </div>
-        <div v-if="loggedIn">
+        <div v-if="!loggedIn">
           <button class="square none" @click="openLoginModal()"><i class="ti ti-heart"></i></button>
         </div>
         <div class="go-detail colrow">
