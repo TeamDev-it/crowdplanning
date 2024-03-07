@@ -30,11 +30,9 @@ export default class GroupButton extends Vue {
 
   async mounted() {
     MessageService.Instance.subscribe("closeCrowdPopup", () => this.listOpened = false)
-    let allGroups = [];
-    console.log(this.currentUser, 'user group')
+    let allGroups = [];    
 
     allGroups = await groupsService.getGroups();
-
 
     this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
 

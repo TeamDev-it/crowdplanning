@@ -26,7 +26,7 @@
       class="list can-scroll-y"
       v-if="listOpened"
     >
-      <div v-for="(g, idx) in plansGroupRoot.children">
+      <div v-for="(g, idx) in plansGroupRoot.children" style="width: 100%;">
         <div
           tabindex="0"
           class="group"

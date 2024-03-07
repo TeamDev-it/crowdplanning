@@ -36,7 +36,6 @@ export default class StatusButton extends Vue {
     MessageService.Instance.subscribe("closeCrowdPopup", () => this.listOpened = false);
     this.statusName = this.value as unknown as string;
     let allGroups = [];
-    console.log(this.currentUser, 'user group')
     
     allGroups = await groupsService.getGroups();
 

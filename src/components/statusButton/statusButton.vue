@@ -37,7 +37,7 @@
         <span>{{ plansstatusRoot.name }}</span>
       </div> -->
 
-      <div v-for="(g, idx) in states">
+      <div v-for="(g, idx) in states" style="width: 100%;">
         <div
           tabindex="0"
           class="status"

@@ -92,6 +92,7 @@ export default class PlanWizard extends Vue {
         this.steplevel = 1
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
         await this.getData();
+        this.onIsPublicChanged()
     }
 
     private async getData(): Promise<void> {
