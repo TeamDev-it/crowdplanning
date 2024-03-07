@@ -55,10 +55,10 @@ export default class Crowdplanning extends Vue {
 
   componentKey = 0;
 
-  @Prop({default: null})
+  @Prop({ default: null })
   groupId?: string | null;
 
-  @Prop({default: null})
+  @Prop({ default: null })
   planId?: string | null;
 
   @Prop({ default: null })
@@ -70,15 +70,15 @@ export default class Crowdplanning extends Vue {
     if (!this.plansGroupRoot?.id) return
 
     if (!this.plans || this.plans.length == 0) return
-      
+
     if (this.planId) {
       this.selectedPlan = this.plans.find(x => x.id === this.planId) ?? null
       return
-    } 
+    }
     this.selectedPlan = null
 
     if (this.groupId) {
-      this.selectedGroup =  (this.flatten([this.plansGroupRoot], (g: server.Group) => g.children) as server.Group[]).find(x => x.id === this.groupId) ?? null;
+      this.selectedGroup = (this.flatten([this.plansGroupRoot], (g: server.Group) => g.children) as server.Group[]).find(x => x.id === this.groupId) ?? null;
       return
     } 
     this.selectedGroup = null
@@ -95,8 +95,6 @@ export default class Crowdplanning extends Vue {
   async mounted() {
     this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
 
-    if (!this.currentUser)
-      this.openAuthModal();
 
     await this.getData();
 
@@ -134,7 +132,7 @@ export default class Crowdplanning extends Vue {
     this.workspaceId = (await MessageService.Instance.ask("MY_WORKSPACE") as { id: string })?.id ?? '';
 
     if (!this.workspaceId)
-      this.workspaceId = (CONFIGURATION.domainWorkspaceMap as Map<string, string>).get(window.location.hostname) || "";
+      this.workspaceId = (CONFIGURATION.domainWorkspaceMap as { [id: string]: string })[window.location.hostname] || "";
 
     if (!this.workspaceId) return;
 
@@ -341,7 +339,7 @@ export default class Crowdplanning extends Vue {
 
   fromIssue: boolean = true
   changeViewFromIssue() {
-    const fI= this.fromIssue
+    const fI = this.fromIssue
     this.fromIssue = !fI
   }
 

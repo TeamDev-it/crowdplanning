@@ -41,7 +41,9 @@ export default class PlanCard extends Vue {
   }
 
   async mounted() {
+    try{
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
+    }catch(e){}
 
     if (this.value.coverImageIds?.sharedToken)
       this.coverImage = await Shared.getShared(this.value.coverImageIds.sharedToken);
