@@ -7,7 +7,7 @@
       <component :is="taskSelector" :ref="taskSelector" style="height: 100%" v-model="tasksList"></component>
     </section>
     <footer>
-      <button @click="confirm()"><i class="ti ti-check"></i></button>
+      <button class="square" @click="confirm()"><i class="ti ti-check"></i></button>
     </footer>
   </div>
 </template>
