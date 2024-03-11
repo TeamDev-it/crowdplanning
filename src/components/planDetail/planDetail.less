@@ -234,6 +234,11 @@
     overflow: hidden;
 
     .info {
+      display: flex;
+      flex-flow: column;
+      justify-content: space-between;
+      height: 100%;
+
       small {
         span {
           background-color: var(--grey-semidark);
@@ -244,7 +249,7 @@
 
       strong {
         display: flex;
-        line-height: 24px;
+        //line-height: 24px;
         gap: 5px;
       }
 
@@ -252,8 +257,8 @@
         font-size: 0.9em;
         word-wrap: break-word;
         text-overflow: ellipsis;
-        height: 63px;
-        line-height: 1.6em;
+        //height: 63px;
+        //line-height: 1.6em;
         overflow: hidden;
         text-align: left;
         position: relative;
@@ -261,6 +266,10 @@
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+
+        >p {
+          margin-bottom: 0 !important;
+        }
       }
 
       .state {
