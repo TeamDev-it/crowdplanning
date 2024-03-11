@@ -80,7 +80,7 @@ export default class Crowdplanning extends Vue {
     if (this.groupId) {
       this.selectedGroup = (this.flatten([this.plansGroupRoot], (g: server.Group) => g.children) as server.Group[]).find(x => x.id === this.groupId) ?? null;
       return
-    }
+    } 
     this.selectedGroup = null
   }
 
@@ -92,9 +92,14 @@ export default class Crowdplanning extends Vue {
     return store.getters.crowdplanning.getPlans();
   }
 
+  loggedIn!: boolean
   async mounted() {
+    if (await MessageService.Instance.ask('AM_I_LOGGEDIN')) {
+      this.loggedIn = true 
+    } else {
+      this.loggedIn = false
+    }
     this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
-
 
     await this.getData();
 
@@ -290,22 +295,22 @@ export default class Crowdplanning extends Vue {
   selectedGroupChanged() {
     if (this.selectedGroup) {
       this.groupId = this.selectedGroup.id
-      this.$router.push({ name: 'crowdplanning', params: { groupId: this.selectedGroup.id } })
+      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedGroup.id } })
     } else {
       this.groupId = null
-      this.$router.push({ name: 'crowdplanning' })
+      this.$router.push({ name: this.$router.currentRoute.name! })
     }
   }
 
   @Watch('selectedPlan')
   selectedPlanChanged() {
-    if (this.selectedPlan) {
+    if (this.selectedPlan) { 
       this.planId = this.selectedPlan.id
-      this.$router.push({ name: 'crowdplanning', params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id } })
+      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id! } })
     } else {
       this.groupId = null
       this.planId = null
-      this.$router.push({ name: 'crowdplanning' })
+      this.$router.push({ name: this.$router.currentRoute.name! })
     }
   }
 

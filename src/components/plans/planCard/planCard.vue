@@ -44,16 +44,17 @@
         <div class="description" v-if="value.description" v-html="value.description"></div>
       </div>
       <div class="commands" v-if="showCommands">
-        <div>
+        <div v-if="loggedIn">
           <component v-if="canVote()" :is="likeViewer" :type="type" :id="value.id"></component>
         </div>
+        <div v-if="!loggedIn">
+          <button class="square none" @click="openLoginModal()"><i class="ti ti-heart"></i></button>
+        </div>
         <div class="go-detail colrow">
-       <!-- <router-link :to="'/crowdplanning/project/' + value.id" :refType="'selectedPlan'"> -->
-            <div class="text" @click="selectPlan">
-              {{ $t('plans.card.go-to-details', 'Vai al dettaglio').toUpperCase() }}
-            </div>
-            <i class="ti ti-chevron-right"></i>
-          <!-- </router-link> -->
+          <div class="text" @click="selectPlan">
+            {{ $t('plans.card.go-to-details', 'Vai al dettaglio').toUpperCase() }}
+          </div>
+          <i class="ti ti-chevron-right"></i>
         </div>
       </div>
     </div>

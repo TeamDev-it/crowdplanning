@@ -26,13 +26,13 @@
       <div class="plan-and-map" :class="{ noMap: !toggleMap, noProj: !toggleProj }" @goback="goBack">
         <div class="plans" v-if="filteredPlans && !selectedPlan && !addPlanSec && !editPlan && states.length" :class="{ noMap: !toggleMap }" v-show="toggleProj">
           <scrollableContainer :class="{ noMap: !toggleMap }">
-            <plan-list :plans="filteredPlans" :class="{ noMap: !toggleMap }" @selectPlan="setSelectedPlan" :plansGroupRoot="plansGroupRoot" />
+            <plan-list :plans="filteredPlans" :class="{ noMap: !toggleMap }" @selectPlan="setSelectedPlan" :plansGroupRoot="plansGroupRoot" :loggedIn="loggedIn"/>
           </scrollableContainer>
         </div>
 
         <!-- <div class="plan-detail" v-if="actualview == 'selectedPlan'"> -->
-          <div class="plan-detail" v-if="selectedPlan">
-          <plan-detail :currentUser="currentUser" :selectedPlan="selectedPlan" :key="selectedPlan.id" @goback="goBack" @edit="edit" />
+        <div class="plan-detail" v-if="selectedPlan">
+          <plan-detail :currentUser="currentUser" :selectedPlan="selectedPlan" :key="selectedPlan.id" @goback="goBack" @edit="edit" :loggedIn="loggedIn"/>
           <!-- <router-view></router-view> -->
         </div>
         <div class="plan-detail" v-else-if="addPlanSec">
@@ -59,4 +59,27 @@
 
 <style lang="less" scoped>
 @import url(./crowdplanning.less);
+</style>
+<style lang="less">
+#crowdplanning {
+  button {
+    &.void {
+      color: var(--crowdplanning-primary-color);
+
+      &:hover {
+        color: var(--crowdplanning-dark-color) !important ;
+      }
+
+      &.is-active {
+        background: var(--crowdplanning-light-color) !important;
+        border-color: var(--crowdplanning-light-color) !important;
+        color: var(--white);
+      }
+    }
+
+    &.square:focus {
+      border: 1px solid var(--crowdplanning-primary-color) !important;
+    }
+  }  
+}
 </style>

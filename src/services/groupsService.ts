@@ -22,7 +22,7 @@ class GroupsService extends baseRestService {
   }
 
   async getPublicGroups(workspaceId: string): Promise<server.Group[]> {
-    const result = (await this.Get<server.Group[]>(`/groups/public/${workspaceId}?`)) || [];
+    const result = (await this.Get<server.Group[]>(`/groups/public/${workspaceId}`)) || [];
 
     store.actions.crowdplanning.setGroups(result);
 

@@ -1,10 +1,10 @@
 import Component from "vue-class-component";
 import Vue from "vue";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
 import { store } from "@/store";
 import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
-import { CommonRegistry, MessageService } from "vue-mf-module";
+import { CommonRegistry, MessageService, Projector } from "vue-mf-module";
 import { Shared } from "@/utility/Shared";
 
 @Component
@@ -21,6 +21,9 @@ export default class PlanCard extends Vue {
 
   @Prop()
   plansGroupRoot: server.Group = {} as server.Group;
+
+  @Prop()
+  loggedIn!: boolean;
 
   coverImage: string | null = null;
   loading = true;
@@ -80,5 +83,9 @@ export default class PlanCard extends Vue {
     if (this.value && (!this.value.rolesCanRate.length || this.value.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
       return true
     }
+  }
+
+  async openLoginModal(): Promise<void> {
+    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as never, {})
   }
 }
