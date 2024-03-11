@@ -65,6 +65,9 @@ export default class PlanDetail extends Vue {
   @ProvideReactive()
   customFields?: any[] = [];
 
+  @Prop()
+  loggedIn!: boolean;
+
   get canSeeOthersComments() {
     // TODO: Check if user roles matches rolesCanSeeOthersComments
     return this.selectedPlan?.rolesCanSeeOthersComments
@@ -224,5 +227,9 @@ export default class PlanDetail extends Vue {
     if (this.selectedPlan && (!this.selectedPlan.rolesCanWriteComments.length || this.selectedPlan.rolesCanWriteComments.some((r) => this.userRoles.includes(r)))) {
       return true
     }
+  }
+
+  async openLoginModal(): Promise<void> {
+    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as never, {})
   }
 }

@@ -5,31 +5,26 @@
     @keydown.enter="toggleOpened()"
     :class="{ asselect: showAsSelect, notselected: disableRoot && value.id === value.id }"
   >
-    <template v-if="showAsSelect">
+    <div v-if="showAsSelect" class="select-cont">
       <div class="select">
         <span class="placeholder" v-if="!value">{{ $t('plans.statusButton.placeholder', 'Scegli uno stato') }}</span>
         <span class="statusName" v-else>{{ statusName }}</span>
         <i class="ti ti-chevron-down" v-if="!listOpened"></i>
         <i class="ti ti-chevron-up" v-if="listOpened"></i>
       </div>
-    </template>
-    <template v-else>
+    </div>
+    <div v-else>
       <div class="ispan">
         <!-- <i class="ti ti-subtask"></i> -->
         <span class="statusName">{{ statusName }}</span>
       </div>
       <i class="ti ti-chevron-down" v-if="!listOpened"></i>
       <i class="ti ti-chevron-up" v-if="listOpened"></i>
-    </template>
+    </div>
 
     <div
       class="list can-scroll-y"
       v-if="listOpened"
-      :style="{
-        left: `${horizontalPosition}px`,
-        top: `${topPosition}px`,
-        width: `${width}px`
-      }"
     >
       <!-- <div
         class="status"
@@ -42,7 +37,7 @@
         <span>{{ plansstatusRoot.name }}</span>
       </div> -->
 
-      <template v-for="(g, idx) in states">
+      <div v-for="(g, idx) in states" style="width: 100%;">
         <div
           tabindex="0"
           class="status"
@@ -58,7 +53,7 @@
         >
           <div class="parent" :class="{ active: value == g }">{{ g.name }}</div>
         </div>
-      </template>
+      </div>
     </div>
   </div>
 </template>

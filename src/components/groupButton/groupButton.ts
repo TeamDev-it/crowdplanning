@@ -21,7 +21,7 @@ export default class GroupButton extends Vue {
   disableRoot?: boolean;
 
   @Prop()
-  currentUser: server.Myself | null = null;
+  currentUser!: server.Myself;
 
   plansGroupRoot: server.Group = {} as server.Group;
   listOpened: boolean = false;
@@ -30,30 +30,22 @@ export default class GroupButton extends Vue {
 
   async mounted() {
     MessageService.Instance.subscribe("closeCrowdPopup", () => this.listOpened = false)
-    let allGroups = [];
-        if (this.currentUser) {
-            allGroups = await groupsService.getGroups();
+    let allGroups = [];    
 
-        } else {
-            allGroups = await groupsService.getPublicGroups(this.workspaceId);
-        }
+    allGroups = await groupsService.getGroups();
 
-        this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
+    this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
 
-        if (this.plansGroupRoot) {
-            // x.parentGroupId === this.plansGroupRoot?.id  (trova tutti i gruppi principali)
-            // x.parentGroupId !== null  (trova tutti i gruppi (principali e figli))
-            // x.parentGroupId !== this.plansGroupRoot?.id (trova solo gruppi figli e PLANS)
-            this.plansGroupRoot.children = this.buildTree(allGroups.filter(x => x.parentGroupId !== null));
-        }
+    if (this.plansGroupRoot) {
+      // x.parentGroupId === this.plansGroupRoot?.id  (trova tutti i gruppi principali)
+      // x.parentGroupId !== null  (trova tutti i gruppi (principali e figli))
+      // x.parentGroupId !== this.plansGroupRoot?.id (trova solo gruppi figli e PLANS)
+      this.plansGroupRoot.children = this.buildTree(allGroups.filter(x => x.parentGroupId !== null));
+    }
 
-        if (this.plansGroupRoot?.id) {
-            if (this.currentUser) {
-                await plansService.getPlans();
-            } else {
-                await plansService.getPublicPlans(this.workspaceId);
-            }
-        }   
+    if (this.plansGroupRoot?.id) {
+      await plansService.getPlans();
+    }
   }
 
   unmounted() {
@@ -65,19 +57,19 @@ export default class GroupButton extends Vue {
     const objectMap: { [key: string]: server.Group } = {};
 
     objects.forEach(obj => {
-        objectMap[obj.id] = obj;
-        obj.children = [];
+      objectMap[obj.id] = obj;
+      obj.children = [];
     });
 
     objects.forEach(obj => {
-        if (obj.parentGroupId !== null && objectMap[obj.parentGroupId]) {
-            objectMap[obj.parentGroupId].children.push(obj);
-        } else {
-            tree.push(obj);
-        }
+      if (obj.parentGroupId !== null && objectMap[obj.parentGroupId]) {
+        objectMap[obj.parentGroupId].children.push(obj);
+      } else {
+        tree.push(obj);
+      }
     });
     return tree;
-}
+  }
 
 
   get Children() {
@@ -147,7 +139,7 @@ export default class GroupButton extends Vue {
 
   @Watch('value')
   emitGroup() {
-    this.$emit("groupChanged",  this.value)
+    this.$emit("groupChanged", this.value)
   }
 
 

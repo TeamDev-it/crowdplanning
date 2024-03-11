@@ -6,32 +6,27 @@
     :class="{ asselect: showAsSelect, notselected: disableRoot && value.id === plansGroupRoot.id }"
     v-if="plansGroupRoot"
   >
-    <template v-if="showAsSelect">
+    <div v-if="showAsSelect" class="select-cont">
       <div class="select">
         <span class="placeholder" v-if="!value">{{ $t('plans.groupButton.placeholder', 'Scegli una categoria') }}</span>
         <span v-else-if="value">{{ value.description || value.name }}</span>
         <i class="ti ti-chevron-down" v-if="!listOpened"></i>
         <i class="ti ti-chevron-up" v-if="listOpened"></i>
       </div>
-    </template>
-    <template v-else>
+    </div>
+    <div v-else>
       <div class="ispan">
         <span class="groupName" v-if="value">{{ value.name }}</span>
       </div>
       <i class="ti ti-chevron-down" v-if="!listOpened"></i>
       <i class="ti ti-chevron-up" v-if="listOpened"></i>
-    </template>
+    </div>
 
     <div
       class="list can-scroll-y"
       v-if="listOpened"
-      :style="{
-        left: `${horizontalPosition}px`,
-        top: `${topPosition}px`,
-        width: `${width}px`
-      }"
     >
-      <template v-for="(g, idx) in plansGroupRoot.children">
+      <div v-for="(g, idx) in plansGroupRoot.children" style="width: 100%;">
         <div
           tabindex="0"
           class="group"
@@ -101,7 +96,7 @@
             </div>
           </div>
         </div>
-      </template>
+      </div>
     </div>
   </div>
 </template>

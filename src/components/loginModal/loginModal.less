@@ -1,0 +1,42 @@
+.modal {
+  &.login-modal {
+    max-width: 30vw;
+    height: fit-content;
+  }
+
+  > header {
+    background-color: var(--crowdplanning-primary-color);
+    padding: 1rem 2rem;
+
+    .title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-bold);
+      color: var(--white);
+    }
+  }
+
+  > article {
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    align-items: center;
+
+    .commands {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: 100%;
+
+      .anonymous-access {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .anonymous-access:hover {
+        font-weight: var(--font-weight-bold);
+      }
+    }
+  }
+}

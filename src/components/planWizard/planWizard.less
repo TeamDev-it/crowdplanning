@@ -2,9 +2,14 @@
   //min-height: 750px;
   min-width: 1000px;
   height: auto;
+  min-height: 75vh;
   width: auto;
-  max-height: 95%;
+  max-height: 97%;
   max-width: 90%;
+
+  &.lastStep {
+    min-height: unset;
+  }
 
   header {
     background-color: var(--crowdplanning-primary-color);
@@ -179,6 +184,13 @@
             display: flex;
             flex-flow: column;
             gap: 25px;
+            
+            &.crowdplanning-roles-selector {
+              &.disabled {
+                pointer-events: none;
+                opacity: 0.5;
+              }
+            }
 
             .row {
               gap: 30px;

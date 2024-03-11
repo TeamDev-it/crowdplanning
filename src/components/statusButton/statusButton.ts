@@ -21,7 +21,7 @@ export default class StatusButton extends Vue {
   disableRoot?: boolean;
 
   @Prop()
-  currentUser: server.Myself | null = null;
+  currentUser!: server.Myself;
 
   plansGroupRoot: server.Group = {} as server.Group;
   listOpened: boolean = false;
@@ -36,12 +36,8 @@ export default class StatusButton extends Vue {
     MessageService.Instance.subscribe("closeCrowdPopup", () => this.listOpened = false);
     this.statusName = this.value as unknown as string;
     let allGroups = [];
-    if (this.currentUser) {
-      allGroups = await groupsService.getGroups();
-
-    } else {
-      allGroups = await groupsService.getPublicGroups(this.workspaceId);
-    }
+    
+    allGroups = await groupsService.getGroups();
 
     this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
 
@@ -98,6 +94,10 @@ export default class StatusButton extends Vue {
 
   emitState(val: string) {
     this.$emit("stateChanged", val)
+  }
+
+  unmounted() {
+    MessageService.Instance.unsubscribe("closeCrowdPopup");
   }
 
 }
