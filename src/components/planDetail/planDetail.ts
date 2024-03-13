@@ -141,9 +141,9 @@ export default class PlanDetail extends Vue {
 
     let editor = CommonRegistry.Instance.getComponent("taskEditor");
     let model = await MessageService.Instance.ask("TASK-MODEL") as any;
-
+    model.reference = this.selectedPlan!.id
     let result = (await Projector.Instance.projectAsyncTo(editor as any, model))
-    await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [result.id], this.selectedPlan!.id!)
+    // await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [result.id], this.selectedPlan!.id!)
 
     this.getPlanTasks();
   }
