@@ -15,7 +15,7 @@ type taskLike = {
 
 @Component
 export default class PlanMap extends Vue {
-  @Prop({ default: [] })
+  @Prop({ default:() => [] })
   plans!: server.Plan[];
 
   @Prop()
@@ -24,7 +24,7 @@ export default class PlanMap extends Vue {
   @Prop({ default: null })
   center!: number[] | null;
 
-  @Prop({ default: [] })
+  @Prop({ default:() => [] })
   states: server.State[] = [];
 
   datas: GeoJSON.FeatureCollection = {
