@@ -2,6 +2,7 @@
   "name": "crowdplanning",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "vite build",
     "watch": "export NODE_ENV=development && vite build --watch",
