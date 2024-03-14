@@ -3,11 +3,11 @@ import { crowdplanningStore } from "./store";
 import { CONFIGURATION } from "./configuration";
 import { routes } from "./router";
 
-declare let __webpack_public_path__: string;
+
 declare let process: any;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
-__webpack_public_path__ = process.env.BASE_URL;
+
 const menuimage = new URL("@/assets/crowdplanning.png", import.meta.url);
 export default ModuleInitializer({
   async init(menu, mainstore, configuration) {

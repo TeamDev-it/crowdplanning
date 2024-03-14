@@ -5,7 +5,7 @@
         <i :class="iconCode" v-if="treeLevel == 0"></i>
         <div class="detail-cont">
           <span class="text">{{ value.name }}</span>
-          <small v-if="treeLevel == 0" class="description text" v-tooltip="value.description">{{ value.description }} </small>
+          <small v-if="treeLevel == 0" class="description text" v-tooltip.top-end="value.description">{{ value.description }} </small>
         </div>
       </div>
       <div class="commands">
