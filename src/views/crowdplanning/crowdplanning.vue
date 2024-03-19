@@ -7,7 +7,7 @@
       @changeViewMap="changeViewMap"
       @changeViewProj="changeViewProj"
       :group="selectedGroup"
-      @toggleMenu="toggleMenu"
+      @toggleMenu="toggleMenu()"
       @changeViewSimple="changeViewSimple()"
       @changeViewFromIssue="changeViewFromIssue()"
     />

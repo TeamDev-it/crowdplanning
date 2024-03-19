@@ -89,7 +89,7 @@ export default class CrowdplanningHeader extends Vue {
 
   toggleMenu() {
     this.noGroups = !this.noGroups
-    this.$emit('toggleMenu', this.noGroups)
+    this.$emit('toggleMenu')
   }
 
   toggleOpened2() {
