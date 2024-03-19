@@ -63,8 +63,6 @@ export default class CrowdplanningHeader extends Vue {
         }
       }
     });
-
-    if (!this.seeProjects) this.toggleMenu();
   };
 
   unmounted() {
