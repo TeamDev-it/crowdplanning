@@ -234,15 +234,15 @@ export default class Crowdplanning extends Vue {
   }
 
   toggleMap: boolean = true
-  changeViewMap() {
-    const tm = this.toggleMap
-    this.toggleMap = !tm
+  changeViewMap(v:boolean) {
+    // const tm = this.toggleMap
+    this.toggleMap = v
   }
 
   toggleProj: boolean = true
-  changeViewProj() {
-    const tp = this.toggleProj
-    this.toggleProj = !tp
+  changeViewProj(v:boolean) {
+    // const tp = this.toggleProj
+    this.toggleProj = v
   }
 
   expiredPrj: boolean = false
@@ -325,9 +325,9 @@ export default class Crowdplanning extends Vue {
   }
 
   noGroups: boolean = false
-  toggleMenu() {
-    let nG = this.noGroups
-    this.noGroups = !nG
+  toggleMenu(v:boolean) {
+    // let nG = this.noGroups
+    this.noGroups = v;
   }
 
 
