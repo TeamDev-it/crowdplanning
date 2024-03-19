@@ -1,10 +1,10 @@
 <template>
-  <div class="modal planWizard" :class="{}">
+  <div class="modal planWizard" :class="{ lastStep: steplevel == 4 }">
     <header>
       <h3>{{ $t('plan.wizard-create-new-project', 'Crea nuovo progetto') }}</h3>
       <button class="square none" @click="close"><i class="ti ti-x"></i></button>
     </header>
-    <section>
+    <section @scroll="closeCrowdPopup()">
       <div class="progressBar">
         <div class="bar">
           <div class="outer line">
@@ -56,22 +56,12 @@
           </div>
           <div class="row">
             <fieldset>
-              <small>{{ $t('plans.modal.stato', 'stato') }}</small>
-              <!-- <select v-model="plan.state" class="category">
-                <option class="opt" disabled value="">{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-                <option class="opt" v-for="state in states" :key="state.id" :value="state.shortName">
-                  {{ state.shortName.toUpperCase() }}
-                </option>
-              </select> -->
-              <status-button v-model="plan.state" :showAsSelect="true" @stateChanged="stateChanged"></status-button>
+              <small>{{ $t('plans.modal.stato', 'stato') }}*</small>
+              <status-button v-model="plan.state" :showAsSelect="true" @stateChanged="stateChanged" :currentUser="currentUser"></status-button>
             </fieldset>
             <fieldset>
               <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
-              <!-- <select v-model="plan.groupId" class="category">
-                <option class="opt" disabled value="">{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-                <option class="opt" v-for="group in plansGroupRoot.children" :key="group.id" :value="group.id"> {{ group.name }} </option>
-              </select> -->
-              <group-button v-model="plan.group" :showAsSelect="true" @groupChanged="groupChanged"></group-button>
+              <group-button v-model="plan.group" :showAsSelect="true" @groupChanged="groupChanged" :currentUser="currentUser"></group-button>
             </fieldset>
           </div>
           <componenet
@@ -123,11 +113,10 @@
           <div class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'Progetto pubblico') }}</span>
-              <toggle v-model="plan.isPublic" @keydown.stop :default="true" />
+              <toggle v-model="isPublic"/>
             </div>
           </div>
-
-          <div class="fieldsets crowdplanning-roles-selector" v-if="!plan.isPublic">
+          <div class="fieldsets crowdplanning-roles-selector" :class="{ disabled : isPublic}">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
             </div>
@@ -153,15 +142,11 @@
             </div>
           </div>
           <hr />
-          <div class="row">
-            <fieldset>
-              <small>{{ $t('plans.modal.typeOf', 'tipo di progetto') }}*</small>
-              <select v-model="plan.planType" class="typeOf">
-                <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-                <option class="opt" value="simple">{{ $t('plans.wizard-planType-simple', 'Descrittivo') }}</option>
-                <option class="opt" value="fromIssues">{{ $t('plans.wizard-planType-fromIssues', 'Raccolta segnalazioni') }}</option>
-              </select>
-            </fieldset>
+          <div class="toggle" v-if="$can('PLANS.canjoin.issues')">
+            <div class="row">
+              <span>{{ $t('plans.modal-typeOf', 'Il progetto contiene segnalazioni') }}</span>
+              <toggle type="checkbox" id="fromIssues" name="changeType" v-model="toggleType"></toggle>
+            </div>
           </div>
           <div v-if="plan.planType == 'fromIssues'" class="crowdplanning-task-selector">
             <component :is="taskSelector" :ref="taskSelector" style="height: 100%" v-model="tasksList"></component>
@@ -175,12 +160,11 @@
         <span>{{ $t('plan.wizard-go-back', 'Indietro') }}</span>
       </button>
       <button v-if="steplevel != 4" @click="goNext">
-        <!-- <button v-if="steplevel != 4" @click="steplevel++"> -->
         <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
         <i class="ti ti-arrow-right"></i>
       </button>
       <button v-if="steplevel == 4" @click="confirm()" :disabled="disablePublishButton">
-        <span>{{ $t('plan.wizard-publish', 'Pubblica') }}</span>
+        <span>{{ $t('plan.wizard-publish&see', 'Pubblica e visualizza') }}</span>
         <i class="ti ti-confetti"></i>
       </button>
     </footer>
@@ -223,6 +207,39 @@
 
   .select-role {
     width: 100%;
+  }
+}
+
+.planWizard {
+  .editor {
+    
+      button {
+        &.void {
+          color: var(--crowdplanning-primary-color);
+
+          &:hover {
+            color: var(--crowdplanning-dark-color) !important ;
+          }
+
+          &.is-active {
+            background: var(--crowdplanning-light-color) !important;
+            border-color: var(--crowdplanning-light-color) !important;
+            color: var(--white);
+          }
+        }
+
+        &.square:focus {
+          border: 1px solid var(--crowdplanning-primary-color) !important;
+        }
+      }
+
+      .content-editor-container{
+      .content-editor {
+        max-height: 300px;
+        min-height: 200px;
+        overflow-y: auto;
+      }
+    }
   }
 }
 </style>

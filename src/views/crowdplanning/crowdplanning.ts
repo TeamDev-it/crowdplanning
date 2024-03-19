@@ -17,6 +17,17 @@ import { cloneDeep } from "lodash";
 import { union } from "@arcgis/core/geometry/geometryEngine.js";
 import { geojsonToArcGIS } from "@terraformer/arcgis";
 
+import createRouter from "vue-router";
+import createWebHistory from "vue-router";
+import { Prop, Watch } from "vue-property-decorator";
+
+
+
+// const router = new createRouter({
+//   routes: [
+//     {path: '/project', name: 'project', component: PlanModal}
+//   ],
+// });
 
 @Component({
   components: {
@@ -26,7 +37,7 @@ import { geojsonToArcGIS } from "@terraformer/arcgis";
     PlanList,
     PlanModal,
     PlanMap,
-    PlanDetail
+    PlanDetail,
   },
   name: "crowdplanning-component"
 })
@@ -44,6 +55,35 @@ export default class Crowdplanning extends Vue {
 
   componentKey = 0;
 
+  @Prop({ default: null })
+  groupId?: string | null;
+
+  @Prop({ default: null })
+  planId?: string | null;
+
+  @Prop({ default: null })
+  refType?: string;
+
+  @Watch('planId')
+  @Watch('groupId')
+  onRouteChanged() {
+    if (!this.plansGroupRoot?.id) return
+
+    if (!this.plans || this.plans.length == 0) return
+
+    if (this.planId) {
+      this.selectedPlan = this.plans.find(x => x.id === this.planId) ?? null
+      return
+    }
+    this.selectedPlan = null
+
+    if (this.groupId) {
+      this.selectedGroup = (this.flatten([this.plansGroupRoot], (g: server.Group) => g.children) as server.Group[]).find(x => x.id === this.groupId) ?? null;
+      return
+    } 
+    this.selectedGroup = null
+  }
+
   get searchedValue(): string {
     return store.state.crowdplanning.searchedValue
   }
@@ -52,16 +92,19 @@ export default class Crowdplanning extends Vue {
     return store.getters.crowdplanning.getPlans();
   }
 
+  loggedIn!: boolean
   async mounted() {
+    if (await MessageService.Instance.ask('AM_I_LOGGEDIN')) {
+      this.loggedIn = true 
+    } else {
+      this.loggedIn = false
+    }
     this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
-
-    if (!this.currentUser)
-      this.openAuthModal();
 
     await this.getData();
 
     MessageService.Instance.subscribe("OPEN_CROWDPLAN", this.openPlan, this);
-    
+
     // Finding the map center
     Promise.all(this.filteredPlans.map(async m => {
       const res: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: m.id });
@@ -94,7 +137,7 @@ export default class Crowdplanning extends Vue {
     this.workspaceId = (await MessageService.Instance.ask("MY_WORKSPACE") as { id: string })?.id ?? '';
 
     if (!this.workspaceId)
-      this.workspaceId = (CONFIGURATION.domainWorkspaceMap as Map<string, string>).get(window.location.hostname) || "";
+      this.workspaceId = (CONFIGURATION.domainWorkspaceMap as { [id: string]: string })[window.location.hostname] || "";
 
     if (!this.workspaceId) return;
 
@@ -111,12 +154,22 @@ export default class Crowdplanning extends Vue {
       this.plansGroupRoot.children = allGroups.filter(x => x.parentGroupId === this.plansGroupRoot?.id);
     }
 
+    const currentPlanId = this.planId;
+    if (this.groupId) {
+      const groups = this.flatten([this.plansGroupRoot], (g: server.Group) => g.children) as server.Group[];
+      this.selectedGroup = groups.find(x => x.id === this.groupId) as (server.Group | null)
+    }
+
     if (this.plansGroupRoot?.id) {
       if (this.currentUser) {
         await plansService.getPlans();
       } else {
         await plansService.getPublicPlans(this.workspaceId);
       }
+    }
+
+    if (currentPlanId) {
+      this.selectedPlan = this.plans.find(x => x.id === currentPlanId) as (server.Plan | null)
     }
 
     this.states = await statesService.getStates(this.plansGroupRoot);
@@ -169,8 +222,7 @@ export default class Crowdplanning extends Vue {
     }
 
     await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "planWizard" */ '@/components/planWizard/planWizard.vue')) as never, this.editable)
-    // let ap = this.addPlanSec
-    // this.addPlanSec = !ap
+
   }
 
   editPlan: boolean = false
@@ -220,6 +272,14 @@ export default class Crowdplanning extends Vue {
       result = result.filter(x => x.title?.includes(this.searchedValue) || x.description?.includes(this.searchedValue));
     }
 
+    if (!this.simple) {
+      result = result.filter(x => x.planType !== 'simple')
+    }
+
+    if (!this.fromIssue) {
+      result = result.filter(x => x.planType !== 'fromIssues')
+    }
+
     return result;
   }
 
@@ -229,6 +289,29 @@ export default class Crowdplanning extends Vue {
 
   setSelectedGroup(value: server.Group | null) {
     this.selectedGroup = value
+  }
+
+  @Watch('selectedGroup')
+  selectedGroupChanged() {
+    if (this.selectedGroup) {
+      this.groupId = this.selectedGroup.id
+      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedGroup.id } })
+    } else {
+      this.groupId = null
+      this.$router.push({ name: this.$router.currentRoute.name! })
+    }
+  }
+
+  @Watch('selectedPlan')
+  selectedPlanChanged() {
+    if (this.selectedPlan) { 
+      this.planId = this.selectedPlan.id
+      this.$router.push({ name: this.$router.currentRoute.name!, params: { groupId: this.selectedPlan.groupId, planId: this.selectedPlan.id! } })
+    } else {
+      this.groupId = null
+      this.planId = null
+      this.$router.push({ name: this.$router.currentRoute.name! })
+    }
   }
 
   setSelectedPlan(value: server.Plan | null) {
@@ -250,6 +333,24 @@ export default class Crowdplanning extends Vue {
 
   flatten = <T>(items: T[], extractChildren: (item: T) => T[]): T[] => Array.prototype.concat.apply(
     items,
-    items.map(x => this.flatten(extractChildren(x) || [], extractChildren)) 
-  ) ;
+    items.map(x => this.flatten(extractChildren(x) || [], extractChildren))
+  );
+
+  simple: boolean = true
+  changeViewSimple() {
+    const s = this.simple
+    this.simple = !s
+  }
+
+  fromIssue: boolean = true
+  changeViewFromIssue() {
+    const fI = this.fromIssue
+    this.fromIssue = !fI
+  }
+
+  get actualview() {
+    const refType = this.refType ?? 'default';
+    // return store.getters.crowdplanning.getFilterConfig().actualview[refType];
+    return refType
+  }
 }

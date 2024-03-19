@@ -21,7 +21,7 @@ export default class StatusButton extends Vue {
   disableRoot?: boolean;
 
   @Prop()
-  currentUser: server.Myself | null = null;
+  currentUser!: server.Myself;
 
   plansGroupRoot: server.Group = {} as server.Group;
   listOpened: boolean = false;
@@ -36,18 +36,16 @@ export default class StatusButton extends Vue {
     MessageService.Instance.subscribe("closeCrowdPopup", () => this.listOpened = false);
     this.statusName = this.value as unknown as string;
     let allGroups = [];
-    if (this.currentUser) {
-      allGroups = await groupsService.getGroups();
-
-    } else {
-      allGroups = await groupsService.getPublicGroups(this.workspaceId);
-    }
+    
+    allGroups = await groupsService.getGroups();
 
     this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
 
     if (this.plansGroupRoot) {
       this.states = Array.from(store.getters.crowdplanning.getStates(this.plansGroupRoot.id) || []);
     }
+
+    this.states.sort((a, b) => a.id - b.id);
   }
 
 
@@ -72,43 +70,6 @@ export default class StatusButton extends Vue {
     return tree;
   }
 
-
-  // get Children() {
-  //   return this.plansGroupRoot.children.reduce((list, i) => { list.push(i, ...i.children); return list; }, [] as server.Group[])
-  //     .filter(a => !a.default)
-  //     .sort((a, b) => a.name.toUpperCase().localeCompare(b.name.toUpperCase()));
-  // }
-
-  // get Value() {
-  //   if (!this.value.groupId && this.disableRoot)
-  //     return this.Children[0];
-
-  //   var groups = this.plansGroupRoot.children.reduce((list, i) => { list.push(i, ...i.children); return list; }, [] as server.Group[])
-
-  //   return groups.find(g => g.id == this.value.groupId) || this.plansGroupRoot;
-  // }
-
-  // set Value(v: server.Group) {
-  //   if (this.readonly) return;
-  //   if (v == null) {
-  //     this.value.group = this.plansGroupRoot;
-  //     this.value.groupId = this.plansGroupRoot.id;
-  //   }
-  //   else {
-  //     this.value.group = v;
-  //     this.value.groupId = v.id;
-  //   }
-  // }
-
-  // @Watch('value.groupId')
-  // onGroupChanged(n, o) {
-  //   if (n && n != o) {
-  //     if (this.plansGroupRoot != null || this.value.groupId != this.plansGroupRoot.parentGroupId) {
-  //       this.value.group.id != this.value.groupId;
-  //     }
-  //   }
-  // }
-
   get horizontalPosition() {
     var bb = this.$el.getBoundingClientRect();
     return bb.x;
@@ -129,15 +90,14 @@ export default class StatusButton extends Vue {
     let listButton = this.listOpened;
     MessageService.Instance.send("closeCrowdPopup");
     this.listOpened = !listButton;
-    // if (this.listOpened)
-    // setTimeout(() => { this.listOpened = false; }, 5000);
   }
 
-
-
   emitState(val: string) {
-    //  console.log(this.value, 'PROVAMOCEccececece')
     this.$emit("stateChanged", val)
+  }
+
+  unmounted() {
+    MessageService.Instance.unsubscribe("closeCrowdPopup");
   }
 
 }
