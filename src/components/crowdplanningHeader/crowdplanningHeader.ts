@@ -11,9 +11,9 @@ export default class CrowdplanningHeader extends Vue {
 
   @Prop()
   group?: server.Group | null;
-
+  noGroups: boolean = false;
   seeMap: boolean = true
-  seeProjects: boolean = true
+  seeProjects: boolean = this.$route.query.hideProjects ? false : true
   showListOpened: boolean = false
   simple: boolean = true
   fromIssue: boolean = true
@@ -27,14 +27,14 @@ export default class CrowdplanningHeader extends Vue {
     store.actions.crowdplanning.setSearchedValue(value);
   }
 
-  @Watch("seeProjects")
+  @Watch("seeProjects", { immediate: true })
   changeViewProj() {
-    this.$emit("changeViewProj")
+    this.$emit("changeViewProj", this.seeProjects)
   }
 
-  @Watch("seeMap")
+  @Watch("seeMap", { immediate: true })
   changeViewMap() {
-    this.$emit("changeViewMap")
+    this.$emit("changeViewMap", this.seeMap)
   }
 
   @Watch("fromIssue")
@@ -60,9 +60,11 @@ export default class CrowdplanningHeader extends Vue {
         this.seeMap = true
       }
     });
+
+    if (!this.seeProjects) this.toggleMenu();
   };
   unmounted() {
-    window.removeEventListener("resize", () => {});
+    window.removeEventListener("resize", () => { });
   };
 
   @Watch("expiredPrj")
@@ -83,11 +85,10 @@ export default class CrowdplanningHeader extends Vue {
     this.showListOpened = !v;
   }
 
-  noGroups: boolean = false
+
   toggleMenu() {
-    let nG = this.noGroups
-    this.noGroups = !nG
-    this.$emit('toggleMenu')
+    this.noGroups = !this.noGroups
+    this.$emit('toggleMenu', this.noGroups)
   }
 
   toggleOpened2() {

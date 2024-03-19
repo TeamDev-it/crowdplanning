@@ -4,10 +4,10 @@
     <crowdplanning-header
       :currentUser="currentUser"
       @addPlan="addPlan()"
-      @changeViewMap="changeViewMap()"
-      @changeViewProj="changeViewProj()"
+      @changeViewMap="changeViewMap"
+      @changeViewProj="changeViewProj"
       :group="selectedGroup"
-      @toggleMenu="toggleMenu()"
+      @toggleMenu="toggleMenu"
       @changeViewSimple="changeViewSimple()"
       @changeViewFromIssue="changeViewFromIssue()"
     />
