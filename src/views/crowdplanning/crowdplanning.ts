@@ -17,17 +17,8 @@ import { cloneDeep } from "lodash";
 import { union } from "@arcgis/core/geometry/geometryEngine.js";
 import { geojsonToArcGIS } from "@terraformer/arcgis";
 
-import createRouter from "vue-router";
-import createWebHistory from "vue-router";
 import { Prop, Watch } from "vue-property-decorator";
 
-
-
-// const router = new createRouter({
-//   routes: [
-//     {path: '/project', name: 'project', component: PlanModal}
-//   ],
-// });
 
 @Component({
   components: {
@@ -107,7 +98,7 @@ export default class Crowdplanning extends Vue {
 
     // Finding the map center
     Promise.all(this.filteredPlans.map(async m => {
-      const res: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF_PUBLIC", { relationType: "PLANS", relationId: m.id });
+      const res: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF_PUBLIC", { relationType: "PLANS", relationId: m.id, workspaceId: m.workspaceId });
       return res?.shape;
     })).then(ss => {
       const geoms = ss.filter(s => !!s).map(s => {
