@@ -172,6 +172,8 @@ export default class PlanMap extends Vue {
 
   @Watch("plans", { deep: true })
   async getData(): Promise<void> {
+    this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STATES");
+
     this.datas.features.splice(0, this.datas.features.length);
     const layerData = (this.values[1] as locations.ManagedMapLayer).data;
 
@@ -179,28 +181,35 @@ export default class PlanMap extends Vue {
 
     const features: { plan: server.Plan, feature: locations.Feature }[] = [];
     for (const item of this.plans) {
-      const feature: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF_PUBLIC", {
-        relationType: "PLANS",
-        relationId: item.id,
-        workspaceId: item.workspaceId
-      });
-      if (feature && feature.shape)
-        features.push({ plan: item, feature });
+      try {
+        const feature: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF_PUBLIC", {
+          relationType: "PLANS",
+          relationId: item.id,
+          workspaceId: item.workspaceId
+        });
+        if (feature && feature.shape)
+          features.push({ plan: item, feature });
 
-      this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STATES");
+      } catch (e) {
+        console.error("Can't get feature for plan: ", item.id, e);
+      }
 
-      const issues: taskLike[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", item.id);
+      try {
+        const issues: taskLike[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", item.id);
 
-      if (issues && issues.length) {
-        layerData.push(...
-          issues.filter(i => !!i.location)
-            .map(t => Object.assign({
-              "id": 0,
-              "relationId": t.id,
-              "relationType": t.group.taskType,
-              task: t
-            }, t.location)));
+        if (issues && issues.length) {
+          layerData.push(...
+            issues.filter(i => !!i.location)
+              .map(t => Object.assign({
+                "id": 0,
+                "relationId": t.id,
+                "relationType": t.group.taskType,
+                task: t
+              }, t.location)));
 
+        }
+      } catch (e) {
+        console.error("Can't get issues for plan: ", item.id, e);
       }
     }
 
