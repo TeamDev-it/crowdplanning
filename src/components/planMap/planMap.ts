@@ -15,7 +15,7 @@ type taskLike = {
 
 @Component
 export default class PlanMap extends Vue {
-  @Prop({ default:() => [] })
+  @Prop({ default: () => [] })
   plans!: server.Plan[];
 
   @Prop()
@@ -24,7 +24,7 @@ export default class PlanMap extends Vue {
   @Prop({ default: null })
   center!: number[] | null;
 
-  @Prop({ default:() => [] })
+  @Prop({ default: () => [] })
   states: server.State[] = [];
 
   datas: GeoJSON.FeatureCollection = {
@@ -179,7 +179,11 @@ export default class PlanMap extends Vue {
 
     const features: { plan: server.Plan, feature: locations.Feature }[] = [];
     for (const item of this.plans) {
-      const feature: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: item.id });
+      const feature: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF_PUBLIC", {
+        relationType: "PLANS",
+        relationId: item.id,
+        workspaceId: item.workspaceId
+      });
       if (feature && feature.shape)
         features.push({ plan: item, feature });
 
