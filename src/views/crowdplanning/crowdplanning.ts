@@ -107,7 +107,7 @@ export default class Crowdplanning extends Vue {
 
     // Finding the map center
     Promise.all(this.filteredPlans.map(async m => {
-      const res: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: m.id });
+      const res: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF_PUBLIC", { relationType: "PLANS", relationId: m.id });
       return res?.shape;
     })).then(ss => {
       const geoms = ss.filter(s => !!s).map(s => {
