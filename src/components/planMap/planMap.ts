@@ -172,7 +172,11 @@ export default class PlanMap extends Vue {
 
   @Watch("plans", { deep: true })
   async getData(): Promise<void> {
-    this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STATES");
+    try {
+      this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STATES");
+    } catch (e) {
+      console.warn("Can't get issues states: ", e);
+    }
 
     this.datas.features.splice(0, this.datas.features.length);
     const layerData = (this.values[1] as locations.ManagedMapLayer).data;
