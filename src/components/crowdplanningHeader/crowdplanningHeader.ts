@@ -48,21 +48,23 @@ export default class CrowdplanningHeader extends Vue {
   }
 
   mounted() {
-    if (window.innerHeight < 800) {
-      this.seeMap = false
-    }
-
-    window.addEventListener("resize", () => {
+    if (this.seeProjects)
       if (window.innerHeight < 800) {
         this.seeMap = false
       }
-      if (window.innerHeight > 800) {
-        this.seeMap = true
+
+    window.addEventListener("resize", () => {
+      if (this.seeProjects) {
+        if (window.innerHeight < 800) {
+          this.seeMap = false
+        }
+        if (window.innerHeight > 800) {
+          this.seeMap = true
+        }
       }
     });
-
-    if (!this.seeProjects) this.toggleMenu();
   };
+
   unmounted() {
     window.removeEventListener("resize", () => { });
   };
@@ -88,7 +90,7 @@ export default class CrowdplanningHeader extends Vue {
 
   toggleMenu() {
     this.noGroups = !this.noGroups
-    this.$emit('toggleMenu', this.noGroups)
+    this.$emit('toggleMenu')
   }
 
   toggleOpened2() {
