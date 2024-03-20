@@ -11,9 +11,9 @@ export default class CrowdplanningHeader extends Vue {
 
   @Prop()
   group?: server.Group | null;
-
+  noGroups: boolean = false;
   seeMap: boolean = true
-  seeProjects: boolean = true
+  seeProjects: boolean = this.$route.query.hideProjects ? false : true
   showListOpened: boolean = false
   simple: boolean = true
   fromIssue: boolean = true
@@ -27,14 +27,14 @@ export default class CrowdplanningHeader extends Vue {
     store.actions.crowdplanning.setSearchedValue(value);
   }
 
-  @Watch("seeProjects")
+  @Watch("seeProjects", { immediate: true })
   changeViewProj() {
-    this.$emit("changeViewProj")
+    this.$emit("changeViewProj", this.seeProjects)
   }
 
-  @Watch("seeMap")
+  @Watch("seeMap", { immediate: true })
   changeViewMap() {
-    this.$emit("changeViewMap")
+    this.$emit("changeViewMap", this.seeMap)
   }
 
   @Watch("fromIssue")
@@ -48,21 +48,25 @@ export default class CrowdplanningHeader extends Vue {
   }
 
   mounted() {
-    if (window.innerHeight < 800) {
-      this.seeMap = false
-    }
-
-    window.addEventListener("resize", () => {
+    if (this.seeProjects)
       if (window.innerHeight < 800) {
         this.seeMap = false
       }
-      if (window.innerHeight > 800) {
-        this.seeMap = true
+
+    window.addEventListener("resize", () => {
+      if (this.seeProjects) {
+        if (window.innerHeight < 800) {
+          this.seeMap = false
+        }
+        if (window.innerHeight > 800) {
+          this.seeMap = true
+        }
       }
     });
   };
+
   unmounted() {
-    window.removeEventListener("resize", () => {});
+    window.removeEventListener("resize", () => { });
   };
 
   @Watch("expiredPrj")
@@ -83,10 +87,9 @@ export default class CrowdplanningHeader extends Vue {
     this.showListOpened = !v;
   }
 
-  noGroups: boolean = false
+
   toggleMenu() {
-    let nG = this.noGroups
-    this.noGroups = !nG
+    this.noGroups = !this.noGroups
     this.$emit('toggleMenu')
   }
 

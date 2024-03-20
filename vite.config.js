@@ -32,7 +32,7 @@ export default defineConfig({
     emptyOutDir: true,
     outDir: resolve(__dirname, isDevelopment ? "../../main/public/modules/" + moduleName : "dist"),
     rollupOptions: {
-      external: ["vue", "vuex"],
+      external: ["vue"],
       output: {
         chunkFileNames: "chunks/[name]-[hash].min.js",
         globals: {
