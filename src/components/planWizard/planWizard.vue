@@ -68,9 +68,9 @@
             :ref="coverMediaGalleryRef"
             :is="mediaGallery"
             :fileLimit="1"
-            :titleText="{ key: 'modal.cover-image-addPlan-null', value: `` }"
-            :subtitleText="{ key: 'modal.cover-image-description-addPlan', value: `` }"
-            :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
+            :titleText="$t(`${context}-COVER.modal.cover-image-addPlan-null`)"
+            :subtitleText="$t(`${context}-COVER.modal.cover-image-description-addPlan`)"
+            :contentText="$t(`${context}-COVER.modal.cover-image-content-text`)"
             :type="`${context}-COVER`"
             :inputFileTypes="'images'"
             :id="plan.id ?? ''"
@@ -113,10 +113,10 @@
           <div class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'Progetto pubblico') }}</span>
-              <toggle v-model="isPublic"/>
+              <toggle v-model="isPublic" />
             </div>
           </div>
-          <div class="fieldsets crowdplanning-roles-selector" :class="{ disabled : isPublic}">
+          <div class="fieldsets crowdplanning-roles-selector" :class="{ disabled: isPublic }">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
             </div>
@@ -212,28 +212,27 @@
 
 .planWizard {
   .editor {
-    
-      button {
-        &.void {
-          color: var(--crowdplanning-primary-color);
+    button {
+      &.void {
+        color: var(--crowdplanning-primary-color);
 
-          &:hover {
-            color: var(--crowdplanning-dark-color) !important ;
-          }
-
-          &.is-active {
-            background: var(--crowdplanning-light-color) !important;
-            border-color: var(--crowdplanning-light-color) !important;
-            color: var(--white);
-          }
+        &:hover {
+          color: var(--crowdplanning-dark-color) !important ;
         }
 
-        &.square:focus {
-          border: 1px solid var(--crowdplanning-primary-color) !important;
+        &.is-active {
+          background: var(--crowdplanning-light-color) !important;
+          border-color: var(--crowdplanning-light-color) !important;
+          color: var(--white);
         }
       }
 
-      .content-editor-container{
+      &.square:focus {
+        border: 1px solid var(--crowdplanning-primary-color) !important;
+      }
+    }
+
+    .content-editor-container {
       .content-editor {
         max-height: 300px;
         min-height: 200px;
