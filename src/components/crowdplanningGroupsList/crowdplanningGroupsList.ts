@@ -21,7 +21,7 @@ export default class CrowdplanningGroupList extends Vue {
   selectedCategory!: server.Group[] | null;
 
   @Prop({ required: true })
-  rootGroup: server.Group | null = null;
+  rootGroup!: server.Group | null;
 
   mounted() {
     MessageService.Instance.subscribe('CHANGED_GROUP', (id: string) => {

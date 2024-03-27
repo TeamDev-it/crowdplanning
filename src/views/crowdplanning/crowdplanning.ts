@@ -17,17 +17,8 @@ import { cloneDeep } from "lodash";
 import { union } from "@arcgis/core/geometry/geometryEngine.js";
 import { geojsonToArcGIS } from "@terraformer/arcgis";
 
-import createRouter from "vue-router";
-import createWebHistory from "vue-router";
 import { Prop, Watch } from "vue-property-decorator";
 
-
-
-// const router = new createRouter({
-//   routes: [
-//     {path: '/project', name: 'project', component: PlanModal}
-//   ],
-// });
 
 @Component({
   components: {
@@ -51,7 +42,6 @@ export default class Crowdplanning extends Vue {
   workspaceId = "";
   mapCenter: number[] | null = null;
 
-  value!: server.Plan;
 
   componentKey = 0;
 
