@@ -42,7 +42,6 @@ export default class Crowdplanning extends Vue {
   workspaceId = "";
   mapCenter: number[] | null = null;
 
-  value!: server.Plan;
 
   componentKey = 0;
 
