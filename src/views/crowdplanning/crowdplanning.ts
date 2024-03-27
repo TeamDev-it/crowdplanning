@@ -105,7 +105,6 @@ export default class Crowdplanning extends Vue {
         const geometry = geojsonToArcGIS(s);
         return geometry;
       });
-
       const center = union(geoms as __esri.Geometry[]).extent.center;
       this.mapCenter = [center.x, center.y];
     });
