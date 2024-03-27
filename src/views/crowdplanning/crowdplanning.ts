@@ -107,14 +107,13 @@ export default class Crowdplanning extends Vue {
 
     // Finding the map center
     Promise.all(this.filteredPlans.map(async m => {
-      const res: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: m.id });
+      const res: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF_PUBLIC", { relationType: "PLANS", relationId: m.id, workspaceId: m.workspaceId });
       return res?.shape;
     })).then(ss => {
       const geoms = ss.filter(s => !!s).map(s => {
         const geometry = geojsonToArcGIS(s);
         return geometry;
       });
-
       const center = union(geoms as __esri.Geometry[]).extent.center;
       this.mapCenter = [center.x, center.y];
     });
