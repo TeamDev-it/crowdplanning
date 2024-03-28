@@ -101,12 +101,12 @@ export default class PlanModal extends Vue {
 
   get taskSelector() {
     return CommonRegistry.Instance.getComponent('task-selector');
-}
+  }
 
-openTaskSelectorModal():void {
-  MessageService.Instance.send("OPEN_TASK_SELECTOR_MODAL", this.plan)
-}
- async mounted() {
+  openTaskSelectorModal(): void {
+    MessageService.Instance.send("OPEN_TASK_SELECTOR_MODAL", this.plan)
+  }
+  async mounted() {
     if (this.editable) {
       this.plan = this.editable
     }
@@ -114,7 +114,7 @@ openTaskSelectorModal():void {
       this.plan = this.newPlan
     }
     if (this.plan?.planType == 'fromIssues') {
-        this.toggleType = true
+      this.toggleType = true
     }
     this.getPlanTasks()
 
@@ -136,9 +136,7 @@ openTaskSelectorModal():void {
   }
 
 
-  get context(): string {
-    return CONFIGURATION.context;
-  }
+  context = "PLANS"
 
   get esriGeocodingAutocomplete() {
     return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
@@ -208,7 +206,7 @@ openTaskSelectorModal():void {
     if (this.tasksList?.length) {
       await MessageService.Instance.ask('CHANGE_TASKS_REFERENCE', this.tasks, null)
     }
-     
+
     await plansService.deletePlan(this.plan!.id!);
     this.back(false)
   }
@@ -222,7 +220,7 @@ openTaskSelectorModal():void {
         cover = file;
       }
 
-      const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+      const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, this.context) as unknown as ArrayBuffer;
 
       this.plan.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 
@@ -257,12 +255,12 @@ openTaskSelectorModal():void {
 
       if (Array.isArray(file)) {
         for (const f of file) {
-          const shared = await this.askForSharedFile(f.id, this.plan.id!, CONFIGURATION.context) as unknown as ArrayBuffer;
+          const shared = await this.askForSharedFile(f.id, this.plan.id!, this.context) as unknown as ArrayBuffer;
 
           attachmentsSharableIds.push({ originalFileId: f.id, sharedToken: this.decodeSharable(shared), contentType: f.contentType } as file.SharedRef);
         }
       } else {
-        const shared = await this.askForSharedFile(file.id, this.plan.id!, CONFIGURATION.context) as unknown as ArrayBuffer;
+        const shared = await this.askForSharedFile(file.id, this.plan.id!, this.context) as unknown as ArrayBuffer;
 
         attachmentsSharableIds.push({ originalFileId: file.id, sharedToken: this.decodeSharable(shared), contentType: file.contentType } as file.SharedRef);
       }
@@ -287,7 +285,7 @@ openTaskSelectorModal():void {
     if (!this.plan?.state || this.plan.state == "") {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.state_error', 'Inserisci uno stato'))
       return false;
-  }
+    }
     if (!this.plan?.groupId || this.plan.groupId == "") {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
       return false;
@@ -312,8 +310,8 @@ openTaskSelectorModal():void {
     }
     if (this.plan.planType == 'fromIssues') {
       if (!this.tasksList) {
-          MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
-          return false;
+        MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
+        return false;
       }
     }
     // if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
@@ -344,21 +342,21 @@ openTaskSelectorModal():void {
   groupChanged(val: server.Group) {
     this.plan!.group = val;
     this.plan!.groupId = val.id;
-}
+  }
 
-stateChanged(val: string) {
-    this.plan!.state = val ;
-}
+  stateChanged(val: string) {
+    this.plan!.state = val;
+  }
 
-tasksList?: taskType[] = []
-toggleType: boolean = false
-@Watch('toggleType') 
-pro() {
+  tasksList?: taskType[] = []
+  toggleType: boolean = false
+  @Watch('toggleType')
+  pro() {
     if (this.toggleType) {
-        this.plan!.planType = 'fromIssues';
+      this.plan!.planType = 'fromIssues';
     } else {
-        this.plan!.planType = 'simple';
-        this.tasksList = []
+      this.plan!.planType = 'simple';
+      this.tasksList = []
     }
-}
+  }
 }

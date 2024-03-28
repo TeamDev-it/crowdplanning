@@ -46,7 +46,7 @@ export default class PlanWizard extends Vue {
         MessageService.Instance.send("closeCrowdPopup");
     }
 
-    currentUser!: server.Myself 
+    currentUser!: server.Myself
 
     steplevel: number = 1
     workspaceId = "";
@@ -69,9 +69,7 @@ export default class PlanWizard extends Vue {
         return CommonRegistry.Instance.getComponent('media-gallery');
     }
 
-    get context(): string {
-        return CONFIGURATION.context;
-    }
+    context = "PLANS";
 
     get states(): server.State[] {
         return Array.from(store.getters.crowdplanning.getStates(this.plansGroupRoot.id) || []);
@@ -181,7 +179,7 @@ export default class PlanWizard extends Vue {
                 cover = file;
             }
 
-            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, this.context) as unknown as ArrayBuffer;
 
             this.plan.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 
