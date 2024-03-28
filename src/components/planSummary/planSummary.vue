@@ -4,8 +4,7 @@
       <h1 class="title">{{ plan.title }}</h1>
     </header>
     <div>
-      <div class="cover-image" v-if="CoverImage">
-        <img :src="CoverImage" />
+      <div class="cover-image" v-if="CoverImage" :style="{ backgroundImage: `url(${CoverImage})`}">
       </div>
       <div class="info-case">
         <div v-tooltip="$t('crowdplanning.planSummary-startDate' ,'Inizio progetto')" class="date info" v-if="plan.startDate">

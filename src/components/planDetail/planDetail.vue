@@ -12,7 +12,7 @@
           <i class="ti ti-pencil"></i>
         </button>
       </div>
-      <div v-if="!loggedIn"> 
+      <div v-if="!loggedIn">
         <button class="like" @click="openLoginModal()">
           <i class="ti ti-heart"></i>
           <span class="text">{{ $t('taskDetail.giveVote', 'Mi piace') }}</span>
@@ -20,16 +20,18 @@
       </div>
     </div>
 
+    
     <div class="content">
       <div class="plan-summary-cont">
         <plan-summary :plan="selectedPlan" :key="`summary-${planId}`" :workspaceId="workspaceId" :likes="count" />
       </div>
-      <div class="third-column" v-if="canSeeMsg() || canWriteMsg() || selectedPlan?.planType == 'fromIssues'">
+      <div class="right-column" v-if="canSeeMsg() || canWriteMsg() || selectedPlan?.planType == 'fromIssues'">
         <div class="togglebtn">
-          <div v-if="canSeeMsg() || canWriteMsg()" @click="toggleSections('comments')" :class="{ active: comments }">Commenti</div>
-          <div v-if="selectedPlan?.planType == 'fromIssues'" @click="toggleSections('issues')" :class="{ active: issues }">Segnalazioni</div>
+          <div v-if="canSeeMsg() || canWriteMsg()" @click="showpane = 'comments'" :class="{ active: showpane == 'comments' }">Commenti</div>
+          <div v-if="selectedPlan?.planType == 'fromIssues'" @click="showpane = 'issues'" :class="{ active: showpane == 'issues' }">Segnalazioni</div>
         </div>
-        <div class="comments-section" v-if="canSeeMsg() || canWriteMsg()" v-show="comments">
+        <section :style="{ background: showpane == 'issues' ? 'var(--grey-semidark)' : '' }">
+        <div class="comments-section" v-if="(canSeeMsg() || canWriteMsg()) && showpane == 'comments'">
           <component
             v-if="loggedIn"
             :canSeeMsg="canSeeMsg()"
@@ -37,13 +39,13 @@
             :is="discussionRoom"
             :type="type"
             :id="planId"
-            :titlePlaceholder="{ key: 'plans.comments.title', value: 'Commenti' }"
-            :textPlaceholder="{ key: 'plans.comments.text', value: 'Utilizza questo spazio per commentare la proposta.' }"
+            titlePlaceholder="plans.comments.title"
+            textPlaceholder="plans.comments.text"
             :showCommentsCount="true"
           />
           <button v-if="!loggedIn" class="log-button" @click="openLoginModal()">Accedi per commentare</button>
         </div>
-        <div class="issues-container" v-show="selectedPlan?.planType == 'fromIssues'">
+        <div class="issues-container" v-if="selectedPlan?.planType == 'fromIssues' && showpane == 'issues'">
           <div class="issues-section">
             <div class="crowdplanning-task-card" v-for="(task, tidx) in tasksList" :key="`t-${tidx}-${task.id}`">
               <div class="info">
@@ -74,6 +76,7 @@
             <button v-if="selectedPlan?.planType == 'fromIssues'" @click="createIssue" class="sendIssue">{{ $t('plans.newissues.create', 'Invia nuova segnalazione') }}</button>
           </div>
         </div>
+        </section>
       </div>
     </div>
   </div>
@@ -81,39 +84,6 @@
 
 <style lang="less" scoped>
 @import url(./planDetail.less);
-</style>
-
-<style lang="less">
-.media {
-  .public-media-gallery {
-    .image-container {
-      max-width: 400px;
-      .preview {
-        width: fit-content;
-        height: fit-content;
-        > img {
-          max-height: 150px;
-          max-width: 150px;
-        }
-      }
-    }
-  }
-}
-
-.second-column {
-  .attachments {
-    .image-container {
-      .preview {
-        min-width: 200px;
-        min-height: 150px;
-        max-height: 250px;
-        max-width: 300px;
-        height: auto;
-        width: auto;
-      }
-    }
-  }
-}
 </style>
 
 <script lang="ts" src="./planDetail.ts" />
