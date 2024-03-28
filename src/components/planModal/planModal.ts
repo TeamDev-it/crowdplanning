@@ -220,7 +220,7 @@ export default class PlanModal extends Vue {
         cover = file;
       }
 
-      const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, this.context) as unknown as ArrayBuffer;
+      const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, `${this.context}-COVER`) as unknown as ArrayBuffer;
 
       this.plan.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 

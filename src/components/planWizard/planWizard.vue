@@ -68,7 +68,7 @@
             :ref="coverMediaGalleryRef"
             :is="mediaGallery"
             :fileLimit="1"
-            :type="context"
+            :type="`${context}-COVER`"
             :inputFileTypes="'images'"
             :id="plan.id ?? ''"
             @filesUploaded="coverUploaded"
