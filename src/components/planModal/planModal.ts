@@ -165,9 +165,6 @@ export default class PlanModal extends Vue {
   }
 
   async confirm(): Promise<void> {
-    if (!this.requiredFieldsSatisfied()) {
-      return;
-    }
 
     if (this.plan && !this.plan?.id) {
       this.plan.workspaceId = this.groups.workspaceId;
@@ -275,58 +272,6 @@ export default class PlanModal extends Vue {
 
   private setPlan(plan: server.Plan): void {
     store.actions.crowdplanning.setPlan(plan);
-  }
-
-  private requiredFieldsSatisfied(): boolean {
-    if (!this.plan?.title || this.plan.title == "") {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-      return false;
-    }
-    if (!this.plan?.state || this.plan.state == "") {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.state_error', 'Inserisci uno stato'))
-      return false;
-    }
-    if (!this.plan?.groupId || this.plan.groupId == "") {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-      return false;
-    }
-    if (!this.plan?.description || this.plan.description == "") {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-      return false;
-    }
-    // if (!this.featureTest || this.featureTest == undefined) {
-    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
-    //     return false;
-    // }
-    if (!this.plan?.startDate || this.plan.startDate == undefined) {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-      return false;
-    }
-    if (this.plan.dueDate) {
-      if (this.plan.dueDate < this.plan.startDate) {
-        MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error_before_start', 'La data di scadenza del progetto non può essere inferiore alla data di inizio'));
-        return false;
-      }
-    }
-    if (this.plan.planType == 'fromIssues') {
-      if (!this.tasksList) {
-        MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
-        return false;
-      }
-    }
-    // if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
-    //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-    //     return false;
-    // }
-
-    //deve stare giu
-    let titleLength = this.plan?.title.length as number
-    if (titleLength > 106) {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-      return false;
-    }
-
-    return true;
   }
 
   private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {

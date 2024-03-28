@@ -51,7 +51,7 @@ export default class PlanWizard extends Vue {
     steplevel: number = 1
     workspaceId = "";
     plansGroupRoot: server.Group = {} as server.Group;
-    featureTest?: locations.Feature;
+    featureTest: locations.Feature | null = null;
 
     createPlan: server.createPlan = {
         feature: this.featureTest as locations.Feature,
@@ -216,10 +216,6 @@ export default class PlanWizard extends Vue {
         this.disablePublishButton = true
         // this.value.resolve(this.plan)
 
-        if (!this.requiredFieldsSatisfied()) {
-            return;
-        }
-
         if (this.plan && !this.plan?.id) {
             //   this.plan.workspaceId = this.plan.workspaceId;
             // Save new plan
@@ -260,121 +256,6 @@ export default class PlanWizard extends Vue {
     private setPlan(plan: server.Plan): void {
         store.actions.crowdplanning.setPlan(plan);
     }
-
-    private requiredFieldsSatisfied(): boolean {
-        if (!this.plan?.title || this.plan.title == "") {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-            return false;
-        }
-        if (!this.plan?.state || this.plan.state == "") {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.state_error', 'Inserisci uno stato'))
-            return false;
-        }
-        if (!this.plan?.groupId || this.plan.groupId == "") {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-            return false;
-        }
-        if (!this.plan?.description || this.plan.description == "") {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-            return false;
-        }
-        if (!this.featureTest || this.featureTest == undefined) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
-            return false;
-        }
-        if (!this.plan?.startDate || this.plan.startDate == undefined) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-            return false;
-        }
-        if (this.plan.dueDate) {
-            if (this.plan.dueDate < this.plan.startDate) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error_before_start', 'La data di scadenza del progetto non può essere inferiore alla data di inizio'));
-                return false;
-            }
-        }
-        // if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
-        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-        //     return false;
-        // }
-        if (this.plan.planType == 'fromIssues') {
-            if (this.tasksList && this.tasksList.length == 0) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
-                return false;
-            }
-        }
-
-        //deve stare giu
-        let titleLength = this.plan?.title.length as number
-        if (titleLength > 106) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-            return false;
-        }
-
-        return true;
-    }
-
-    goNext() {
-        if (this.steplevel == 1) {
-            if (!this.plan?.title || this.plan.title == "") {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-                return false;
-            }
-            if (this.plan.title.charAt(0) == ' ') {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error2', 'La prima lettera del titolo non può essere uno spazio vuoto'))
-                return false;
-            }
-            let titleLength = this.plan?.title.length as number
-            if (titleLength > 106) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-                return false;
-            }
-            if (!this.plan?.state || this.plan.state == "") {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.state_error', 'Inserisci uno stato'))
-                return false;
-            }
-            if (!this.plan?.groupId || this.plan.groupId == "") {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-                return false;
-            }
-            if (!this.plan?.description || this.plan.description == "") {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-                return false;
-            }
-
-            return this.steplevel++
-        }
-
-        if (this.steplevel == 2) {
-            if (!this.featureTest || this.featureTest == undefined) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
-                return false;
-            }
-
-            return this.steplevel++
-        }
-
-        if (this.steplevel == 3) {
-            if (!this.plan?.startDate || this.plan.startDate == undefined) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-                return false;
-            }
-            if (this.plan.dueDate) {
-                if (this.plan.dueDate < this.plan.startDate) {
-                    MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error_before_start', 'La data di scadenza del progetto non può essere inferiore alla data di inizio'));
-                    return false;
-                }
-            }
-            if (this.plan.planType == 'fromIssues') {
-                if (!this.tasksList || this.tasksList.length == 0) {
-                    MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
-                    return false;
-                }
-            }
-
-            return this.steplevel++
-        }
-    }
-
     groupChanged(val: server.Group) {
         this.plan.group = val;
         this.plan.groupId = val.id;
