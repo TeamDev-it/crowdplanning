@@ -48,7 +48,7 @@
             <div class="crowdplanning-task-card" v-for="(task, tidx) in tasksList" :key="`t-${tidx}-${task.id}`">
               <div class="info">
                 <small>
-                  <span>#{{ task.shortId }}</span>
+                  <span>#{{ task.hexId }}</span>
                 </small>
                 <strong>{{ task.title }}</strong>
                 <div class="description" v-html="task.description" v-tooltip="task.description"></div>
