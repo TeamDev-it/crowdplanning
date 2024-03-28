@@ -25,7 +25,7 @@ export default class PlanMap extends Vue {
   center!: number[] | null;
 
   @Prop({ default: () => [] })
-  states: server.State[] = [];
+  states!: server.State[];
 
   datas: GeoJSON.FeatureCollection = {
     type: "FeatureCollection" as const,
