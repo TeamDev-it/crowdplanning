@@ -41,7 +41,7 @@
               :id="plan.id ?? ''"
               @filesUploaded="coverUploaded"
               @fileRemoved="coverRemoved"
-              style="background-color: var(--white); height: 100%; display: grid"
+              style="height: 100%; display: grid"
             ></componenet>
           </fieldset>
 
