@@ -73,7 +73,7 @@
             :id="plan.id ?? ''"
             @filesUploaded="coverUploaded"
             @fileRemoved="coverRemoved"
-            style="background-color: var(--background-color); height: 100%; display: grid"
+            style="height: 100%; display: grid"
           ></componenet>
           <div class="editor">
             <inject name="note-editor" v-model="plan.description" @keydown.stop> </inject>
