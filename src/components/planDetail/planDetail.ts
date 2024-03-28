@@ -108,18 +108,8 @@ export default class PlanDetail extends Vue {
 
   tasksList?: taskType[] = [];
 
-  comments = true
-  issues = false
-  toggleSections(s: string) {
-    if (s == 'comments') {
-      this.comments = true
-      this.issues = false
-    }
-    if (s == 'issues') {
-      this.comments = false
-      this.issues = true
-    }
-  }
+  type = "PLANS";
+  showpane: 'comments' | 'issues' = "comments";
 
   async mounted() {
     this.getPlanTasks();
@@ -127,7 +117,7 @@ export default class PlanDetail extends Vue {
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
 
     if (!this.canSeeMsg() && !this.canWriteMsg()) {
-      this.toggleSections('issues')
+      this.showpane = "issues";
     }
   }
 
@@ -168,9 +158,7 @@ export default class PlanDetail extends Vue {
     return CommonRegistry.Instance.getComponent('shared-preview');
   }
 
-  get type(): string {
-    return CONFIGURATION.context;
-  }
+  
 
   get selectedPlanTitle(): string {
     return this.selectedPlan!.title
@@ -206,7 +194,7 @@ export default class PlanDetail extends Vue {
   }
 
   hasPermission(permission: string): boolean {
-    return this.$can(`${CONFIGURATION.context}.${permission}`);
+    return this.$can(`${this.type}.${permission}`);
   }
 
   userRoles: string[] = []
