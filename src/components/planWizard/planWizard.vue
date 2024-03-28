@@ -51,7 +51,7 @@
           <div class="row">
             <fieldset>
               <small>{{ $t('plans.modal.title', 'titolo') }}*</small>
-              <input class="layer" v-model="plan.title" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
+              <input class="layer" v-model="plan.title" maxlength="106" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
             </fieldset>
           </div>
           <div class="row">
@@ -98,7 +98,9 @@
             <fieldset class="area fixed">
               <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
               <div class="date-picker-container">
-                <date-picker v-model="plan.dueDate" @keydown.stop mode="dateTime" timezone="utc">
+                <date-picker v-model="plan.dueDate" 
+                :available-dates="[{start: plan.startDate, end: null}]"
+                @keydown.stop mode="dateTime" timezone="utc">
                   <template v-slot="{ inputEvents }">
                     <date-time :value="plan.dueDate" :events="inputEvents"></date-time>
                   </template>
@@ -156,7 +158,15 @@
         <i class="ti ti-arrow-left"></i>
         <span>{{ $t('plan.wizard-go-back', 'Indietro') }}</span>
       </button>
-      <button v-if="steplevel != 4" @click="goNext">
+      <button v-if="steplevel == 1" @click="steplevel++" :disabled="!plan.title || !plan.title.trim() || !plan.state || !plan.groupId">
+        <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
+        <i class="ti ti-arrow-right"></i>
+      </button>
+      <button v-if="steplevel == 2" @click="steplevel++" :disabled="!featureTest">
+        <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
+        <i class="ti ti-arrow-right"></i>
+      </button>
+      <button v-if="steplevel == 3" @click="steplevel++" :disabled="!plan.startDate">
         <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
         <i class="ti ti-arrow-right"></i>
       </button>
