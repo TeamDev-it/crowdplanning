@@ -9,6 +9,8 @@ import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
 import { groupsService } from "@/services/groupsService";
+import groupButton from "@/components/groupButton/groupButton.vue";
+import statusButton from "@/components/statusButton/statusButton.vue";
 
 
 @Component({
@@ -16,6 +18,8 @@ import { groupsService } from "@/services/groupsService";
         datePicker,
         dateTime,
         Autocomplete,
+        groupButton,
+        statusButton
     }
 })
 export default class PlanWizard extends Vue {
@@ -24,16 +28,30 @@ export default class PlanWizard extends Vue {
     public readonly mediaGalleryRef: string = 'media-gallery';
 
     @Prop()
-    value!: IProjectableModel<server.Plan>;
+    value!: IProjectableModel<unknown>;
 
+    plan: server.Plan = {} as server.Plan;
 
+    @Watch('plan.isPublic')
+    onIsPublicChanged() {
+        if (this.plan.isPublic || this.plan.isPublic == undefined) {
+            this.plan.rolesCanRate = [];
+            this.plan.rolesCanSeeOthersComments = [];
+            this.plan.rolesCanSeeOthersRatings = [];
+            this.plan.rolesCanWriteComments = [];
+        }
+    }
 
-    currentUser!: server.Myself | null
+    closeCrowdPopup() {
+        MessageService.Instance.send("closeCrowdPopup");
+    }
+
+    currentUser!: server.Myself
 
     steplevel: number = 1
     workspaceId = "";
     plansGroupRoot: server.Group = {} as server.Group;
-    featureTest?: locations.Feature;
+    featureTest: locations.Feature | null = null;
 
     createPlan: server.createPlan = {
         feature: this.featureTest as locations.Feature,
@@ -51,42 +69,67 @@ export default class PlanWizard extends Vue {
         return CommonRegistry.Instance.getComponent('media-gallery');
     }
 
-    get context(): string {
-        return CONFIGURATION.context;
+    context = "PLANS";
+
+    get states(): server.State[] {
+        return Array.from(store.getters.crowdplanning.getStates(this.plansGroupRoot.id) || []);
+    }
+
+    isPublic: boolean = true
+
+    @Watch('isPublic')
+    planIsPublic() {
+        if (this.isPublic) {
+            this.plan.isPublic = true
+        } else if (!this.isPublic) {
+            this.plan.isPublic = false
+        }
     }
 
     async mounted() {
         this.steplevel = 1
         this.currentUser = await MessageService.Instance.ask("WHO_AM_I");
         await this.getData();
-
-        // if (this.newPlan) {
-        //     this.plan = this.newPlan
-        // }
+        this.onIsPublicChanged()
     }
 
     private async getData(): Promise<void> {
 
         let allGroups = [];
-        if (this.currentUser) {
-            allGroups = await groupsService.getGroups();
-        } else {
-            allGroups = await groupsService.getPublicGroups(this.workspaceId);
-        }
+
+        allGroups = await groupsService.getGroups();
 
         this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
 
         if (this.plansGroupRoot) {
-            this.plansGroupRoot.children = allGroups.filter(x => x.parentGroupId === this.plansGroupRoot?.id);
+            // x.parentGroupId === this.plansGroupRoot?.id  (trova tutti i gruppi principali)
+            // x.parentGroupId !== null  (trova tutti i gruppi (principali e figli))
+            // x.parentGroupId !== this.plansGroupRoot?.id (trova solo gruppi figli e PLANS)
+            this.plansGroupRoot.children = this.buildTree(allGroups.filter(x => x.parentGroupId !== null));
         }
 
         if (this.plansGroupRoot?.id) {
-            if (this.currentUser) {
-                await plansService.getPlans();
-            } else {
-                await plansService.getPublicPlans(this.workspaceId);
-            }
+            await plansService.getPlans();
         }
+    }
+
+    buildTree(objects: server.Group[]): server.Group[] {
+        const tree: server.Group[] = [];
+        const objectMap: { [key: string]: server.Group } = {};
+
+        objects.forEach(obj => {
+            objectMap[obj.id] = obj;
+            obj.children = [];
+        });
+
+        objects.forEach(obj => {
+            if (obj.parentGroupId !== null && objectMap[obj.parentGroupId]) {
+                objectMap[obj.parentGroupId].children.push(obj);
+            } else {
+                tree.push(obj);
+            }
+        });
+        return tree;
     }
 
     close() {
@@ -96,7 +139,7 @@ export default class PlanWizard extends Vue {
             // 
         }
 
-        this.value.resolve(this.value.data);
+        this.value.resolve(this.plan);
     }
 
 
@@ -128,7 +171,7 @@ export default class PlanWizard extends Vue {
     }
 
     async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
-        if (file && this.value.data) {
+        if (file && this.plan) {
             let cover = null;
             if (Array.isArray(file)) {
                 cover = file[0];
@@ -136,13 +179,13 @@ export default class PlanWizard extends Vue {
                 cover = file;
             }
 
-            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.value.data.id!, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+            const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, `${this.context}-COVER`) as unknown as ArrayBuffer;
 
-            this.value.data.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
+            this.plan.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 
-            if (this.value.data.id)
+            if (this.plan.id)
                 //update plan
-                await plansService.Set(this.value.data!.groupId, this.value.data);
+                await plansService.Set(this.plan!.groupId, this.plan);
         }
     }
 
@@ -157,13 +200,13 @@ export default class PlanWizard extends Vue {
     }
 
     async coverRemoved(file: server.FileAttach): Promise<void> {
-        if (this.value.data) {
+        if (this.plan) {
 
-            this.value.data.coverImageIds = null;
+            this.plan.coverImageIds = null;
 
-            if (this.value.data.id)
+            if (this.plan.id)
                 //update plan
-                await plansService.Set(this.value.data!.groupId, this.value.data);
+                await plansService.Set(this.plan!.groupId, this.plan);
         }
     }
 
@@ -171,20 +214,16 @@ export default class PlanWizard extends Vue {
     async confirm(): Promise<void> {
 
         this.disablePublishButton = true
-        // this.value.resolve(this.value.data)
+        // this.value.resolve(this.plan)
 
-        if (!this.requiredFieldsSatisfied()) {
-            return;
-        }
-
-        if (this.value.data && !this.value.data?.id) {
-            //   this.value.data.workspaceId = this.value.data.workspaceId;
+        if (this.plan && !this.plan?.id) {
+            //   this.plan.workspaceId = this.plan.workspaceId;
             // Save new plan
-            this.value.data.id = null;
-            this.value.data = await plansService.Set(this.value.data.groupId, this.value.data) as server.Plan;
+            this.plan.id = null;
+            this.plan = await plansService.Set(this.plan.groupId, this.plan) as server.Plan;
         }
 
-        if (!this.value.data) {
+        if (!this.plan) {
             MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
             return;
         }
@@ -192,117 +231,48 @@ export default class PlanWizard extends Vue {
         this.disablePublishButton = false
 
         // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-        await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.value.data.id);
+        await (this.$refs[this.coverMediaGalleryRef] as any)?.save(this.plan.id);
 
         // await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
 
         // Update plan with new properties
-        await plansService.Set(this.value.data!.groupId, this.value.data);
+        await plansService.Set(this.plan!.groupId, this.plan);
 
-        if (this.tasksList != null) {
-            await plansService.importTask(this.value.data.id!, this.tasksList!);
+        if (this.plan.planType == 'fromIssues' && this.tasksList) {
+            MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", this.tasksList, this.plan.id);
+        }
+        if (this.plan.planType == null) {
+            this.plan.planType = 'simple';
         }
 
-        this.setPlan(this.value.data);
+        this.plan.isPublic = this.isPublic;
+        this.setPlan(this.plan);
 
         this.close();
+
+        MessageService.Instance.send("OPEN_CROWDPLAN", this.plan.id);
     }
 
     private setPlan(plan: server.Plan): void {
         store.actions.crowdplanning.setPlan(plan);
     }
-
-    private requiredFieldsSatisfied(): boolean {
-        if (!this.value.data?.title || this.value.data.title == "") {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-            return false;
-        }
-        if (!this.value.data?.groupId || this.value.data.groupId == "") {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-            return false;
-        }
-        if (!this.value.data?.description || this.value.data.description == "") {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-            return false;
-        }
-        if (!this.featureTest || this.featureTest == undefined) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
-            return false;
-        }
-        if (!this.value.data?.startDate || this.value.data.startDate == undefined) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-            return false;
-        }
-        // if (!this.value.data?.dueDate || this.value.data.dueDate == undefined) {
-        //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-        //     return false;
-        // }
-        if (this.value.data.planType == 'fromIssues') {
-            if (this.tasksList && this.tasksList.length == 0) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
-                return false;
-            }
-        }
-
-        //deve stare giu
-        let titleLength = this.value.data?.title.length as number
-        if (titleLength > 106) {
-            MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-            return false;
-        }
-
-        return true;
+    groupChanged(val: server.Group) {
+        this.plan.group = val;
+        this.plan.groupId = val.id;
     }
 
-    goNext() {
-        if (this.steplevel == 1) {
-            if (!this.value.data?.title || this.value.data.title == "") {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-                return false;
-            }
-            if (this.value.data.title.charAt(0) == ' ') {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error2', 'La prima lettera del titolo non può essere uno spazio vuoto'))
-                return false;
-            }
-            let titleLength = this.value.data?.title.length as number
-            if (titleLength > 106) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-                return false;
-            }
-            if (!this.value.data?.groupId || this.value.data.groupId == "") {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-                return false;
-            }
-            if (!this.value.data?.description || this.value.data.description == "") {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-                return false;
-            }
+    stateChanged(val: string) {
+        this.plan.state = val;
+    }
 
-            return this.steplevel++
-        }
-
-        if (this.steplevel == 2) {
-            if (!this.featureTest || this.featureTest == undefined) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
-                return false;
-            }
-
-            return this.steplevel++
-        }
-
-        if (this.steplevel == 3) {
-            if (!this.value.data?.startDate || this.value.data.startDate == undefined) {
-                MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-                return false;
-            }
-            if (this.value.data.planType == 'fromIssues') {
-                if (this.tasksList && this.tasksList.length == 0) {
-                    MessageService.Instance.send("ERROR", this.$t('plans.modal.planType_error', 'Inserisci almeno una segnalazione'));
-                    return false;
-                }
-            }
-
-            return this.steplevel++
+    toggleType: boolean = false
+    @Watch('toggleType')
+    pro() {
+        if (this.toggleType) {
+            this.plan.planType = 'fromIssues';
+        } else {
+            this.plan.planType = 'simple';
+            this.tasksList = []
         }
     }
 }

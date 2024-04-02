@@ -1,19 +1,19 @@
 <template>
   <div class="crowd-group-item" v-if="value.id">
-    <header @click="setSelectedCategory(value)" :class="{ active: selectedCategory?.id === value.id }">
+    <header @click="setSelectedCategory(value)" class="category" :class="{ active: selectedCategory?.id === value.id }">
       <div class="group-detail">
         <i :class="iconCode" v-if="treeLevel == 0"></i>
         <div class="detail-cont">
           <span class="text">{{ value.name }}</span>
-          <small class="description text" v-tooltip="value.description">{{ value.description }} </small>
+          <small v-if="treeLevel == 0" class="description text" v-tooltip.top-end="value.description">{{ value.description }} </small>
         </div>
       </div>
       <div class="commands">
-        <div v-if="hasPermission('groups.cancreate')" @click="addSubGroup" >
+        <div v-if="hasPermission('groups.cancreate') && treeLevel < 3" @click="addSubGroup" >
           <i class="ti ti-plus"></i>
         </div>
         <div v-if="hasPermission('groups.canedit')">
-          <i class="ti ti-pencil" @click.stop="edit"></i>
+          <i class="ti ti-pencil" @click="edit"></i>
         </div>
       </div>
     </header>

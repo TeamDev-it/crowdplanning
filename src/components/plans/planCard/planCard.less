@@ -28,6 +28,43 @@
       width: 3rem;
       height: 3rem;
     }
+
+    .state {
+      
+      position: absolute;
+  top: 85%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      background-color: var(--white);
+      width: auto;
+      max-width: 150px;
+      height: 1.5rem;
+      gap: .5rem;
+      padding: 0 0.5rem;
+      text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+
+      .state_circle {
+        height: 100%;
+        svg {
+          height: 100%;
+          width: 20px;
+          padding-top: 2px;
+        }
+      }
+
+      .value_text {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
   }
 
   .card-content {
@@ -44,6 +81,10 @@
       align-items: center;
       justify-content: space-between;
       height: 24px;
+
+      .square:hover {
+        color: var(--crowdplanning-primary-color);
+      }
     }
 
     .description {
@@ -77,7 +118,6 @@
         font-weight: var(--font-weight-bold);
         text-overflow: ellipsis;
         max-width: 100%;
-
       }
     }
 
@@ -88,4 +128,8 @@
       justify-content: flex-end;
     }
   }
+}
+
+.text{
+  color: var(--text-color) !important;
 }

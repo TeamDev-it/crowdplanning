@@ -1,0 +1,54 @@
+.modal {
+  min-height: unset !important;
+  &.login-modal {
+    max-width: 30vw;
+    height: fit-content;
+    width: 250px;
+    //height: 200px;
+  }
+
+  > header {
+    background-color: var(--crowdplanning-primary-color);
+    padding: 1rem 2rem;
+    justify-content: center !important;
+
+    .title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: var(--white);
+    }
+  }
+
+   section {
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    align-items: center;
+    overflow: hidden;
+    height: fit-content;
+
+    .text {
+      text-align: center;
+    }
+  }
+
+  .commands {
+    // display: grid;
+    // grid-template-columns: 1fr 1fr;
+    width: 100%;
+    border: none !important;
+
+    .anonymous-access {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+    }
+
+    .anonymous-access:hover {
+      font-weight: var(--font-weight-bold);
+    }
+  }
+}

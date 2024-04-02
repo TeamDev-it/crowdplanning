@@ -3,6 +3,10 @@
   grid-template-rows: auto 1fr;
   position: relative;
 
+  .category {
+    padding: 0 0.5rem;
+  }
+
   .children {
     margin-left: 1rem;
     border-left: 1px solid var(--grey-semidark2);
@@ -18,7 +22,7 @@
       position: absolute;
       width: 1rem;
       left: -2px;
-      top: 16px;
+      top: 15.5px;
       bottom: 0;
       height: auto;
     }
@@ -36,6 +40,7 @@
       .active {
         background-color: var(--crowdplanning-primary-color);
         color: var(--white);
+        max-width: 100%;
       }
 
       &::before {
@@ -44,23 +49,27 @@
         position: absolute;
         width: 1rem;
         border-bottom: 1px solid var(--grey-semidark2);
-        left: 0;
+        left: -1rem;
       }
     }
   }
 
   header {
-    display: flex;
-    flex-flow: row;
+    display: grid;
+    grid-template-columns: minmax(50px, 200px) auto;
+    // flex-flow: row nowrap;
+    // grid-template-columns: auto;
     align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
-    min-height: 40px;
-    height: 40px;
-    background-color: var(--white);
+    padding: 0 .5rem 0 1rem;
+    // padding-right: 0;
+    background: var(--white);
     border-radius: var(--border-radius);
-    padding: 10px;
+    min-height: 40px;
     cursor: pointer;
+    position: relative;
+    z-index: 1;
+   
 
     &.active {
       background-color: var(--crowdplanning-primary-color);
@@ -69,7 +78,7 @@
 
     &:hover {
       .text {
-        width: auto !;
+        width: inherit;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -92,7 +101,7 @@
         display: flex;
         flex-flow: column;
         overflow: hidden;
-        max-width: 140px;
+        //max-width: 140px;
         text-overflow: ellipsis;
         white-space: nowrap;
 

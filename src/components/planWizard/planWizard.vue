@@ -1,10 +1,10 @@
 <template>
-  <div class="modal planWizard" :class="{}">
+  <div class="modal planWizard" :class="{ lastStep: steplevel == 4 }">
     <header>
       <h3>{{ $t('plan.wizard-create-new-project', 'Crea nuovo progetto') }}</h3>
       <button class="square none" @click="close"><i class="ti ti-x"></i></button>
     </header>
-    <section>
+    <section @scroll="closeCrowdPopup()">
       <div class="progressBar">
         <div class="bar">
           <div class="outer line">
@@ -51,47 +51,45 @@
           <div class="row">
             <fieldset>
               <small>{{ $t('plans.modal.title', 'titolo') }}*</small>
-              <input class="layer" v-model="value.data.title" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
+              <input class="layer" v-model="plan.title" maxlength="106" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
+            </fieldset>
+          </div>
+          <div class="row">
+            <fieldset>
+              <small>{{ $t('plans.modal.stato', 'stato') }}*</small>
+              <status-button v-model="plan.state" :showAsSelect="true" @stateChanged="stateChanged" :currentUser="currentUser"></status-button>
             </fieldset>
             <fieldset>
               <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
-              <select v-model="value.data.groupId" class="category">
-                <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-                <option class="opt" v-for="group in plansGroupRoot.children" :key="group.id" :value="group.id">
-                  {{ group.name }}
-                </option>
-              </select>
+              <group-button v-model="plan.group" :showAsSelect="true" @groupChanged="groupChanged" :currentUser="currentUser"></group-button>
             </fieldset>
           </div>
           <componenet
             :ref="coverMediaGalleryRef"
             :is="mediaGallery"
             :fileLimit="1"
-            :titleText="{ key: 'modal.cover-image-addPlan-null', value: `` }"
-            :subtitleText="{ key: 'modal.cover-image-description-addPlan', value: `` }"
-            :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
             :type="`${context}-COVER`"
             :inputFileTypes="'images'"
-            :id="value.data.id ?? ''"
+            :id="plan.id ?? ''"
             @filesUploaded="coverUploaded"
             @fileRemoved="coverRemoved"
-            style="background-color: var(--background-color); height: 100%; display: grid"
+            style="height: 100%; display: grid"
           ></componenet>
           <div class="editor">
-            <inject name="note-editor" v-model="value.data.description" @keydown.stop> </inject>
+            <inject name="note-editor" v-model="plan.description" @keydown.stop> </inject>
           </div>
         </div>
         <div v-show="steplevel == 2" class="field two">
-          <inject name="editfeature-map" v-model="featureTest" :id="value.data.id" :type="'PLANS'" :proposedFeatures="null"> </inject>
+          <inject name="editfeature-map" v-model="featureTest" :id="plan.id" :type="'PLANS'" :proposedFeatures="null"> </inject>
         </div>
         <div v-show="steplevel == 3" class="field three">
           <div class="dates">
             <fieldset class="area fixed">
               <small>{{ $t('plans.modal.start-date', 'data inizio') }}</small>
               <div class="date-picker-container">
-                <date-picker v-model="value.data.startDate" @keydown.stop mode="dateTime" timezone="utc" required>
+                <date-picker v-model="plan.startDate" @keydown.stop mode="dateTime" timezone="utc" required>
                   <template v-slot="{ inputEvents }">
-                    <date-time :value="value.data.startDate" :events="inputEvents"></date-time>
+                    <date-time :value="plan.startDate" :events="inputEvents"></date-time>
                   </template>
                 </date-picker>
               </div>
@@ -100,9 +98,11 @@
             <fieldset class="area fixed">
               <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
               <div class="date-picker-container">
-                <date-picker v-model="value.data.dueDate" @keydown.stop mode="dateTime" timezone="utc">
+                <date-picker v-model="plan.dueDate" 
+                :available-dates="[{start: plan.startDate, end: null}]"
+                @keydown.stop mode="dateTime" timezone="utc">
                   <template v-slot="{ inputEvents }">
-                    <date-time :value="value.data.dueDate" :events="inputEvents"></date-time>
+                    <date-time :value="plan.dueDate" :events="inputEvents"></date-time>
                   </template>
                 </date-picker>
               </div>
@@ -112,47 +112,42 @@
           <div class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'Progetto pubblico') }}</span>
-              <toggle v-model="value.data.isPublic" @keydown.stop :default="true" />
+              <toggle v-model="isPublic" />
             </div>
           </div>
-
-          <div class="fieldsets crowdplanning-roles-selector" v-if="!value.data.isPublic">
+          <div class="fieldsets crowdplanning-roles-selector" :class="{ disabled: isPublic }">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
             </div>
             <div class="row">
               <fieldset class="noborder">
                 <small>{{ $t('plans.modal.roles-can-write', 'scrivere commenti').toLocaleUpperCase() }}</small>
-                <inject name="roles-selector" class="bordered rolesSelector" v-model="value.data.rolesCanWriteComments"> </inject>
+                <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanWriteComments"> </inject>
               </fieldset>
               <fieldset class="noborder">
                 <small>{{ $t('plans.modal.roles-can-see-comments', 'leggere i commenti altrui').toLocaleUpperCase() }}</small>
-                <inject name="roles-selector" class="bordered rolesSelector" v-model="value.data.rolesCanSeeOthersComments"> </inject>
+                <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersComments"> </inject>
               </fieldset>
             </div>
             <div class="row">
               <fieldset class="noborder">
                 <small>{{ $t('plans.modal.roles-can-rate', 'votare il progetto').toLocaleUpperCase() }}</small>
-                <inject name="roles-selector" class="bordered rolesSelector" v-model="value.data.rolesCanRate"> </inject>
+                <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanRate"> </inject>
               </fieldset>
               <fieldset class="noborder">
                 <small>{{ $t('plans.modal.roles-can-see-ratings', 'vedere il totale di voti').toLocaleUpperCase() }}</small>
-                <inject name="roles-selector" class="bordered rolesSelector" v-model="value.data.rolesCanSeeOthersRatings"> </inject>
+                <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersRatings"> </inject>
               </fieldset>
             </div>
           </div>
           <hr />
-          <div class="row">
-            <fieldset>
-              <small>{{ $t('plans.modal.typeOf', 'tipo di progetto') }}*</small>
-              <select v-model="value.data.planType" class="typeOf">
-                <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-                <option class="opt" value="simple">{{ $t('plan.wizard-planType-simple', 'Descrittivo') }}</option>
-                <option class="opt" value="fromIssues">{{ $t('plan.wizard-planType-fromIssues', 'Raccolta segnalazioni') }}</option>
-              </select>
-            </fieldset>
+          <div class="toggle" v-if="$can('PLANS.canjoin.issues')">
+            <div class="row">
+              <span>{{ $t('plans.modal-typeOf', 'Il progetto contiene segnalazioni') }}</span>
+              <toggle type="checkbox" id="fromIssues" name="changeType" v-model="toggleType"></toggle>
+            </div>
           </div>
-          <div v-if="value.data.planType == 'fromIssues'" class="crowdplanning-task-selector">
+          <div v-if="plan.planType == 'fromIssues'" class="crowdplanning-task-selector">
             <component :is="taskSelector" :ref="taskSelector" style="height: 100%" v-model="tasksList"></component>
           </div>
         </div>
@@ -163,13 +158,20 @@
         <i class="ti ti-arrow-left"></i>
         <span>{{ $t('plan.wizard-go-back', 'Indietro') }}</span>
       </button>
-      <button v-if="steplevel != 4" @click="goNext">
-        <!-- <button v-if="steplevel != 4" @click="steplevel++"> -->
+      <button v-if="steplevel == 1" @click="steplevel++" :disabled="!plan.title || !plan.title.trim() || !plan.state || !plan.groupId">
+        <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
+        <i class="ti ti-arrow-right"></i>
+      </button>
+      <button v-if="steplevel == 2" @click="steplevel++" :disabled="!featureTest">
+        <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
+        <i class="ti ti-arrow-right"></i>
+      </button>
+      <button v-if="steplevel == 3" @click="steplevel++" :disabled="!plan.startDate">
         <span>{{ $t('plan.wizard-go-next', 'Avanti') }}</span>
         <i class="ti ti-arrow-right"></i>
       </button>
       <button v-if="steplevel == 4" @click="confirm()" :disabled="disablePublishButton">
-        <span>{{ $t('plan.wizard-publish', 'Pubblica') }}</span>
+        <span>{{ $t('plan.wizard-publish&see', 'Pubblica e visualizza') }}</span>
         <i class="ti ti-confetti"></i>
       </button>
     </footer>
@@ -198,7 +200,7 @@
 }
 
 .crowdplanning-roles-selector {
-    button{
+  button {
     color: var(--crowdplanning-primary-color) !important;
     width: 100% !important;
     justify-content: space-between;
@@ -210,8 +212,40 @@
     }
   }
 
-  .select-role{
+  .select-role {
     width: 100%;
   }
+}
+
+.planWizard {
+  .editor {
+    button {
+      &.void {
+        color: var(--crowdplanning-primary-color);
+
+        &:hover {
+          color: var(--crowdplanning-dark-color) !important ;
+        }
+
+        &.is-active {
+          background: var(--crowdplanning-light-color) !important;
+          border-color: var(--crowdplanning-light-color) !important;
+          color: var(--white);
+        }
+      }
+
+      &.square:focus {
+        border: 1px solid var(--crowdplanning-primary-color) !important;
+      }
+    }
+
+    .content-editor-container {
+      .content-editor {
+        max-height: 300px;
+        min-height: 200px;
+        overflow-y: auto;
+      }
+    }
   }
+}
 </style>

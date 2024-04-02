@@ -2,9 +2,14 @@
   //min-height: 750px;
   min-width: 1000px;
   height: auto;
+  min-height: 75vh;
   width: auto;
-  max-height: 95%;
+  max-height: 97%;
   max-width: 90%;
+
+  &.lastStep {
+    min-height: unset;
+  }
 
   header {
     background-color: var(--crowdplanning-primary-color);
@@ -131,7 +136,13 @@
                   overflow-x: hidden;
                   background-color: var(--white);
                   color: var(--text-color);
+                  display: flex;
+                  flex-flow: column;
                 }
+              }
+
+              &.error {
+                border: solid red 1px;
               }
             }
           }
@@ -173,6 +184,13 @@
             display: flex;
             flex-flow: column;
             gap: 25px;
+            
+            &.crowdplanning-roles-selector {
+              &.disabled {
+                pointer-events: none;
+                opacity: 0.5;
+              }
+            }
 
             .row {
               gap: 30px;
@@ -193,7 +211,7 @@
             overflow-x: hidden;
             background-color: var(--white);
             color: var(--text-color);
-          } 
+          }
         }
       }
     }
@@ -221,4 +239,24 @@
       justify-content: space-between;
     }
   }
+
+  select:has(option[value='']:checked) {
+    color: var(--text-color);
+    opacity: 0.5;
+  }
+
+  input::placeholder {
+    padding-left: 0;
+    color: var(--text-color);
+    opacity: 0.5;
+  }
+
+  input {
+    padding-left: 4px !important;
+  }
+  select {
+    padding: 0 !important;
+  }
 }
+
+

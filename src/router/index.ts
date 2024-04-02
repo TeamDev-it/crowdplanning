@@ -1,11 +1,30 @@
 import { RouteConfig } from "vue-router";
 
 export const routes: Array<RouteConfig> = [
-{
-  path: '/crowdplanning',
-  name: 'crowdplanning',
-  meta: {
-    requireAuth: false
+  {
+    path: '/crowdplanning/:groupId?/:planId?',
+    name: 'crowdplanning',
+    component: () => import(/* webpackChunkName: "crowdplanning" */ '@/views/crowdplanning/crowdplanning.vue'),
+    props: route => ({
+      groupId: route.params.groupId,
+      planId: route.params.planId,
+    }),
+    meta: {
+      requireAuth: false
+    },
   },
-  component: () => import(/* webpackChunkName: "crowdplanning" */ '@/views/crowdplanning/crowdplanning.vue')
-}];
+  {
+    path: 'crowdplanning/:groupId?/:planId?',
+    name: 'public-crowdplanning',
+    component: () => import(/* webpackChunkName: "crowdplanning" */ '@/views/crowdplanning/crowdplanning.vue'),
+    props: route => ({
+      groupId: route.params.groupId,
+      planId: route.params.planId,
+    }),
+    meta: {
+      public: true,
+      requireAuth: false
+    },
+  },
+];
+

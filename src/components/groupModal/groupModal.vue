@@ -19,7 +19,7 @@
       </div>
       <div class="area">
         <small class="title">{{ $t(`plan.group.create.description`, 'descrizione') }}</small>
-        <textarea class="description" v-model="copyValue.description" name="" id="" cols="30" rows="3" :placeholder="$t('plan.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')"></textarea>
+        <textarea class="description" v-model="copyValue.description" name="" id="" cols="30" rows="3" :placeholder="$t('plan.group.create.placeholderdescription', 'inserisci una descrizione per il tuo gruppo')" maxlength="150"></textarea>
       </div>
       <template v-if="!value.data.default">
         <div class="area wToggle">
@@ -27,7 +27,7 @@
           <toggle v-model="copyValue.public" />
         </div>
       </template>
-      <template>
+      <template v-if="value.data.parentGroupId != 'PLANS'">
         <div class="area">
           <small class="title">{{ $t('plan.group.create.icon.label', 'icona') }}</small>
           <input v-model="copyValue.iconCode" :placeholder="$t('plan.group.create.icon.placeholder', 'Inserisci un codice tabler icon')" />

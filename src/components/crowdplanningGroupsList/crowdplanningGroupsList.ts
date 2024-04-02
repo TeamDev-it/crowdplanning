@@ -5,6 +5,7 @@ import CrowdplanningGroupsItem from "../crowdplanningGroupsItem/crowdplanningGro
 import { MessageService, Projector } from "vue-mf-module";
 import groupModal from "@/components/groupModal/groupModal.vue";
 import { CONFIGURATION } from "@/configuration";
+import { groupsService } from "@/services/groupsService";
 
 
 @Component({
@@ -17,16 +18,26 @@ export default class CrowdplanningGroupList extends Vue {
   loading = true;
 
   @Prop({ required: true })
-  selectedCategory!: server.Group | null;
+  selectedCategory!: server.Group[] | null;
 
   @Prop({ required: true })
-  rootGroup!: server.Group;
+  rootGroup!: server.Group | null;
+
+  mounted() {
+    MessageService.Instance.subscribe('CHANGED_GROUP', (id: string) => {
+      this.$emit("rootGroupChanged", this.rootGroup);
+    })
+  }
+
+  unmounted() {
+    MessageService.Instance.unsubscribe('CHANGED_GROUP');
+  }
 
   setNullCategory() {
     this.$emit('selectedNoCategory')
   }
 
-  setSelectedCategory(value: server.Group) {
+  setSelectedCategory(value: server.Group[]) {
     this.$emit('selectedCategory', value)
   }
 
@@ -46,17 +57,17 @@ export default class CrowdplanningGroupList extends Vue {
     return this.$can(`${CONFIGURATION.context}.${permission}`);
   }
 
-  public changedGroup(group: server.Group) {
-    const idxChildrenGroup = this.rootGroup.children.findIndex((x) => x.id === group.id);
+  changedGroup(group: server.Group) {
+    const idxChildrenGroup = this.rootGroup!.children.findIndex((x) => x.id === group.id);
 
     if (idxChildrenGroup !== -1) {
       if ((group as any).deleted) {
-        this.rootGroup.children.splice(idxChildrenGroup, 1);
+        this.rootGroup!.children.splice(idxChildrenGroup, 1);
       } else {
-        this.rootGroup.children[idxChildrenGroup] = group;
+        this.rootGroup!.children[idxChildrenGroup] = group;
       }
     } else {
-      this.rootGroup.children.push(group);
+      this.rootGroup!.children.push(group);
     }
 
     this.$emit("rootGroupChanged", this.rootGroup);

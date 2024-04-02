@@ -43,6 +43,11 @@
     display: grid;
     grid-template-columns: 260px 1fr;
 
+
+    &.noGroups {
+      grid-template-columns: 0 1fr;
+    }
+
     .groups {
       background-color: var(--primary-color-lighter);
       overflow: hidden;
@@ -74,6 +79,10 @@
         .plans {
           overflow-y: auto;
         }
+      }
+
+      &.noProj {
+        grid-template-rows: 1fr;
       }
 
       .plans {

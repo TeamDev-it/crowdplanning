@@ -15,7 +15,7 @@ type taskLike = {
 
 @Component
 export default class PlanMap extends Vue {
-  @Prop({ default: [] })
+  @Prop({ default: () => [] })
   plans!: server.Plan[];
 
   @Prop()
@@ -24,8 +24,8 @@ export default class PlanMap extends Vue {
   @Prop({ default: null })
   center!: number[] | null;
 
-  @Prop({ default: [] })
-  states: server.State[] = [];
+  @Prop({ default: () => [] })
+  states!: server.State[];
 
   datas: GeoJSON.FeatureCollection = {
     type: "FeatureCollection" as const,
@@ -109,7 +109,6 @@ export default class PlanMap extends Vue {
       legendEnabled: true,
     });
 
-
     res.push({
       id: `ISSUES`,
       name: this.$t('crowdplanning.issues', 'Segnalazioni'),
@@ -117,6 +116,8 @@ export default class PlanMap extends Vue {
       visible: true,
       data: this.locations,
       type: "managed",
+      tocVisible: true,
+      legendEnabled: true,
       fields: [
         { name: 'id', alias: 'id', type: "long" },
         { name: 'state', alias: 'state', type: "string" }
@@ -171,6 +172,12 @@ export default class PlanMap extends Vue {
 
   @Watch("plans", { deep: true })
   async getData(): Promise<void> {
+    try {
+      this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STATES");
+    } catch (e) {
+      console.warn("Can't get issues states: ", e);
+    }
+
     this.datas.features.splice(0, this.datas.features.length);
     const layerData = (this.values[1] as locations.ManagedMapLayer).data;
 
@@ -178,22 +185,35 @@ export default class PlanMap extends Vue {
 
     const features: { plan: server.Plan, feature: locations.Feature }[] = [];
     for (const item of this.plans) {
-      const feature: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF", { relationType: "PLANS", relationId: item.id });
-      if (feature && feature.shape)
-        features.push({ plan: item, feature });
+      try {
+        const feature: locations.Feature = await MessageService.Instance.ask("GET_FEATURE_BYREF_PUBLIC", {
+          relationType: "PLANS",
+          relationId: item.id,
+          workspaceId: item.workspaceId
+        });
+        if (feature && feature.shape)
+          features.push({ plan: item, feature });
 
-      this.issuesStates = await MessageService.Instance.ask("GET_ISSUES_STSATES_BYREF", item.id);
-      const issues: taskLike[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", item.id);
-      if (issues && issues.length) {
-        layerData.push(...
-          issues.filter(i => !!i.location)
-            .map(t => Object.assign({
-              "id": 0,
-              "relationId": t.id,
-              "relationType": t.group.taskType,
-              task: t
-            }, t.location)));
+      } catch (e) {
+        console.error("Can't get feature for plan: ", item.id, e);
+      }
 
+      try {
+        const issues: taskLike[] = await MessageService.Instance.ask("GET_ISSUES_BYREF", item.id);
+
+        if (issues && issues.length) {
+          layerData.push(...
+            issues.filter(i => !!i.location)
+              .map(t => Object.assign({
+                "id": 0,
+                "relationId": t.id,
+                "relationType": t.group.taskType,
+                task: t
+              }, t.location)));
+
+        }
+      } catch (e) {
+        console.error("Can't get issues for plan: ", item.id, e);
       }
     }
 

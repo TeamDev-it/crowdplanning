@@ -11,10 +11,10 @@
           <i class="ti ti-presentation"></i>
           <span class="text">{{ $t('planDetail.publish', 'Pubblica') }} </span>
         </button>
-        <button class="danger" v-tooltip="$t('planDetail.delete', 'doppio click per eliminare')" v-if="editable" @dblclick="remove">
+        <button class="danger" v-if="hasPermission('plans.candelete')" v-tooltip="$t('planDetail.delete', 'doppio click per eliminare')" @dblclick="remove">
           <i class="ti ti-trash"></i>
         </button>
-        <button class="warning" v-tooltip="'annulla modifiche'" v-if="editable" @click="back">
+        <button class="warning" v-tooltip="$t('planDetail.back', 'annulla modifiche')" v-if="editable" @click="back(true)">
           <i class="ti ti-arrow-back"></i>
         </button>
         <button class="publish" @click="confirm" type="submit" v-if="editable">
@@ -24,42 +24,35 @@
       </div>
     </div>
     <div class="content" v-if="plan">
-      <div class="third-column">
-        <div class="fieldsets" v-if="(plan && plan.description) || !editable">
+      <div class="right-column">
+        <template v-if="(plan && plan.description) || !editable">
           <fieldset>
             <small>{{ $t('plans.modal.title', 'titolo') }}*</small>
             <input class="layer" v-model="plan.title" :placeholder="$t('plans.modal.title-placeholder', 'Inserisci il titolo qui...')" />
           </fieldset>
-          <fieldset style="height: 100%; max-height: 250px">
+          <fieldset class="mediacontent">
             <small>{{ $t('plans.modal.copertina', 'copertina') }}*</small>
             <componenet
               :ref="coverMediaGalleryRef"
               :is="mediaGallery"
               :fileLimit="1"
-              :titleText="{ key: 'modal.cover-image-addPlan-null', value: `` }"
-              :subtitleText="{ key: 'modal.cover-image-description-addPlan', value: `` }"
-              :contentText="{ key: 'modal.cover-image-content-text', value: `Trascina qui l'immagine di copertina` }"
               :type="`${context}-COVER`"
               :inputFileTypes="'images'"
               :id="plan.id ?? ''"
               @filesUploaded="coverUploaded"
               @fileRemoved="coverRemoved"
-              style="background-color: var(--white); height: 100%; display: grid"
             ></componenet>
           </fieldset>
+
           <fieldset>
             <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
-            <select v-model="plan.groupId" class="category">
-              <option class="opt" disabled selected>{{ $t('plans.modal.select.default_option', `Seleziona un'opzione`) }}</option>
-              <option class="opt" v-for="group in groups.children" :key="group.id" :value="group.id">
-                {{ group.name }}
-              </option>
-            </select>
+            <group-button v-model="plan.group" :showAsSelect="true" @groupChanged="groupChanged"></group-button>
           </fieldset>
-          <!-- <fieldset class="position">
-            <small>{{ $t('plans.modal.posizione', 'posizione').toLocaleUpperCase() }}</small>
-            <component class="position-input" v-model="plan.location" :is="esriGeocodingAutocomplete" @locationSelected="locationSelected" @keydown.stop @keydown.enter.prevent="$event.preventDefault()" />
-          </fieldset> -->
+
+          <fieldset>
+            <small>{{ $t('plans.modal.states', 'stato') }}*</small>
+            <status-button v-model="plan.state" :showAsSelect="true" @stateChanged="stateChanged"></status-button>
+          </fieldset>
 
           <fieldset class="edit-map">
             <small>{{ $t('plans.modal.plan-area', 'Area progetto').toLocaleUpperCase() }}</small>
@@ -77,7 +70,7 @@
             </div>
           </fieldset>
 
-          <fieldset class="area fixed">
+          <fieldset>
             <small>{{ $t('plans.modal.due-date', 'data fine') }}</small>
             <div class="date-picker-container">
               <date-picker v-model="plan.dueDate" @keydown.stop mode="dateTime" timezone="utc">
@@ -87,24 +80,6 @@
               </date-picker>
             </div>
           </fieldset>
-
-          <!-- <header v-if="plans" class="cluster">
-            <div class="row">
-              <span>{{ $t('plans.modal.has-cluster-parent-label', 'Fa parte di un altro progetto').toUpperCase() }}</span>
-              <toggle v-model="hasClusterParent" @keydown.native.stop></toggle>
-            </div>
-            <div v-if="hasClusterParent" class="autocomplete">
-              <autocomplete
-              v-model="plan.parentId"
-              :inputValues="plans"
-              :filterFunction="autocompleteFilterFunction"
-              :placeholderKey="$t('plans.modal.plan.autocomplete', 'scrivi il titolo del progetto...')"
-              :showThisPropertyAsItemName="'title'"
-              @valueChanged="valueChanged"
-              ></autocomplete>
-            </div>
-          </header> -->
-
           <header class="toggle">
             <div class="row">
               <span>{{ $t('plans.modal.isPublic', 'progetto pubblico') }}</span>
@@ -112,45 +87,40 @@
             </div>
           </header>
 
-          <div class="fieldsets crowdplanning-roles-selector" v-if="!plan.isPublic">
+          <template v-if="!plan.isPublic">
             <div class="row">
               <span>{{ $t('plans.modal.roles-can', 'limita i ruoli che possono:').toLocaleUpperCase() }}</span>
             </div>
-            <fieldset class="noborder">
+            <fieldset class="roles">
               <small>{{ $t('plans.modal.roles-can-write', 'scrivere commenti').toLocaleUpperCase() }}</small>
-              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanWriteComments"> </inject>
+              <inject name="roles-selector"  v-model="plan.rolesCanWriteComments"> </inject>
             </fieldset>
-            <fieldset class="noborder">
+            <fieldset class="roles">
               <small>{{ $t('plans.modal.roles-can-see-comments', 'leggere i commenti altrui').toLocaleUpperCase() }}</small>
-              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersComments"> </inject>
+              <inject name="roles-selector"  v-model="plan.rolesCanSeeOthersComments"> </inject>
             </fieldset>
-            <fieldset class="noborder">
+            <fieldset class="roles">
               <small>{{ $t('plans.modal.roles-can-rate', 'votare il progetto').toLocaleUpperCase() }}</small>
-              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanRate"> </inject>
+              <inject name="roles-selector"  v-model="plan.rolesCanRate"> </inject>
             </fieldset>
-            <fieldset class="noborder">
+            <fieldset class="roles">
               <small>{{ $t('plans.modal.roles-can-see-ratings', 'vedere il totale di voti').toLocaleUpperCase() }}</small>
-              <inject name="roles-selector" class="bordered rolesSelector" v-model="plan.rolesCanSeeOthersRatings"> </inject>
+              <inject name="roles-selector"  v-model="plan.rolesCanSeeOthersRatings"> </inject>
             </fieldset>
+          </template>
+
+          <div class="toggle" v-if="$can('PLANS.canjoin.issues')">
+            <div class="row">
+              <span>{{ $t('plans.modal-typeOf', 'Il progetto contiene segnalazioni') }}</span>
+              <toggle type="checkbox" id="fromIssues" name="changeType" v-model="toggleType"></toggle>
+            </div>
           </div>
-          <!-- <header class="toggle">
-            <div class="row">
-              <span>{{ $t('plans.modal.citizen-can-view-others-comments', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE I COMMENTI ALTRUI').toUpperCase() }}</span>
-              <toggle v-model="plan.citizensCanSeeOthersComments" @keydown.native.stop />
-            </div>
-          </header>
-          
-          <header class="toggle">
-            <div class="row">
-              <span>{{ $t('plans.modal.citizen-can-view-others-votes', 'CONSENTI AL RUOLO CITTADINO DI VISUALIZZARE VOTAZIONI ALTRUI').toUpperCase() }}</span>
-              <toggle v-model="plan.citizensCanSeeOthersRatings" @keydown.native.stop />
-            </div>
-          </header> -->
-        </div>
+          <div v-if="plan.planType == 'fromIssues'" class="crowdplanning-task-selector">
+            <button @click="openTaskSelectorModal()">{{ $t('plans.modal.addIssues', 'Aggiungi segnalazioni') }}</button>
+          </div>
+        </template>
       </div>
-      <div class="editor" v-if="(plan && plan.description) || !editable">
-        <inject name="note-editor" v-model="plan.description" @keydown.stop> </inject>
-      </div>
+      <inject class="editor" v-if="(plan && plan.description) || !editable" name="note-editor" v-model="plan.description" @keydown.stop> </inject>
     </div>
   </div>
 </template>
@@ -159,120 +129,4 @@
 
 <style lang="less" scoped>
 @import url(./planModal.less);
-</style>
-
-<style lang="less">
-.third-column {
-  .fieldsets {
-    .media-gallery {
-      .image-container,
-      .preview {
-        width: 100%;
-
-        small {
-          top: 0;
-          bottom: auto;
-        }
-      }
-    }
-
-    .position {
-      .position-input {
-        .esri-search__sources-button {
-          display: none;
-        }
-        .esri-search__input-container {
-          padding-left: 0.7rem;
-        }
-
-        .esri-input {
-          padding: 0;
-        }
-      }
-    }
-
-    .select-role {
-      right: auto !important;
-    }
-  }
-}
-
-.description {
-  .content-editor {
-    .cont {
-      /* Basic editor styles */
-      .ProseMirror {
-        height: 100%;
-        position: relative;
-        padding: 0.5rem;
-        border: none !important;
-        outline: none;
-
-        > * + *,
-        p {
-          margin-top: 0em;
-          margin-bottom: 0rem;
-        }
-
-        img {
-          max-width: 100%;
-          height: auto;
-        }
-
-        hr {
-          margin: 1rem 0;
-        }
-      }
-    }
-  }
-}
-
-.date-picker-container {
-  width: 100%;
-  height: 40px;
-
-  time {
-    font-family: 'Open Sans';
-  }
-
-  .datetime {
-    height: 100%;
-  }
-}
-
-.modal {
-  header {
-    &.media,
-    &.cover-image {
-      .media-gallery {
-        .add-attachments {
-          background-color: var(--grey-light);
-          padding: 1rem 0;
-          border-radius: var(--border-radius);
-        }
-      }
-    }
-  }
-}
-
-.detail-container {
-  .crowdplanning-roles-selector {
-    button{
-    color: var(--crowdplanning-primary-color) !important;
-    width: 100%;
-    justify-content: space-between;
-    padding-left: 15px;
-
-    &:hover {
-      background-color: unset;
-      color: unset;
-    }
-  }
-
-  .select-role{
-    width: 100%;
-  }
-  }
-}
-
 </style>

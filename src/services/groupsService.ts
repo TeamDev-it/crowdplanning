@@ -1,6 +1,7 @@
 import { CONFIGURATION } from "@/configuration";
 import { baseRestService } from "./baseRestService";
 import { store } from "@/store";
+import { forEach } from "lodash";
 
 class GroupsService extends baseRestService {
   constructor() {
@@ -21,7 +22,7 @@ class GroupsService extends baseRestService {
   }
 
   async getPublicGroups(workspaceId: string): Promise<server.Group[]> {
-    const result = (await this.Get<server.Group[]>(`/groups//${workspaceId}?`)) || [];
+    const result = (await this.Get<server.Group[]>(`/groups/public/${workspaceId}`)) || [];
 
     store.actions.crowdplanning.setGroups(result);
 

@@ -8,12 +8,48 @@ import { plansService } from "@/services/plansService";
 import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
+import groupButton from "@/components/groupButton/groupButton.vue";
+import statusButton from "@/components/statusButton/statusButton.vue";
+
+
+type taskType = {
+  id: number;
+  parentId: string;
+  parentType: string;
+  title: string;
+  description: string;
+  priority: number;
+  state: any;
+  isArchived: boolean;
+  source: string;
+  startDate: Date;
+  dueDate: Date;
+  userName: string;
+  creationDate: Date;
+  lastUpdated: Date;
+  groupId: string;
+  group: any;
+  assignedTo: any;
+  location?: locations.Location;
+  workspaceId?: string;
+  customFields: [];
+  subtaskCount?: {
+    type: string;
+    count: number;
+  }[];
+  isClusterRoot: boolean;
+  tags: string[];
+  shortId: number;
+};
+
 
 @Component({
   components: {
     datePicker,
     dateTime,
     Autocomplete,
+    groupButton,
+    statusButton,
   }
 })
 export default class PlanModal extends Vue {
@@ -27,14 +63,21 @@ export default class PlanModal extends Vue {
   selectedPlan?: server.Plan;
 
   @Prop()
-  plans?: server.Plan;
-
-  @Prop()
   groups!: server.Group;
 
   @Prop()
   newPlan?: server.Plan
 
+  @Watch('plan.isPublic')
+  onIsPublicChanged() {
+    if (this.plan?.isPublic) {
+      this.plan.rolesCanRate = [];
+      this.plan.rolesCanSeeOthersComments = [];
+      this.plan.rolesCanSeeOthersRatings = [];
+      this.plan.rolesCanWriteComments = [];
+    }
+  }
+  copyPlan: server.Plan | null = null;
   plan: server.Plan | null = null;
   coverImage: File | null = null;
   tmpVisibleLayer = "";
@@ -52,30 +95,48 @@ export default class PlanModal extends Vue {
     return CommonRegistry.Instance.getComponent("editfeature-map");
   }
 
-  mounted() {
+  get states(): server.State[] {
+    return Array.from(store.getters.crowdplanning.getStates(this.groups.id) || []);
+  }
 
+  get taskSelector() {
+    return CommonRegistry.Instance.getComponent('task-selector');
+  }
+
+  openTaskSelectorModal(): void {
+    MessageService.Instance.send("OPEN_TASK_SELECTOR_MODAL", this.plan)
+  }
+  async mounted() {
     if (this.editable) {
       this.plan = this.editable
     }
     if (this.newPlan) {
       this.plan = this.newPlan
     }
+    if (this.plan?.planType == 'fromIssues') {
+      this.toggleType = true
+    }
+    this.getPlanTasks()
 
+    this.copyPlan = JSON.parse(JSON.stringify(this.plan));
   }
 
-  // @Watch("featureTest")
-  // featureChanged(n: unknown) {
-  //   console.log(n);
-  // }
+  hasPermission(permission: string): boolean {
+    return this.$can(`PLANS.${permission}`);
+  }
 
-  back() {
-    this.$emit('goback')
+  back(noMod: boolean) {
+    if (noMod) {
+      Object.assign(this.plan!, this.copyPlan)
+      this.$emit('goback')
+    }
+    else {
+      this.$emit('goback')
+    }
   }
 
 
-  get context(): string {
-    return CONFIGURATION.context;
-  }
+  context = "PLANS"
 
   get esriGeocodingAutocomplete() {
     return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
@@ -84,13 +145,6 @@ export default class PlanModal extends Vue {
   get mediaGallery() {
     return CommonRegistry.Instance.getComponent('media-gallery');
   }
-
-  // locationSelected(value: locations.Location & { name: string }) {
-  //   if (this.plan) {
-  //     this.featureTest = value as locations.Feature;
-  //     this.plan.locationName = value.name;
-  //   }
-  // }
 
   confirmVisibleLayer() {
     if (!this.tmpVisibleLayer) return;
@@ -111,9 +165,6 @@ export default class PlanModal extends Vue {
   }
 
   async confirm(): Promise<void> {
-    if (!this.requiredFieldsSatisfied()) {
-      return;
-    }
 
     if (this.plan && !this.plan?.id) {
       this.plan.workspaceId = this.groups.workspaceId;
@@ -126,7 +177,6 @@ export default class PlanModal extends Vue {
       MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
       return;
     }
-
     // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
     if (this.plan.id)
       await (this.$refs[this.coverMediaGalleryRef] as unknown as { save(id: string): Promise<void> })?.save(this.plan.id);
@@ -138,12 +188,24 @@ export default class PlanModal extends Vue {
 
     this.setPlan(this.plan);
 
-    this.back();
+    this.back(false);
+  }
+
+  tasks: any = [];
+  async getPlanTasks() {
+    let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
+    let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, this.plan?.id)));
+    this.tasksList = tasks.flat();
+    this.tasks = this.tasksList?.map(t => t.id) ?? []
   }
 
   async remove(): Promise<void> {
+    if (this.tasksList?.length) {
+      await MessageService.Instance.ask('CHANGE_TASKS_REFERENCE', this.tasks, null)
+    }
+
     await plansService.deletePlan(this.plan!.id!);
-    this.back()
+    this.back(false)
   }
 
   async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
@@ -155,7 +217,7 @@ export default class PlanModal extends Vue {
         cover = file;
       }
 
-      const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, `${CONFIGURATION.context}-COVER`) as unknown as ArrayBuffer;
+      const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, `${this.context}-COVER`) as unknown as ArrayBuffer;
 
       this.plan.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
 
@@ -190,12 +252,12 @@ export default class PlanModal extends Vue {
 
       if (Array.isArray(file)) {
         for (const f of file) {
-          const shared = await this.askForSharedFile(f.id, this.plan.id!, CONFIGURATION.context) as unknown as ArrayBuffer;
+          const shared = await this.askForSharedFile(f.id, this.plan.id!, this.context) as unknown as ArrayBuffer;
 
           attachmentsSharableIds.push({ originalFileId: f.id, sharedToken: this.decodeSharable(shared), contentType: f.contentType } as file.SharedRef);
         }
       } else {
-        const shared = await this.askForSharedFile(file.id, this.plan.id!, CONFIGURATION.context) as unknown as ArrayBuffer;
+        const shared = await this.askForSharedFile(file.id, this.plan.id!, this.context) as unknown as ArrayBuffer;
 
         attachmentsSharableIds.push({ originalFileId: file.id, sharedToken: this.decodeSharable(shared), contentType: file.contentType } as file.SharedRef);
       }
@@ -212,42 +274,6 @@ export default class PlanModal extends Vue {
     store.actions.crowdplanning.setPlan(plan);
   }
 
-  private requiredFieldsSatisfied(): boolean {
-    if (!this.plan?.title || this.plan.title == "") {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.title_error', 'Inserisci un titolo'))
-      return false;
-  }
-  if (!this.plan?.groupId || this.plan.groupId == "") {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.group_error', 'Inserisci una categoria'))
-      return false;
-  }
-  if (!this.plan?.description || this.plan.description == "") {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.description_error', 'Inserisci una descrizione'))
-      return false;
-  }
-  // if (!this.featureTest || this.featureTest == undefined) {
-  //     MessageService.Instance.send("ERROR", this.$t('plans.modal.position_error', 'Inserisci una geometria valida'));
-  //     return false;
-  // }
-  if (!this.plan?.startDate || this.plan.startDate == undefined) {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.start_date_error', 'Inserisci una data di inizio'));
-      return false;
-  }
-  // if (!this.plan?.dueDate || this.plan.dueDate == undefined) {
-  //     MessageService.Instance.send("ERROR", this.$t('plans.modal.due_date_error', 'Inserisci una data di fine'));
-  //     return false;
-  // }
-
-  //deve stare giu
-  let titleLength = this.plan?.title.length as number
-  if (titleLength > 106) {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.title.length_error', 'Titolo troppo lungo'))
-      return false;
-  }
-
-  return true;
-}
-
   private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
     return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
   }
@@ -258,4 +284,24 @@ export default class PlanModal extends Vue {
   //         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
   //     }
 
+  groupChanged(val: server.Group) {
+    this.plan!.group = val;
+    this.plan!.groupId = val.id;
+  }
+
+  stateChanged(val: string) {
+    this.plan!.state = val;
+  }
+
+  tasksList?: taskType[] = []
+  toggleType: boolean = false
+  @Watch('toggleType')
+  pro() {
+    if (this.toggleType) {
+      this.plan!.planType = 'fromIssues';
+    } else {
+      this.plan!.planType = 'simple';
+      this.tasksList = []
+    }
+  }
 }

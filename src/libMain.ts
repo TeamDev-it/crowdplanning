@@ -3,12 +3,12 @@ import { crowdplanningStore } from "./store";
 import { CONFIGURATION } from "./configuration";
 import { routes } from "./router";
 
-declare let __webpack_public_path__: string;
+
 declare let process: any;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
-__webpack_public_path__ = process.env.BASE_URL;
 
+const menuimage = new URL("@/assets/crowdplanning.png", import.meta.url);
 export default ModuleInitializer({
   async init(menu, mainstore, configuration) {
     menu.addMenuDefinition({
@@ -19,9 +19,12 @@ export default ModuleInitializer({
       class: "main",
       routeName: "crowdplanning",
       meta: {
-        themeColor: 'var(--crowdplanning-primary-color)'
+        themeColor: 'var(--crowdplanning-primary-color)', 
+        image: menuimage
       },
-      featureflags: []
+      featureflags: [
+        "PLANS.plans.enabled"
+      ]
     }, { section: menuType.drawer });
 
     mainstore.registerModule(crowdplanningStore.PREFIX, crowdplanningStore);
@@ -32,15 +35,24 @@ export default ModuleInitializer({
 
     MessageService.Instance.subscribe("OPEN_PLANS_STATES_MODAL", (group: server.Group) => {
       Projector.Instance.projectAsyncTo((() => import('@/components/statesModal/crowdStatesModal.vue')) as never, group)
+    })
+
+    MessageService.Instance.subscribe("OPEN_TASK_SELECTOR_MODAL", (planId: string) => {
+      Projector.Instance.projectAsyncTo((() => import('@/components/taskSelectorModal/taskSelectorModal.vue')) as never, planId)
+    })
+
+
+    function ProvideComponentForEvents(component: any, componentname: string, events: string[]) {
+      for (const e of events) {
+        CommonRegistry.Instance.provideComponent(component, componentname, e);
+      }
     }
-    
-    
-    );
+
+    ProvideComponentForEvents(() => import('@/components/rule_actions/assignToPlanByLocation/assignToPlanByLocation.vue'), 'associateToCrowdplanning',
+    ['dynamicrule-actions-taskcreated', 'dynamicrule-actions-taskchanged','dynamicrule-actions-issuecreated', 'dynamicrule-actions-issuechanged']);
     
   },
   routes
 });
 
-// MessageService.Instance.reply("OPEN_PLANS_WIZARD", (group: server.Group) => {
-//   Projector.Instance.projectAsyncTo((() => import('@/components/planWizard/planWizard.vue')) as never, group)
-// })
+

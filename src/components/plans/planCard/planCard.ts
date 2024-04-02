@@ -1,10 +1,10 @@
 import Component from "vue-class-component";
 import Vue from "vue";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
 import { store } from "@/store";
 import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
-import { CommonRegistry, MessageService } from "vue-mf-module";
+import { CommonRegistry, MessageService, Projector } from "vue-mf-module";
 import { Shared } from "@/utility/Shared";
 
 @Component
@@ -19,16 +19,24 @@ export default class PlanCard extends Vue {
   @Prop({ required: true })
   selectedPlan!: server.Plan
 
+  @Prop()
+  plansGroupRoot: server.Group = {} as server.Group;
+
+  @Prop()
+  loggedIn!: boolean;
+
   coverImage: string | null = null;
   loading = true;
   group: server.Group | null = null;
+  state: server.State | null = null;
+  states: server.State[]= [];
 
   get likeViewer() {
     return CommonRegistry.Instance.getComponent("likeViewer");
   }
 
   get iconCode(): string {
-    return Icon.getIconCode(this.group?.iconCode ?? '');
+    return Icon.getIconCode(this.value.group.iconCode);
   }
 
   get imagePreview() {
@@ -36,13 +44,22 @@ export default class PlanCard extends Vue {
   }
 
   async mounted() {
-
+    try{
     this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
+    }catch(e){}
 
     if (this.value.coverImageIds?.sharedToken)
       this.coverImage = await Shared.getShared(this.value.coverImageIds.sharedToken);
 
-    this.group = store.getters.crowdplanning.getGroupById(this.value.groupId);
+    if (this.value.groupId) {
+      this.group = this.value.group;
+    }
+
+    if (this.value.id) {
+      this.states = store.getters.crowdplanning.getStates(this.plansGroupRoot.id ?? this.value.groupId);
+    }
+
+    this.state = this.states?.find(x => x.shortName === this.value.state) as server.State; 
 
     this.loading = false;
   }
@@ -65,6 +82,10 @@ export default class PlanCard extends Vue {
   canVote() {
     if (this.value && (!this.value.rolesCanRate.length || this.value.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
       return true
-    } 
+    }
+  }
+
+  async openLoginModal(): Promise<void> {
+    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as never, {})
   }
 }
