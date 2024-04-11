@@ -54,7 +54,7 @@ export default class CrowdplanningGroupList extends Vue {
   // }
 
   hasPermission(permission: string): boolean {
-    return this.$can(`${CONFIGURATION.context}.${permission}`);
+    return this.$can(`PLANS.${permission}`);
   }
 
   changedGroup(group: server.Group) {
