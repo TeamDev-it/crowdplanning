@@ -26,7 +26,7 @@ export default class PlanSummary extends Vue {
   }
 
   get type(): string {
-    return CONFIGURATION.context;
+    return 'PLANS';
   }
 
   group: server.Group | null = null;
