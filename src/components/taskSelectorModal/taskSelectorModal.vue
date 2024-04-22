@@ -14,7 +14,7 @@
 
 <script src="./taskSelectorModal.ts" lang="ts"></script>
 
-<style lang="less">
+<style lang="less" scoped>
 .task-selector-crowdplanning {
   width: 70%;
   height: 70%;
