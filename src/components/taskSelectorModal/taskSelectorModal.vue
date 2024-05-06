@@ -14,7 +14,7 @@
 
 <script src="./taskSelectorModal.ts" lang="ts"></script>
 
-<style lang="less" scoped>
+<style lang="less" >
 .task-selector-crowdplanning {
   width: 70%;
   height: 70%;
@@ -27,7 +27,7 @@
   section {
     .container {
       .head {
-        background-color: var(--crowdplanning-light-color);
+        background-color: var(--crowdplanning-light-color) ;
       }
 
       .search {
