@@ -11,7 +11,8 @@
     <section class="can-scroll-y">
       <drop
         @drop="handleDropState(state, ...arguments)"
-        
+        @dragenter.prevent
+        @dragover.prevent
         class="state"
         v-for="(state, sidx) in ['New', 'Open', 'Active', 'Review', 'Closed']"
         :key="sidx"
@@ -26,7 +27,8 @@
           <drop
             tag="article"
             @drop="handleDrop(s, ...arguments)"
-            
+            @dragenter.prevent
+            @dragover.prevent
             v-for="(s, idx) in sortedStates.filter(s => s.generalStatus == state)"
             :key="`c-${idx}`"
           >

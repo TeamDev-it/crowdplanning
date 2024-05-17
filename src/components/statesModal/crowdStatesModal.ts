@@ -11,7 +11,7 @@ import { directive } from "vue/types/umd";
 
 
 export default defineComponent({
-  name: "statesModal",
+  name: "crowdStatesModal",
   props: {
     value: {
       type: Object as PropType<IProjectableModel<server.Group>>,
@@ -35,20 +35,22 @@ export default defineComponent({
     }
   
     function handleDrop(to: server.State, from: server.State) {
+      debugger
       states.value.splice(states.value.indexOf(from), 1);
       states.value.splice(states.value.indexOf(to), 0, from);
       recalcIndex();
     }
   
     function handleDropState(state: string, from: server.State) {
-      if (state != from.state)
-        from.state = state;
+      debugger
+      if (state != from.generalStatus)
+        from.generalStatus = state;
     }
   
     function recalcIndex() {
       for (let index = 0; index < states.value.length; index++) {
         const element = states.value[index];
-        switch (element.state) {
+        switch (element.generalStatus) {
           case 'New': element.orderIndex = 100 + index + 1; break;
           case 'Open': element.orderIndex = 200 + index + 1; break;
           case 'Active': element.orderIndex = 300 + index + 1; break;
