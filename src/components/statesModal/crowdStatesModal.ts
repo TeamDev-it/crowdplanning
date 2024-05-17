@@ -35,14 +35,12 @@ export default defineComponent({
     }
   
     function handleDrop(to: server.State, from: server.State) {
-      debugger
       states.value.splice(states.value.indexOf(from), 1);
       states.value.splice(states.value.indexOf(to), 0, from);
       recalcIndex();
     }
   
     function handleDropState(state: string, from: server.State) {
-      debugger
       if (state != from.generalStatus)
         from.generalStatus = state;
     }

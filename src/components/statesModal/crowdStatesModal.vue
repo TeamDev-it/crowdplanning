@@ -9,14 +9,7 @@
       </button>
     </header>
     <section class="can-scroll-y">
-      <drop
-        @drop="handleDropState(state, ...arguments)"
-        @dragenter.prevent
-        @dragover.prevent
-        class="state"
-        v-for="(state, sidx) in ['New', 'Open', 'Active', 'Review', 'Closed']"
-        :key="sidx"
-      >
+      <drop @drop="handleDropState(state, ...arguments)" class="state" v-for="(state, sidx) in ['New', 'Open', 'Active', 'Review', 'Closed']" :key="sidx">
         <div class="header">
           {{ $t(`taskstate.${state}`) }}
           <button class="none" @click="addState(state)">
@@ -24,14 +17,7 @@
           </button>
         </div>
         <div class="state-container">
-          <drop
-            tag="article"
-            @drop="handleDrop(s, ...arguments)"
-            @dragenter.prevent
-            @dragover.prevent
-            v-for="(s, idx) in sortedStates.filter(s => s.generalStatus == state)"
-            :key="`c-${idx}`"
-          >
+          <drop tag="article" @drop="handleDrop(s, ...arguments)" v-for="(s, idx) in sortedStates.filter(s => s.generalStatus == state)" :key="`c-${idx}`">
             <drag name="dragState" class="drag mini-card" :transfer-data="s">
               <i class="wt drag_indicator"></i>
 
