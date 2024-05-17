@@ -24,13 +24,13 @@
               <small v-if="s.id">{{ s.shortName }}</small>
               <input
                 v-else
-                id="ciao"
+                id="shortname"
                 onkeypress="return /[a-zA-Z]/i.test(event.key)"
                 type="text"
                 v-model="s.shortName"
                 :placeholder="$t('taskstate.shortname.placeholder', 'state shortname')"
               />
-              <input id="ciao" type="text" v-model="s.name" :placeholder="$t('taskstate.name.placeholder', 'state name')" />
+              <input id="name" type="text" v-model="s.name" :placeholder="$t('taskstate.name.placeholder', 'state name')" />
               <color-selector v-model="s.color"></color-selector>
               <button class="square none danger" @dblclick="remove(s)">
                 <i class="ti ti-trash"></i>
