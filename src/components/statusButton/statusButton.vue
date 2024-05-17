@@ -8,7 +8,7 @@
     <div v-if="showAsSelect" class="select-cont">
       <div class="select">
         <span class="placeholder" v-if="!value">{{ $t('plans.statusButton.placeholder', 'Scegli uno stato') }}</span>
-        <span class="statusName" v-else>{{ statusName }}</span>
+        <span class="statusName" v-else>{{ value }}</span>
         <i class="ti ti-chevron-down" v-if="!listOpened"></i>
         <i class="ti ti-chevron-up" v-if="listOpened"></i>
       </div>
@@ -16,7 +16,7 @@
     <div v-else>
       <div class="ispan">
         <!-- <i class="ti ti-subtask"></i> -->
-        <span class="statusName">{{ statusName }}</span>
+        <span class="statusName">{{ value }}</span>
       </div>
       <i class="ti ti-chevron-down" v-if="!listOpened"></i>
       <i class="ti ti-chevron-up" v-if="listOpened"></i>
@@ -41,17 +41,15 @@
         <div
           tabindex="0"
           class="status"
-          :class="{ active: value == g }"
+          :class="{ active: value == g.name }"
           :key="idx"
           @click.stop="
-            emitState(g.shortName);
-            value = g;
-            statusName = g.name;
-            listOpened = false;
+            emitState(g.name);
           "
-          @keydown.enter="value = g"
+          @keydown.enter="
+          emitState(g.name)"
         >
-          <div class="parent" :class="{ active: value == g }">{{ g.name }}</div>
+          <div class="parent" :class="{ active: value == g.name }">{{ g.name }}</div>
         </div>
       </div>
     </div>

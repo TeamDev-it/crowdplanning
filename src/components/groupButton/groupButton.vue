@@ -32,12 +32,10 @@
           class="group"
           :key="idx"
           @click.stop="
-            value = g;
-            listOpened = false;
+            emitGroup(g);
           "
           @keydown.enter="
-            value = g;
-            listOpened = false;
+           emitGroup(g);
           "
         >
           <div class="parent text" :class="{ active: value == g }">{{ g.name }}</div>
@@ -48,13 +46,11 @@
             :key="idx"
             @click.stop="
               fg.iconCode = g.iconCode;
-              value = fg;
-              listOpened = false;
+              emitGroup(fg);
             "
             @keydown.enter="
               fg.iconCode = g.iconCode;
-              value = fg;
-              listOpened = false;
+              emitGroup(fg);
             "
           >
             <div class="first text" :class="{ active: value == fg }">{{ fg.name }}</div>
@@ -64,14 +60,12 @@
               v-for="(sg, idx) in fg.children"
               :key="idx"
               @click.stop="
-                value = sg;
-                listOpened = false;
                 sg.iconCode = g.iconCode;
+                emitGroup(sg);
               "
               @keydown.enter="
                 sg.iconCode = g.iconCode;
-                value = sg;
-                listOpened = false;
+                emitGroup(sg);
               "
             >
               <div class="second text" :class="{ active: value == sg }">{{ sg.name }}</div>
@@ -82,13 +76,11 @@
                 :key="idx"
                 @click.stop="
                   tg.iconCode = g.iconCode;
-                  value = tg;
-                  listOpened = false;
+                  emitGroup(tg);
                 "
                 @keydown.enter="
                   tg.iconCode = g.iconCode;
-                  value = tg;
-                  listOpened = false;
+                  emitGroup(tg);
                 "
               >
                 <div class="third text" :class="{ active: value == tg }">{{ tg.name }}</div>

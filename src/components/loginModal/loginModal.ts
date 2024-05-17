@@ -1,23 +1,26 @@
-import Component from "vue-class-component";
-import Vue from 'vue';
-import SpidLogin from "../spidLogin/spidLogin.vue";
+import { defineComponent, PropType } from 'vue';
 import { IProjectableModel } from "vue-mf-module";
-import { Prop } from "vue-property-decorator";
 
-@Component({
-  components: {
-    SpidLogin
-  }
-})
-export default class LoginModal extends Vue {
-  @Prop()
-  value!: IProjectableModel<unknown>;
-
-  close(): void {
-    try {
-      this.value?.reject();
-    } catch (_) {
-      //
+export default defineComponent({
+  name: "loginModal",
+  props: {
+    value: {
+      type: Object as PropType<IProjectableModel<unknown>>,
+      required: true
+    }
+  },
+  setup(props) {
+    
+    function close() {
+      try {
+        props.value.reject();
+      } catch (_) {
+        //
+      }
+    }
+    
+    return {
+      close
     }
   }
-}
+})
