@@ -1,8 +1,8 @@
 <template>
   <div
     class="crowdplanning-group-button"
-    @click.stop="toggleOpened()"
-    @keydown.enter="toggleOpened()"
+    @click.stop="listOpened ? closeList() : openList()"
+    @keydown.enter="listOpened ? closeList() : openList()"
     :class="{ asselect: showAsSelect, notselected: disableRoot && value.id === plansGroupRoot.id }"
     v-if="plansGroupRoot"
   >

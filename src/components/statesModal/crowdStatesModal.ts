@@ -18,13 +18,7 @@ export default defineComponent({
       required: true
     }
   },
-  components: {
-    directives: {
-      validate: ValidateDirective as any
-    }, components: {
-      Drag, Drop
-    }
-  },
+  components: { Drag, Drop },
   setup(props, { emit }) {
     
     const states = ref<server.State[]>([]);

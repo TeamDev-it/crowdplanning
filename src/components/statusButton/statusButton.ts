@@ -98,8 +98,20 @@ export default defineComponent({
       listOpened.value = !listOpened.value;
     }
 
+    function openList() {
+      if (props.readonly) return;
+      MessageService.Instance.send("closeCrowdPopup");
+      listOpened.value = true;
+      MessageService.Instance.subscribe("closeCrowdPopup", () => closeList());
+    }
+
+    function closeList() {
+      listOpened.value = false
+      MessageService.Instance.unsubscribe("closeCrowdPopup");
+    }
+
     function emitState(val: string) {
-      emit("stateChanged", val)
+      emit("input", val)
       listOpened.value = false
     }
 
@@ -121,7 +133,9 @@ export default defineComponent({
       width,
       buildTree,
       toggleOpened,
-      emitState
+      emitState,
+      openList,
+      closeList
     }
   }
 })
