@@ -42,6 +42,7 @@
             titlePlaceholder="plans.comments.title"
             textPlaceholder="plans.comments.text"
             :showCommentsCount="true"
+            :template="'comments'"
           />
           <button v-if="!loggedIn" class="log-button" @click="openLoginModal()">Accedi per commentare</button>
         </div>
@@ -84,6 +85,17 @@
 
 <style lang="less" scoped>
 @import url(./planDetail.less);
+</style>
+
+<style lang="less">
+.detail-container {
+  .ProseMirror{
+  height: 100%;
+    position: relative;
+    padding: 0.5rem;
+    border: none !important;
+    outline: none;
+  }}
 </style>
 
 <script lang="ts" src="./planDetail.ts" />

@@ -1,63 +1,79 @@
-import Component from "vue-class-component";
-import Vue from "vue";
-import { Prop } from "vue-property-decorator";
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref } from "vue";
 import groupModal from "@/components/groupModal/groupModal.vue";
 import { MessageService, Projector } from "vue-mf-module";
 import { Icon } from "@/utility/Icon";
 import { groupsService } from "@/services/groupsService";
 
-@Component({
-  name: 'crowdplanning-groups-item'
-})
-export default class CrowdplanningGroupsItem extends Vue {
-  @Prop({ required: true })
-  value!: server.Group;
+export default defineComponent({
+  name: 'crowdplanningGroupsItem',
+  props: {
+    value: {
+      type: Object as PropType<server.Group>,
+      required: true
+    },
+    selectedCategory: {
+      type: Object as PropType<server.Group>,
+    },
+    treeLevel: {
+      type: Number,
+      default: 0
+    }
+  },
+  setup(props, { emit }) {
+    
+    const children = ref<server.Group[]>([])
+    
+    const iconCode = computed<string>(() => {
+      return Icon.getIconCode(props.value.iconCode);
+    })
 
-  @Prop({ required: true })
-  selectedCategory!: server.Group | null;
+    const can = getCurrentInstance()!.proxy.$root.$can;
+    const t = getCurrentInstance()!.proxy.$root.$t;
 
-  @Prop({ default: 0 })
-  treeLevel!: number
+    onMounted(mounted)
+    async function mounted() {
+      getChildren();
+    }
 
-  children: server.Group[] = [];
+    async function  getChildren() {
+      props.value.children = await groupsService.getGroupChildren(props.value.id);
+      children.value = props.value.children;
+    }
+  
+    function hasPermission(value: string): boolean {
+      return can(`PLANS.${value}`);
+    }
+  
+    async function edit(): Promise<void> {
+      await Projector.Instance.projectAsyncTo(groupModal as never, props.value);
+    }
+  
+    function setSelectedCategory(item: server.Group) {
+      emit('selectedCategory', item)
+    }
+  
+    async function addSubGroup(): Promise<void> {
+      const g = {} as server.Group;
+      g.parentGroupId = props.value.id;
+      g.iconCode = props.value.iconCode;
+      const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
+  
+      if (result) {
+        getChildren();
+      } else {
+        // error message
+        MessageService.Instance.send('ERROR', t("plans.crowdplanning.group-create-error", "Errore durante la creazione della categoria"));
+      }
+    }
 
-  get iconCode(): string {
-    return Icon.getIconCode(this.value.iconCode);
-  }
-
-  async mounted() {
-    this.getChildren();
-  }
-
-  async getChildren() {
-    this.value.children = await groupsService.getGroupChildren(this.value.id);
-    this.children = this.value.children;
-  }
-
-  hasPermission(value: string): boolean {
-    return this.$can(`PLANS.${value}`);
-  }
-
-  async edit(): Promise<void> {
-    const updatedGroup = await Projector.Instance.projectAsyncTo(groupModal as never, this.value);
-
-  }
-
-  setSelectedCategory(item: server.Group) {
-    this.$emit('selectedCategory', item)
-  }
-
-  async addSubGroup(): Promise<void> {
-    const g = {} as server.Group;
-    g.parentGroupId = this.value.id;
-    g.iconCode = this.value.iconCode;
-    const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
-
-    if (result) {
-      this.getChildren();
-    } else {
-      // error message
-      MessageService.Instance.send('ERROR', this.$t("plans.crowdplanning.group-create-error", "Errore durante la creazione della categoria"));
+    return {
+      children,
+      iconCode,
+      hasPermission,
+      edit,
+      setSelectedCategory,
+      addSubGroup
     }
   }
-}
+})
+

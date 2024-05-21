@@ -1,64 +1,82 @@
-import Vue from 'vue';
-import { Component, Prop, Watch } from 'vue-property-decorator';
+import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
 
-@Component({})
-export default class Autocomplete extends Vue {
-  /**
-    Input values to show on autocomplete
-    */
-  @Prop({ default: null })
-  inputValues!: Array<{ id: string } & any> | null;
+export default defineComponent({
+  name: 'Autocomplete',
+  props: {
+    inputValues: {
+      type: Object as PropType<[Array<{ id: string } & any>, null]>,
+      default: null
+    },
+    dataSourceFunction: {
+      type: Function as PropType<dataSourceFunction<any>>,
+      default: null
+    },
+    filterFunction: {
+      type: Function,
+      required: true
+    },
+    labelKey: {
+      type: String,
+      default: ''
+    },
+    placeholderKey: {
+      type: String,
+      default: ''
+    },
+    showThisPropertyAsItemName: {
+      type: String,
+      default: ''
+    },
+  },
+  emits: ['valueChanged'],
+  setup(props, { emit }) {
+    
+    const searchedText = ref<string>("");
+    const datas = ref<Array<{ id: string } & any>>([]);
+    const loading = ref<boolean>(true);
+    const suggestionOpen = ref<boolean>(false);
 
-  /** 
-   * Function for fetch values of autocomplete, if input values is not null this function is not used.
-   */
-  @Prop({ default: null })
-  dataSourceFunction!: dataSourceFunction<any> | null;
-
-  @Prop({ required: true })
-  filterFunction!: Function;
-
-  @Prop({ default: "" })
-  labelKey!: string;
-
-  @Prop({ default: "" })
-  placeholderKey!: string;
-
-  @Prop({ default: '' })
-  showThisPropertyAsItemName!: string;
-
-  searchedText = "";
-  datas: Array<{ id: string } & any> = [];
-  loading = true;
-  suggestionOpen = false;
-
-  get filteredValues(): Array<any> {
-    if (!this.searchedText) return this.datas;
-
-    return this.filterFunction(this.datas, this.searchedText);
-  }
-
-  async mounted(): Promise<void> {
-    if (this.inputValues) {
-      this.datas = this.inputValues;
-    } else {
-      if (this.dataSourceFunction) {
-        this.datas = await this.dataSourceFunction();
+    const filteredValues = computed<Array<any>>(() => {
+      if (!searchedText.value) return datas.value;
+  
+      return props.filterFunction(datas.value, searchedText.value);
+    })
+    
+    onMounted(mounted);
+    async function mounted(): Promise<void> {
+      if (props.inputValues) {
+        datas.value = props.inputValues;
+      } else {
+        if (props.dataSourceFunction) {
+          datas.value = await props.dataSourceFunction();
+        }
       }
+  
+      loading.value = false;
     }
 
-    this.loading = false;
+    function onItemClickHandler(item: any): void {
+      emit('valueChanged', item);
+  
+      searchedText.value = item[props.showThisPropertyAsItemName];
+  
+      suggestionOpen.value = false;
+    }
+  
+    function onInputHandler() {
+      suggestionOpen.value = !!searchedText.value.length;
+    }
+
+    return {
+      searchedText,
+      datas,
+      loading,
+      suggestionOpen,
+      filteredValues,
+      onItemClickHandler,
+      onInputHandler
+    }
   }
-
-  onItemClickHandler(item: any): void {
-    this.$emit('valueChanged', item);
-
-    this.searchedText = item[this.showThisPropertyAsItemName];
-
-    this.suggestionOpen = false;
   }
+)
 
-  onInputHandler() {
-    this.suggestionOpen = !!this.searchedText.length;
-  }
-}
