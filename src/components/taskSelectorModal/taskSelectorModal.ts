@@ -1,5 +1,5 @@
-import Component from "vue-class-component";
-import Vue, { computed, defineComponent, onMounted, PropType, ref } from "vue";
+
+import { computed, defineComponent, onMounted, PropType, ref } from "vue";
 import { Prop, Watch } from "vue-property-decorator";
 import { CommonRegistry, IProjectableModel, MessageService } from "vue-mf-module";
 import { plansService } from "@/services/plansService";

@@ -1,5 +1,5 @@
-import Component from "vue-class-component";
-import Vue, { computed, defineComponent, getCurrentInstance, onMounted, PropType, Ref, ref, watch } from "vue";
+
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, Ref, ref, watch } from "vue";
 import { Prop, Watch } from "vue-property-decorator";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 import datePicker from "v-calendar/lib/components/date-picker.umd";

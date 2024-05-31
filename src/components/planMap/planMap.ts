@@ -1,5 +1,5 @@
-import Component from "vue-class-component";
-import Vue, { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref, watch } from "vue";
+
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref, watch } from "vue";
 import { Prop, Watch } from "vue-property-decorator";
 import { HexToRGBA } from "@/utility/HexToRGBA";
 import { CommonRegistry, MessageService } from "vue-mf-module";

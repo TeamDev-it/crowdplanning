@@ -1,5 +1,5 @@
-import Vue, { computed, defineComponent, onMounted, PropType, ref, watch } from "vue";
-import Component from "vue-class-component";
+import { computed, defineComponent, onMounted, PropType, ref, watch } from "vue";
+
 import { Prop, Watch } from "vue-property-decorator";
 import PlanCard from "../plans/planCard/planCard.vue";
 import { store } from "@/store";

@@ -1,5 +1,5 @@
-import Component from "vue-class-component";
-import Vue, { defineComponent, getCurrentInstance, onMounted, ref } from "vue";
+
+import { defineComponent, getCurrentInstance, onMounted, ref } from "vue";
 
 type ScrollDirection = 'left' | 'right';
 

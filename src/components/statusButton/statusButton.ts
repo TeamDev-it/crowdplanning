@@ -1,9 +1,9 @@
 import { groupsService } from "@/services/groupsService";
 import { store } from "@/store";
-import Vue, { computed, defineComponent, onMounted, onUnmounted, PropType, Ref, ref } from "vue";
-import Component from "vue-class-component";
+import { computed, defineComponent, onMounted, onUnmounted, PropType, Ref, ref } from "vue";
+
 import { MessageService } from "vue-mf-module";
-import { Prop } from "vue-property-decorator";
+
 
 export default defineComponent({
   name: 'statusButton',

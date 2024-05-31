@@ -1,5 +1,5 @@
-import Component from "vue-class-component";
-import Vue, { computed, defineComponent, getCurrentInstance, onMounted, onUnmounted, PropType, ref, watch } from "vue";
+
+import { computed, defineComponent, getCurrentInstance, onMounted, onUnmounted, PropType, ref, watch } from "vue";
 import { store } from "@/store";
 import { Prop, Watch } from "vue-property-decorator";
 
