@@ -1,5 +1,5 @@
-import Component from "vue-class-component";
-import Vue, { computed, defineComponent, getCurrentInstance, onMounted, PropType, provide, ref } from 'vue';
+
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, provide, ref } from 'vue';
 import { InjectReactive, Prop, ProvideReactive, Watch } from "vue-property-decorator";
 import PlanCard from "../plans/planCard/planCard.vue";
 import PlanSummary from "../planSummary/planSummary.vue";

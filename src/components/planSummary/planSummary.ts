@@ -1,6 +1,6 @@
-import Component from "vue-class-component";
-import Vue, { computed, defineComponent, onMounted, PropType, ref } from "vue";
-import { Prop } from "vue-property-decorator";
+
+import { computed, defineComponent, onMounted, PropType, ref } from "vue";
+
 import { store } from "@/store";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 import moment from "moment";

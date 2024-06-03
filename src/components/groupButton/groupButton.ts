@@ -1,6 +1,6 @@
 import { groupsService } from "@/services/groupsService";
 import { plansService } from "@/services/plansService";
-import Vue, { computed, defineComponent, onMounted, onUnmounted, PropType, Ref, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, onUnmounted, PropType, Ref, ref, watch } from "vue";
 import { MessageService } from "vue-mf-module";
 
 export default defineComponent({
