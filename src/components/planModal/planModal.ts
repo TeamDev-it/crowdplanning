@@ -1,11 +1,9 @@
 
-import { computed, defineComponent, getCurrentInstance, onMounted, PropType, Ref, ref, watch } from "vue";
-import { Prop, Watch } from "vue-property-decorator";
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref, watch } from "vue";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 import datePicker from "v-calendar/lib/components/date-picker.umd";
 import dateTime from "../dateTime/dateTime.vue";
 import { plansService } from "@/services/plansService";
-import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
 import groupButton from "@/components/groupButton/groupButton.vue";
@@ -174,7 +172,7 @@ export default defineComponent({
     }
 
     const refs = getCurrentInstance()!.proxy.$refs;
-    const coverMediaGalleryRef = ref(''); 
+    const coverMediaGalleryRef = ref('');
     async function confirm(): Promise<void> {
 
       if (plan.value && !plan.value?.id) {
@@ -190,7 +188,7 @@ export default defineComponent({
       }
       // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
       if (plan.value.id)
-        
+
         await (refs[coverMediaGalleryRef.value] as unknown as { save(id: string): Promise<void> })?.save(plan.value.id);
 
       // await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
@@ -204,7 +202,7 @@ export default defineComponent({
     }
 
     async function getPlanTasks() {
-      let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
+      const groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
       let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, plan.value?.id)));
       tasksList.value = tasks.flat();
       tasks = tasksList.value?.map(t => t.id) as unknown as taskType[][] ?? [];
