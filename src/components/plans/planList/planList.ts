@@ -1,25 +1,32 @@
-import Component from "vue-class-component";
-import Vue from "vue";
-import { Prop } from "vue-property-decorator";
+import { defineComponent, PropType } from "vue";
 import PlanCard from "../planCard/planCard.vue";
-import { MessageService } from "vue-mf-module";
 
-@Component({
+export default defineComponent({
+  name: 'planList',
+  props: {
+    plans: {
+      type: Array as PropType<server.Plan[]>,
+    },
+    plansGroupRoot: {
+      type: Object as PropType<server.Group>,
+      default: {}
+    },
+    loggedIn: {
+      type: Boolean
+    }
+  },
   components: {
     PlanCard
+  },
+  setup(props, { emit }) {
+
+    function selectPlan(value: server.Plan) {
+      emit('selectPlan', value)
+    }
+
+    return { 
+      selectPlan,
+     }
   }
-})
-export default class PlanList extends Vue {
-  @Prop({ required: true })
-  plans!: server.Plan[];
+  })
 
-  @Prop({default:{}})
-  plansGroupRoot!: server.Group;
-
-  @Prop()
-  loggedIn!: boolean;
-
-  selectPlan(value: server.Plan | null) {
-    this.$emit('selectPlan', value)
-  }
-}

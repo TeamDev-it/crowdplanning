@@ -1,112 +1,127 @@
 import Component from "vue-class-component";
-import Vue from "vue";
+import Vue, { computed, defineComponent, getCurrentInstance, onMounted, onUnmounted, PropType, ref, watch } from "vue";
 import { store } from "@/store";
 import { Prop, Watch } from "vue-property-decorator";
-import { groupsService } from "@/services/groupsService";
 
-@Component({})
-export default class CrowdplanningHeader extends Vue {
-  @Prop({})
-  currentUser!: server.Myself | null;
+export default defineComponent({
+  name: 'crowdplanningHeader',
+  props: {
+    currentUser: {
+      type: Object as PropType<server.Myself>,
+    },
+    group: {
+      type: Object as PropType<server.Group | null>,
+    }
+  },
+  setup(props, { emit }) {
 
-  @Prop()
-  group?: server.Group | null;
-  noGroups: boolean = false;
-  seeMap: boolean = true
-  seeProjects: boolean = this.$route.query.hideProjects ? false : true
-  showListOpened: boolean = false
-  simple: boolean = true
-  fromIssue: boolean = true
-  visualListOpened: boolean = false
-  expiredPrj: boolean = true
+    const route = getCurrentInstance()!.proxy.$route
 
-  get searchedValue(): string {
-    return store.getters.crowdplanning.getSearchedValue();
-  }
-  set searchedValue(value: string) {
-    store.actions.crowdplanning.setSearchedValue(value);
-  }
+    const noGroups = ref<boolean>(false);
+    const seeMap = ref<boolean>(true)
+    const seeProjects = ref<boolean>(route.query.hideProjects ? false : true)
+    const showListOpened = ref<boolean>(false)
+    const simple = ref<boolean>(true)
+    const fromIssue = ref<boolean>(true)
+    const visualListOpened = ref<boolean>(false)
+    const expiredPrj = ref<boolean>(true)
 
-  @Watch("seeProjects", { immediate: true })
-  changeViewProj() {
-    this.$emit("changeViewProj", this.seeProjects)
-  }
-
-  @Watch("seeMap", { immediate: true })
-  changeViewMap() {
-    this.$emit("changeViewMap", this.seeMap)
-  }
-
-  @Watch("fromIssue")
-  changeViewFromIssue() {
-    this.$emit("changeViewFromIssue")
-  }
-
-  @Watch("simple")
-  changeViewSimple() {
-    this.$emit("changeViewSimple")
-  }
-
-  mounted() {
-    if (this.seeProjects)
-      if (window.innerHeight < 800) {
-        this.seeMap = false
-      }
-
-    window.addEventListener("resize", () => {
-      if (this.seeProjects) {
-        if (window.innerHeight < 800) {
-          this.seeMap = false
-        }
-        if (window.innerHeight > 800) {
-          this.seeMap = true
-        }
+    const searchedValue = computed<string>({
+      get() {
+        return store.getters.crowdplanning.getSearchedValue();
+      },
+      set(value: string) {
+        store.actions.crowdplanning.setSearchedValue(value);
       }
     });
-  };
 
-  unmounted() {
-    window.removeEventListener("resize", () => { });
-  };
+    const can = getCurrentInstance()!.proxy.$root.$can
 
-  @Watch("expiredPrj")
-  async noExpiredPrj() {
-    this.$emit("expiredPrj");
+    watch(() => seeProjects, changeViewProj)
+    function changeViewProj() {
+      emit("changeViewProj", seeProjects.value)
+    }
+
+    watch(() => seeMap, changeViewMap)
+    function changeViewMap() {
+      emit("changeViewMap", seeMap.value)
+    }
+
+    watch(() => fromIssue, changeViewFromIssue)
+    function changeViewFromIssue() {
+      emit("changeViewFromIssue")
+    }
+
+    watch(() => simple, changeViewSimple)
+    function changeViewSimple() {
+      emit("changeViewSimple")
+    }
+
+    watch(() => expiredPrj, noExpiredPrj)
+    async function noExpiredPrj() {
+      emit("expiredPrj")
+    }
+    
+    onMounted(mounted)
+    function mounted() {
+      if (seeProjects.value)
+        if (window.innerHeight < 800) {
+          seeMap.value = false
+        }
+  
+      window.addEventListener("resize", () => {
+        if (seeProjects.value) {
+          if (window.innerHeight < 800) {
+            seeMap.value = false
+          }
+          if (window.innerHeight > 800) {
+            seeMap.value = true
+          }
+        }
+      });
+    };
+  
+    onUnmounted(unmounted)
+    function unmounted() {
+      window.removeEventListener("resize", () => { });
+    };
+  
+    function hasPermission(permission: string): boolean {
+      return can(`PLANS.${permission}`);
+    }
+  
+    async function addPlan(): Promise<void> {
+      emit("addPlan");
+    }
+  
+    function toggleOpened() {
+      showListOpened.value = !showListOpened.value;
+    }
+  
+    function toggleMenu() {
+      noGroups.value = !noGroups.value
+      emit('toggleMenu')
+    }
+  
+    function toggleOpened2() {
+      visualListOpened.value = !visualListOpened.value;
+    }
+
+    return {
+      noGroups,
+      seeMap,
+      seeProjects,
+      showListOpened,
+      simple,
+      fromIssue,
+      visualListOpened,
+      expiredPrj,
+      searchedValue,
+      hasPermission,
+      addPlan,
+      toggleOpened,
+      toggleMenu,
+      toggleOpened2
+    }
   }
-
-  hasPermission(permission: string): boolean {
-    return this.$can(`PLANS.${permission}`);
-  }
-
-  async addPlan(): Promise<void> {
-    this.$emit("addPlan");
-  }
-
-  toggleOpened() {
-    let v = this.showListOpened;
-    this.showListOpened = !v;
-  }
-
-
-  toggleMenu() {
-    this.noGroups = !this.noGroups
-    this.$emit('toggleMenu')
-  }
-
-  toggleOpened2() {
-    let v = this.visualListOpened;
-    this.visualListOpened = !v;
-  }
-
-  // filter: string = 'all' || 'simple' || 'fromIssues';
-  // switchFilter() {
-  //   if (this.filter === 'all') {
-  //     this.filter = 'simple'
-  //   } else if (this.filter === 'simple') {
-  //     this.filter = 'fromIssues'
-  //   } else {
-  //     this.filter = 'all'
-  //   }
-  //   this.$emit('switchFilter', this.filter)
-  // }
-}
+})

@@ -1,14 +1,22 @@
-import Component from "vue-class-component";
-import Vue from "vue";
+import { defineComponent } from "vue";
 import { MessageService } from "vue-mf-module";
-import { Prop } from "vue-property-decorator";
 
-@Component({})
-export default class SpidLogin extends Vue {
-  @Prop({ default: true })
-  showText!: boolean;
+export default defineComponent({
+  name: "SpidLogin",
+  props: {
+    showText: {
+      type: Boolean,
+      default: true
+    }
+  },
+  setup(props) {
 
-  askLogin(): void {
-    MessageService.Instance.send("ASK_LOGIN");
+    function askLogin(): void {
+      MessageService.Instance.send("ASK_LOGIN");
+    }
+
+    return {
+      askLogin
+    }
   }
-}
+})

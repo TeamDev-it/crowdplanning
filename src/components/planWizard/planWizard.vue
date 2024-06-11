@@ -57,15 +57,15 @@
           <div class="row">
             <fieldset>
               <small>{{ $t('plans.modal.stato', 'stato') }}*</small>
-              <status-button v-model="plan.state" :showAsSelect="true" @stateChanged="stateChanged" :currentUser="currentUser"></status-button>
+              <status-button v-model="plan.state" :showAsSelect="true" @input="stateChanged" ></status-button>
             </fieldset>
             <fieldset>
               <small>{{ $t('plans.modal.categoria', 'categoria') }}*</small>
-              <group-button v-model="plan.group" :showAsSelect="true" @groupChanged="groupChanged" :currentUser="currentUser"></group-button>
+              <group-button v-model="plan.group" :showAsSelect="true" @input="groupChanged" ></group-button>
             </fieldset>
           </div>
           <componenet
-            :ref="coverMediaGalleryRef"
+            ref="coverMediaGalleryRef"
             :is="mediaGallery"
             :fileLimit="1"
             :type="`${context}-COVER`"
