@@ -5,11 +5,10 @@ import { createVuePlugin } from 'vite-plugin-vue2'
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 import { resolve } from 'path';
 
-var isDevelopment = process.env.NODE_ENV?.toString().trim() == 'development';
 const moduleName = "crowdplanning";
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   server: {
     hmr: false
   },
@@ -18,8 +17,8 @@ export default defineConfig({
     cssInjectedByJsPlugin()
   ],
   define: {
-    "DEVELOPMENT": isDevelopment,
-    "PRODUCTION": !isDevelopment
+    "DEVELOPMENT": mode == "development",
+    "PRODUCTION": mode == "production"
   },
   resolve: {
     alias: {
@@ -27,10 +26,10 @@ export default defineConfig({
     }
   },
   build: {
-    minify: !isDevelopment,
-    // sourcemap: isDevelopment,
+    minify: mode == "production",
+    // sourcemap: mode=="development",
     emptyOutDir: true,
-    outDir: resolve(__dirname, isDevelopment ? "../../main/public/modules/" + moduleName : "dist"),
+    outDir: resolve(__dirname, mode == "development" ? "../../main/public/modules/" + moduleName : "dist"),
     rollupOptions: {
       external: ["vue"],
       output: {
@@ -49,4 +48,4 @@ export default defineConfig({
     },
 
   }
-})
+}))

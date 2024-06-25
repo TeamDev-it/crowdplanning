@@ -1,5 +1,5 @@
-import Vue, { computed, defineComponent, getCurrentInstance, onMounted, ref, watch } from "vue";
-import Component from "vue-class-component";
+import { computed, defineComponent, getCurrentInstance, onMounted, ref, watch } from "vue";
+
 import { MessageService, Projector } from "vue-mf-module";
 import CrowdplanningGroupList from "@/components/crowdplanningGroupsList/crowdplanningGroupsList.vue";
 import CrowdplanningHeader from "@/components/crowdplanningHeader/crowdplanningHeader.vue";
