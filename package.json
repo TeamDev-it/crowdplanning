@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "watch": "export NODE_ENV=development && vite build --watch",
-    "builddev": "export NODE_ENV=development && vite build"
+    "watch": "vite build --watch -m development",
+    "builddev": "vite build -m development"
   },
   "dependencies": {
     "@arcgis/core": "^4.26.5",
