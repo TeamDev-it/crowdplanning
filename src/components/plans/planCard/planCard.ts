@@ -27,23 +27,23 @@ export default defineComponent({
       // required: true
     }
   },
-  setup(props, {emit}) {
-    
+  setup(props, { emit }) {
+
     const coverImage = ref<string | null>(null);
     const loading = ref<boolean>(true);
     const group = ref<server.Group | null>(null);
     const state = ref<server.State | null>(null);
     const states = ref<server.State[]>([]);
     const userRoles = ref<string[]>([])
-  
+
     const likeViewer = computed(() => {
       return CommonRegistry.Instance.getComponent("likeViewer");
     })
-  
+
     const iconCode = computed<string>(() => {
       return Icon.getIconCode(props.value.group.iconCode);
     })
-  
+
     const imagePreview = computed(() => {
       return CommonRegistry.Instance.getComponent("image-preview")
     })
@@ -52,30 +52,30 @@ export default defineComponent({
       if (!coverImage.value) return '';
       return Shared.imageFromString(coverImage.value);
     })
-  
+
     const type = computed<string>(() => {
       return "PLANS";
     })
 
     onMounted(mounted)
     async function mounted() {
-      try{
-      userRoles.value = await MessageService.Instance.ask("USER_ROLES") as string[]
-      }catch(e){}
-  
+      try {
+        userRoles.value = await MessageService.Instance.ask("USER_ROLES") as string[]
+      } catch (e) { /**/ }
+
       if (props.value.coverImageIds?.sharedToken)
         coverImage.value = await Shared.getShared(props.value.coverImageIds.sharedToken);
-  
+
       if (props.value.groupId) {
         group.value = props.value.group;
       }
-  
+
       if (props.value.id) {
         states.value = store.getters.crowdplanning.getStates(props.plansGroupRoot.id ?? props.value.groupId);
       }
-  
-      state.value = states.value?.find(x => x.shortName === props.value.state) as server.State; 
-  
+
+      state.value = states.value?.find(x => x.shortName === props.value.state) as server.State;
+
       loading.value = false;
     }
 
@@ -88,11 +88,11 @@ export default defineComponent({
         return true
       }
     }
-  
+
     async function openLoginModal(): Promise<void> {
       await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as never, {})
     }
-    
+
     return {
       coverImage,
       loading,
@@ -108,6 +108,6 @@ export default defineComponent({
       selectPlan,
       canVote,
       openLoginModal
+    }
   }
-}
 })

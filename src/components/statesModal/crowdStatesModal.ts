@@ -1,7 +1,7 @@
-import Vue, { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref } from "vue";
-import Component from "vue-class-component";
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref } from "vue";
+
 import { IProjectableModel, Projector } from "vue-mf-module/dist/helpers/Projector";
-import { Prop } from "vue-property-decorator";
+
 import ValidateDirective, { MessageService } from 'vue-mf-module';
 import { statesService } from "@/services/statesService";
 import { Drag, Drop } from 'vue-drag-drop';

@@ -9,7 +9,7 @@
     <div v-if="showAsSelect" class="select-cont">
       <div class="select">
         <span class="placeholder" v-if="!value">{{ $t('plans.groupButton.placeholder', 'Scegli una categoria') }}</span>
-        <span v-else-if="value">{{ value.description || value.name }}</span>
+        <span v-else-if="value">{{ value.name || value.description }}</span>
         <i class="ti ti-chevron-down" v-if="!listOpened"></i>
         <i class="ti ti-chevron-up" v-if="listOpened"></i>
       </div>
