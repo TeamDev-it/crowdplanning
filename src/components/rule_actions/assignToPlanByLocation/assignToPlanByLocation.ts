@@ -1,27 +1,25 @@
-import Vue from 'vue';
+import { defineComponent, PropType } from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
 
-@Component
-export default class assignToPlanByLocation extends Vue {
-  declare $t: any;
+export default defineComponent({
+  name: 'assignToPlanByLocation',
+  props: {
+    value: { type: Object as PropType<{ actionRoutingName: string, actionParameters: string }> },
+    editing: { type: Boolean, default: false }
+  },
+  setup(props, { emit }) {
 
-  @Prop()
-  value!: {
-    actionRoutingName: string;
-    actionParameters: string;
-  };
+    function addAction() {
+      if (!props.value)
+        emit('click', {
+          actionRoutingName: 'associateToCrowdplanning',
+          actionParameters: ''
+        });
+    }
 
-  @Prop({ default: false })
-  editing!: boolean;
-
- 
-  addAction() {
-    if (!this.value)
-      this.$emit('click', {
-        actionRoutingName: 'associateToCrowdplanning',
-        actionParameters: ''
-      });
+    return {
+      addAction
+    }
   }
-
-}
+})

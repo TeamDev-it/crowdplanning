@@ -1,11 +1,9 @@
-import Component from "vue-class-component";
-import Vue from "vue";
-import { Prop, Watch } from "vue-property-decorator";
+
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref, watch } from "vue";
 import { CommonRegistry, MessageService } from "vue-mf-module";
 import datePicker from "v-calendar/lib/components/date-picker.umd";
 import dateTime from "../dateTime/dateTime.vue";
 import { plansService } from "@/services/plansService";
-import { CONFIGURATION } from "@/configuration";
 import Autocomplete from "../autocomplete/autocomplete.vue";
 import { store } from "@/store";
 import groupButton from "@/components/groupButton/groupButton.vue";
@@ -42,266 +40,313 @@ type taskType = {
   shortId: number;
 };
 
-
-@Component({
+export default defineComponent({
+  name: 'planModal',
+  props: {
+    editable: {
+      type: Object as PropType<server.Plan>
+    },
+    selectedPlan: {
+      type: Object as PropType<server.Plan>
+    },
+    groups: {
+      type: Object as PropType<server.Group>
+    },
+    newPlan: {
+      type: Object as PropType<server.Plan>
+    }
+  },
   components: {
     datePicker,
     dateTime,
     Autocomplete,
     groupButton,
     statusButton,
+  },
+  setup(props, { emit }) {
+
+    const copyPlan = ref<server.Plan | null>(null);
+    const plan = ref<server.Plan | null>(null);
+    const coverImage = ref<File | null>(null);
+    const tmpVisibleLayer = ref<string>("");
+    const hasClusterParent = ref<boolean>(false);
+    const planMode = ref<planMode>("create");
+    const loading = ref<boolean>(true);
+    const errors = ref<{ [id: string]: string }>({});
+    const featureTest = ref<locations.Feature | null>(null);
+    const context = ref<string>("PLANS")
+
+    const tasksList = ref<taskType[]>([])
+    const toggleType = ref<boolean>(false)
+
+    const tasks = ref<any>([]);
+
+    const can = getCurrentInstance()!.proxy.$root.$can
+    const t = getCurrentInstance()!.proxy.$root.$t
+
+
+    const workspaceId = computed(() => {
+      return props.selectedPlan!.workspaceId
+    })
+
+    const editFeatureMap = computed(() => {
+      return CommonRegistry.Instance.getComponent("editfeature-map");
+    })
+
+    const states = computed<server.State[]>(() => {
+      return Array.from(store.getters.crowdplanning.getStates(props.groups!.id) || []);
+    })
+
+    const taskSelector = computed(() => {
+      return CommonRegistry.Instance.getComponent('task-selector');
+    })
+
+    const esriGeocodingAutocomplete = computed(() => {
+      return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
+    })
+
+    const mediaGallery = computed(() => {
+      return CommonRegistry.Instance.getComponent('media-gallery');
+    })
+
+    watch(() => plan.value?.isPublic, onIsPublicChanged)
+    function onIsPublicChanged() {
+      if (plan.value?.isPublic) {
+        plan.value.rolesCanRate = [];
+        plan.value.rolesCanSeeOthersComments = [];
+        plan.value.rolesCanSeeOthersRatings = [];
+        plan.value.rolesCanWriteComments = [];
+      }
+    }
+
+    function openTaskSelectorModal(): void {
+      MessageService.Instance.send("OPEN_TASK_SELECTOR_MODAL", plan.value)
+    }
+
+    onMounted(mounted)
+    async function mounted() {
+      if (props.editable) {
+        plan.value = props.editable
+      }
+      if (props.newPlan) {
+        plan.value = props.newPlan
+      }
+      if (plan.value?.planType == 'fromIssues') {
+        toggleType.value = true
+      }
+      getPlanTasks()
+
+      copyPlan.value = JSON.parse(JSON.stringify(plan.value));
+    }
+
+    function hasPermission(permission: string): boolean {
+      return can(`PLANS.${permission}`);
+    }
+
+    function back(noMod: boolean) {
+      if (noMod) {
+        Object.assign(plan.value!, copyPlan.value)
+        emit('goback')
+      }
+      else {
+        emit('goback')
+      }
+    }
+
+    function confirmVisibleLayer() {
+      if (!tmpVisibleLayer.value) return;
+
+      plan.value?.visibleLayers.push(tmpVisibleLayer.value);
+
+      tmpVisibleLayer.value = "";
+    }
+
+    function valueChanged(value: server.Plan): void {
+      plan.value = { ...plan.value, parentId: value.id } as server.Plan;
+    }
+
+    function autocompleteFilterFunction(plans: server.Plan[], filteringValue: string): server.Plan[] {
+      return plans.filter(x =>
+        x?.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
+        x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
+    }
+
+    const refs = getCurrentInstance()!.proxy.$refs;
+    const coverMediaGalleryRef = ref('');
+    async function confirm(): Promise<void> {
+
+      if (plan.value && !plan.value?.id) {
+        plan.value.workspaceId = props.groups!.workspaceId;
+        // Save new plan
+        plan.value.id = null;
+        plan.value = await plansService.Set(plan.value.groupId, plan.value);
+      }
+
+      if (!plan.value) {
+        MessageService.Instance.send("ERROR", t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
+        return;
+      }
+      // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
+      if (plan.value.id)
+
+        await (refs[coverMediaGalleryRef.value] as unknown as { save(id: string): Promise<void> })?.save(plan.value.id);
+
+      // await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
+
+      // Update plan with new properties
+      await plansService.Set(plan.value!.groupId, plan.value);
+
+      setPlan(plan.value);
+
+      back(false);
+    }
+
+    async function getPlanTasks() {
+      const groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
+      let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, plan.value?.id)));
+      tasksList.value = tasks.flat();
+      tasks = tasksList.value?.map(t => t.id) as unknown as taskType[][] ?? [];
+    }
+
+    async function remove(): Promise<void> {
+      if (tasksList.value?.length) {
+        await MessageService.Instance.ask('CHANGE_TASKS_REFERENCE', tasks.value, null)
+      }
+
+      await plansService.deletePlan(plan.value!.id!);
+      back(false)
+    }
+
+    async function coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
+      if (file && plan.value) {
+        let cover = null;
+        if (Array.isArray(file)) {
+          cover = file[0];
+        } else {
+          cover = file;
+        }
+
+        const sharableCoverImageToken = await askForSharedFile(cover.id, plan.value.id!, `${context.value}-COVER`) as unknown as ArrayBuffer;
+
+        plan.value.coverImageIds = { originalFileId: cover.id, sharedToken: decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
+
+        if (plan.value.id)
+          //update plan
+          await plansService.Set(plan.value!.groupId, plan.value);
+      }
+    }
+
+    async function coverRemoved(/* file: server.FileAttach */): Promise<void> {
+      if (plan.value) {
+        plan.value.coverImageIds = null;
+
+        if (plan.value.id)
+          //update plan
+          await plansService.Set(plan.value!.groupId, plan.value);
+      }
+    }
+
+    function decodeSharable(buffer: ArrayBuffer): string {
+      const textDecoder = new TextDecoder();
+
+      return textDecoder.decode(buffer);
+    }
+
+    async function filesUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
+      if (file && plan.value) {
+        let attachmentsSharableIds: file.SharedRef[] = [];
+
+        if (plan.value.attachmentsIds !== null)
+          attachmentsSharableIds = [...plan.value.attachmentsIds];
+
+        if (Array.isArray(file)) {
+          for (const f of file) {
+            const shared = await askForSharedFile(f.id, plan.value.id!, context.value) as unknown as ArrayBuffer;
+
+            attachmentsSharableIds.push({ originalFileId: f.id, sharedToken: decodeSharable(shared), contentType: f.contentType } as file.SharedRef);
+          }
+        } else {
+          const shared = await askForSharedFile(file.id, plan.value.id!, context.value) as unknown as ArrayBuffer;
+
+          attachmentsSharableIds.push({ originalFileId: file.id, sharedToken: decodeSharable(shared), contentType: file.contentType } as file.SharedRef);
+        }
+
+        plan.value.attachmentsIds = [...attachmentsSharableIds];
+
+        if (plan.value.id)
+          //update plan
+          await plansService.Set(plan.value!.groupId, plan.value);
+      }
+    }
+
+    function setPlan(plan: server.Plan): void {
+      store.actions.crowdplanning.setPlan(plan);
+    }
+
+    async function askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
+      return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
+    }
+
+    //     private async rollbackplanCreation(id: string): Promise<void> {
+    //         await plansService.deleteplan(id);
+
+    //         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
+    //     }
+
+    function groupChanged(val: server.Group) {
+      plan.value!.group = val;
+      plan.value!.groupId = val.id;
+    }
+
+    function stateChanged(val: string) {
+      plan.value!.state = val;
+    }
+
+
+    watch(() => toggleType.value, ToggleType)
+    function ToggleType() {
+      if (toggleType.value) {
+        plan.value!.planType = 'fromIssues';
+      } else {
+        plan.value!.planType = 'simple';
+        tasksList.value = []
+      }
+    }
+
+    return {
+      copyPlan,
+      plan,
+      coverImage,
+      tmpVisibleLayer,
+      hasClusterParent,
+      planMode,
+      loading,
+      errors,
+      featureTest,
+      context,
+      workspaceId,
+      editFeatureMap,
+      states,
+      taskSelector,
+      esriGeocodingAutocomplete,
+      mediaGallery,
+      tasksList,
+      toggleType,
+      tasks,
+      coverMediaGalleryRef,
+      openTaskSelectorModal,
+      hasPermission,
+      back,
+      confirmVisibleLayer,
+      valueChanged,
+      autocompleteFilterFunction,
+      confirm,
+      remove,
+      coverUploaded,
+      coverRemoved,
+      filesUploaded,
+      groupChanged,
+      stateChanged
+    }
   }
 })
-export default class PlanModal extends Vue {
-  public readonly coverMediaGalleryRef: string = 'cover-media-gallery';
-  public readonly mediaGalleryRef: string = 'media-gallery';
-
-  @Prop()
-  editable?: server.Plan;
-
-  @Prop()
-  selectedPlan?: server.Plan;
-
-  @Prop()
-  groups!: server.Group;
-
-  @Prop()
-  newPlan?: server.Plan
-
-  @Watch('plan.isPublic')
-  onIsPublicChanged() {
-    if (this.plan?.isPublic) {
-      this.plan.rolesCanRate = [];
-      this.plan.rolesCanSeeOthersComments = [];
-      this.plan.rolesCanSeeOthersRatings = [];
-      this.plan.rolesCanWriteComments = [];
-    }
-  }
-  copyPlan: server.Plan | null = null;
-  plan: server.Plan | null = null;
-  coverImage: File | null = null;
-  tmpVisibleLayer = "";
-  hasClusterParent = false;
-  planMode: planMode = "create";
-  loading = true;
-  errors: { [id: string]: string } = {};
-  featureTest: locations.Feature | null = null;
-
-  get workspaceId() {
-    return this.selectedPlan!.workspaceId
-  }
-
-  get editFeatureMap() {
-    return CommonRegistry.Instance.getComponent("editfeature-map");
-  }
-
-  get states(): server.State[] {
-    return Array.from(store.getters.crowdplanning.getStates(this.groups.id) || []);
-  }
-
-  get taskSelector() {
-    return CommonRegistry.Instance.getComponent('task-selector');
-  }
-
-  openTaskSelectorModal(): void {
-    MessageService.Instance.send("OPEN_TASK_SELECTOR_MODAL", this.plan)
-  }
-  async mounted() {
-    if (this.editable) {
-      this.plan = this.editable
-    }
-    if (this.newPlan) {
-      this.plan = this.newPlan
-    }
-    if (this.plan?.planType == 'fromIssues') {
-      this.toggleType = true
-    }
-    this.getPlanTasks()
-
-    this.copyPlan = JSON.parse(JSON.stringify(this.plan));
-  }
-
-  hasPermission(permission: string): boolean {
-    return this.$can(`PLANS.${permission}`);
-  }
-
-  back(noMod: boolean) {
-    if (noMod) {
-      Object.assign(this.plan!, this.copyPlan)
-      this.$emit('goback')
-    }
-    else {
-      this.$emit('goback')
-    }
-  }
-
-
-  context = "PLANS"
-
-  get esriGeocodingAutocomplete() {
-    return CommonRegistry.Instance.getComponent('esri-geocoding-autocomplete');
-  }
-
-  get mediaGallery() {
-    return CommonRegistry.Instance.getComponent('media-gallery');
-  }
-
-  confirmVisibleLayer() {
-    if (!this.tmpVisibleLayer) return;
-
-    this.plan?.visibleLayers.push(this.tmpVisibleLayer);
-
-    this.tmpVisibleLayer = "";
-  }
-
-  valueChanged(value: server.Plan): void {
-    this.plan = { ...this.plan, parentId: value.id } as server.Plan;
-  }
-
-  autocompleteFilterFunction(plans: server.Plan[], filteringValue: string): server.Plan[] {
-    return plans.filter(x =>
-      x?.title.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()) ||
-      x.description.toLocaleLowerCase().includes(filteringValue.toLocaleLowerCase()));
-  }
-
-  async confirm(): Promise<void> {
-
-    if (this.plan && !this.plan?.id) {
-      this.plan.workspaceId = this.groups.workspaceId;
-      // Save new plan
-      this.plan.id = null;
-      this.plan = await plansService.Set(this.plan.groupId, this.plan);
-    }
-
-    if (!this.plan) {
-      MessageService.Instance.send("ERROR", this.$t('plans.modal.error-plans-creation', 'Errore durante la creazione del progetto'));
-      return;
-    }
-    // Non navigo il dizionario perche' devo navigare solo i componenti con ref delle immagini
-    if (this.plan.id)
-      await (this.$refs[this.coverMediaGalleryRef] as unknown as { save(id: string): Promise<void> })?.save(this.plan.id);
-
-    // await (this.$refs[this.mediaGalleryRef] as any)?.save(this.plan.id);
-
-    // Update plan with new properties
-    await plansService.Set(this.plan!.groupId, this.plan);
-
-    this.setPlan(this.plan);
-
-    this.back(false);
-  }
-
-  tasks: any = [];
-  async getPlanTasks() {
-    let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
-    let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, this.plan?.id)));
-    this.tasksList = tasks.flat();
-    this.tasks = this.tasksList?.map(t => t.id) ?? []
-  }
-
-  async remove(): Promise<void> {
-    if (this.tasksList?.length) {
-      await MessageService.Instance.ask('CHANGE_TASKS_REFERENCE', this.tasks, null)
-    }
-
-    await plansService.deletePlan(this.plan!.id!);
-    this.back(false)
-  }
-
-  async coverUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
-    if (file && this.plan) {
-      let cover = null;
-      if (Array.isArray(file)) {
-        cover = file[0];
-      } else {
-        cover = file;
-      }
-
-      const sharableCoverImageToken = await this.askForSharedFile(cover.id, this.plan.id!, `${this.context}-COVER`) as unknown as ArrayBuffer;
-
-      this.plan.coverImageIds = { originalFileId: cover.id, sharedToken: this.decodeSharable(sharableCoverImageToken), contentType: cover.contentType } as file.SharedRef;
-
-      if (this.plan.id)
-        //update plan
-        await plansService.Set(this.plan!.groupId, this.plan);
-    }
-  }
-
-  async coverRemoved(/* file: server.FileAttach */): Promise<void> {
-    if (this.plan) {
-      this.plan.coverImageIds = null;
-
-      if (this.plan.id)
-        //update plan
-        await plansService.Set(this.plan!.groupId, this.plan);
-    }
-  }
-
-  private decodeSharable(buffer: ArrayBuffer): string {
-    const textDecoder = new TextDecoder();
-
-    return textDecoder.decode(buffer);
-  }
-
-  async filesUploaded(file: server.FileAttach | server.FileAttach[]): Promise<void> {
-    if (file && this.plan) {
-      let attachmentsSharableIds: file.SharedRef[] = [];
-
-      if (this.plan.attachmentsIds !== null)
-        attachmentsSharableIds = [...this.plan.attachmentsIds];
-
-      if (Array.isArray(file)) {
-        for (const f of file) {
-          const shared = await this.askForSharedFile(f.id, this.plan.id!, this.context) as unknown as ArrayBuffer;
-
-          attachmentsSharableIds.push({ originalFileId: f.id, sharedToken: this.decodeSharable(shared), contentType: f.contentType } as file.SharedRef);
-        }
-      } else {
-        const shared = await this.askForSharedFile(file.id, this.plan.id!, this.context) as unknown as ArrayBuffer;
-
-        attachmentsSharableIds.push({ originalFileId: file.id, sharedToken: this.decodeSharable(shared), contentType: file.contentType } as file.SharedRef);
-      }
-
-      this.plan.attachmentsIds = [...attachmentsSharableIds];
-
-      if (this.plan.id)
-        //update plan
-        await plansService.Set(this.plan!.groupId, this.plan);
-    }
-  }
-
-  private setPlan(plan: server.Plan): void {
-    store.actions.crowdplanning.setPlan(plan);
-  }
-
-  private async askForSharedFile(fileId: string, id: string, context: string): Promise<string> {
-    return await MessageService.Instance.ask("SHARE_FILE", fileId, `${context}-${id}`);
-  }
-
-  //     private async rollbackplanCreation(id: string): Promise<void> {
-  //         await plansService.deleteplan(id);
-
-  //         MessageService.Instance.send("ERROR", this.$t("plan.creation.error", "Errore durante la creazione della proposta"));
-  //     }
-
-  groupChanged(val: server.Group) {
-    this.plan!.group = val;
-    this.plan!.groupId = val.id;
-  }
-
-  stateChanged(val: string) {
-    this.plan!.state = val;
-  }
-
-  tasksList?: taskType[] = []
-  toggleType: boolean = false
-  @Watch('toggleType')
-  pro() {
-    if (this.toggleType) {
-      this.plan!.planType = 'fromIssues';
-    } else {
-      this.plan!.planType = 'simple';
-      this.tasksList = []
-    }
-  }
-}

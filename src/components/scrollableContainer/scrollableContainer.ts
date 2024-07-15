@@ -1,60 +1,34 @@
-import Component from "vue-class-component";
-import Vue from "vue";
+
+import { defineComponent, getCurrentInstance, onMounted, ref } from "vue";
 
 type ScrollDirection = 'left' | 'right';
 
-@Component
-export default class ScrollableContainer extends Vue {
-  // private scrollAmount = 0;
-  // private unitScrollAmount = 200;
+export default defineComponent({
+  name: 'scrollableContainer',
+  setup() {
 
-  scrollableContent = {} as HTMLDivElement;
-  isRightScrollButtonVisible = false;
-  isLeftScrollButtonVisible = false;
+    const scrollableContent = ref({} as HTMLDivElement);
+    const isRightScrollButtonVisible = ref<boolean>(false);
+    const isLeftScrollButtonVisible = ref<boolean>(false);
 
-  mounted() {
-    this.scrollableContent = this.$refs.scrollableContent as HTMLDivElement;
+    const refs = getCurrentInstance()!.proxy.$refs;
 
-    // this.checkButtonsVisibility();
+    onMounted(mounted)
+    function mounted() {
+      scrollableContent.value = refs.scrollableContent as HTMLDivElement;
+  
+      window.addEventListener('resize', () => {
+        // this.scrollAmount = 0;
+        // this.checkButtonsVisibility()
+      });
+    }
 
-    window.addEventListener('resize', () => {
-      // this.scrollAmount = 0;
-      // this.checkButtonsVisibility()
-    });
+
+    return {
+      scrollableContent,
+      isRightScrollButtonVisible,
+      isLeftScrollButtonVisible,
+      refs
+    }
   }
-
-  // checkButtonsVisibility(): void {
-  //     this.isLeftScrollButtonVisible = this.scrollAmount >= this.unitScrollAmount;
-  //     this.isRightScrollButtonVisible = this.scrollAmount <= this.scrollableContent.scrollWidth - this.scrollableContent.clientWidth;
-  // }
-
-
-
-  // scroll(scrollDirection: ScrollDirection): void {
-  //     if (scrollDirection === "left") {
-  //         this.subtractScrollValue();
-  //         this.scrollableContent.scrollTo({
-  //             top: 0,
-  //             left: this.scrollAmount,
-  //             behavior: "smooth"
-  //         });
-  //     } else {
-  //         this.addScrollValue();
-  //         this.scrollableContent.scrollTo({
-  //             top: 0,
-  //             left: this.scrollAmount,
-  //             behavior: "smooth"
-  //         });
-  //     }
-
-  //     this.checkButtonsVisibility();
-  // }
-
-  // private subtractScrollValue(): void {
-  //     this.scrollAmount -= this.unitScrollAmount;
-  // }
-
-  // private addScrollValue(): void {
-  //     this.scrollAmount += this.unitScrollAmount;
-  // }
-}
+})

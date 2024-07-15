@@ -1,19 +1,16 @@
-import Component from "vue-class-component";
-import Vue from 'vue';
+
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, provide, ref } from 'vue';
 import { InjectReactive, Prop, ProvideReactive, Watch } from "vue-property-decorator";
 import PlanCard from "../plans/planCard/planCard.vue";
 import PlanSummary from "../planSummary/planSummary.vue";
-import CitizenInteraction from "../citizenInteraction/citizenInteraction.vue";
-import { CONFIGURATION } from "@/configuration";
 import { CommonRegistry, MessageService, Projector } from "vue-mf-module";
-import ChildrenPlans from "../childrenPlans/childrenPlans.vue";
 import PlanMap from "../planMap/planMap.vue";
 import moment from "moment";
-import { plansService } from "@/services/plansService";
 
 
 type taskType = {
   id: number;
+  hexId: string;
   parentId: string;
   parentType: string;
   title: string;
@@ -42,182 +39,199 @@ type taskType = {
   shortId: number;
 };
 
-@Component({
+export default defineComponent({
+  name: "planDetail",
+  props: {
+    currentUser: {
+      type: Object as PropType<server.Myself | null>
+    },
+    selectedPlan: {
+      type: Object as PropType<server.Plan | null>
+    },
+    plans: {
+      type: Object as PropType<server.Plan>
+    },
+    loggedIn: {
+      type: Boolean
+    }
+  },
   components: {
     PlanCard,
     PlanSummary,
-    CitizenInteraction,
-    ChildrenPlans,
     PlanMap
+  },
+  setup(props, { emit }) {
+
+    // provide(() => customFields, customFields)
+
+    // @ProvideReactive()
+    // customFields?: any[] = [];
+
+    const liked = ref<boolean>(false)
+    const count = ref<number>(0)
+    const tasksList = ref<taskType[]>([])
+    const type = ref<string>("PLANS");
+    const showpane = ref<'comments' | 'issues'>("comments");
+
+    const can = getCurrentInstance()!.proxy.$root.$can
+
+    const commentSectionOpened = ref<boolean>(false);
+
+    const userRoles = ref<string[]>([])
+
+    const canSeeOthersComments = computed(() => {
+      // TODO: Check if user roles matches rolesCanSeeOthersComments
+      return props.selectedPlan?.rolesCanSeeOthersComments
+    })
+
+    const canWriteComments = computed(() => {
+      return props.selectedPlan?.rolesCanWriteComments
+    })
+
+    const likeButton = computed(() => {
+      return CommonRegistry.Instance.getComponent("likeButton");
+    })
+
+    const taskCardComponent = computed(() => {
+      return CommonRegistry.Instance.getComponent("taskCardComponent");
+    })
+
+    const citizenTaskCardComponent = computed(() => {
+      return CommonRegistry.Instance.getComponent("citizenTaskCardComponent");
+    })
+
+    const planId = computed(() => {
+      return props.selectedPlan!.id;
+    })
+
+    const sharedPreviewComponent = computed(() => {
+      return CommonRegistry.Instance.getComponent('shared-preview');
+    })
+
+    const selectedPlanTitle = computed<string>(() => {
+      return props.selectedPlan!.title
+    })
+
+    const mediaGallery = computed(() => {
+      return CommonRegistry.Instance.getComponent('public-media-gallery');
+    })
+
+    const discussionRoom = computed(() => {
+      return CommonRegistry.Instance.getComponent('discussion-room-crowd')
+    })
+
+    const workspaceId = computed(() => {
+      return props.selectedPlan!.workspaceId
+    })
+
+    onMounted(mounted)
+    async function mounted() {
+      getPlanTasks();
+
+      userRoles.value = await MessageService.Instance.ask("USER_ROLES") as string[]
+
+      if (!canSeeMsg() && !canWriteMsg()) {
+        showpane.value = "issues";
+      }
+    }
+
+    async function getPlanTasks() {
+      let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
+      let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, props.selectedPlan?.id)));
+      tasksList.value = tasks.flat();
+    }
+
+    async function createIssue() {
+      let editor = CommonRegistry.Instance.getComponent("taskEditor");
+      let model = await MessageService.Instance.ask("TASK-MODEL") as any;
+      model.reference = props.selectedPlan!.id
+      let result = (await Projector.Instance.projectAsyncTo(editor as any, model))
+      // await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [result.id], this.selectedPlan!.id!)
+
+      getPlanTasks();
+    }
+
+    async function removeTask(id: string, taskId: any) {
+      await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [taskId], null)
+      getPlanTasks();
+    }
+
+    function date(value: Date, format: string = "L") {
+      return moment(value).format(format)
+    }
+
+    function edit() {
+      back()
+      emit('edit', props.selectedPlan)
+    }
+
+    function openCommentSection(): void {
+      commentSectionOpened.value = true;
+    }
+
+    function closeCommentsSection(): void {
+      commentSectionOpened.value = false;
+    }
+
+    function back() {
+      emit('goback')
+    }
+
+    function hasPermission(permission: string): boolean {
+      return can(`${type.value}.${permission}`);
+    }
+
+    function canVote() {
+      if (props.selectedPlan && (!props.selectedPlan.rolesCanRate.length || props.selectedPlan.rolesCanRate.some((r) => userRoles.value.includes(r)))) {
+        return true
+      }
+    }
+
+    function canSeeMsg() {
+      if (props.selectedPlan && (!props.selectedPlan.rolesCanSeeOthersComments.length || props.selectedPlan.rolesCanSeeOthersComments.some((r) => userRoles.value.includes(r)))) {
+        return true
+      } else return false
+    }
+
+    function canWriteMsg() {
+      if (props.selectedPlan && (!props.selectedPlan.rolesCanWriteComments.length || props.selectedPlan.rolesCanWriteComments.some((r) => userRoles.value.includes(r)))) {
+        return true
+      }
+    }
+
+  async function openLoginModal(): Promise < void> {
+      await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as never, {})
+    }
+
+    return {
+      liked,
+      count,
+      type,
+      tasksList,
+      canSeeOthersComments,
+      canWriteComments,
+      likeButton,
+      taskCardComponent,
+      citizenTaskCardComponent,
+      planId,
+      sharedPreviewComponent,
+      selectedPlanTitle,
+      mediaGallery,
+      discussionRoom,
+      workspaceId,
+      showpane,
+      canSeeMsg,
+      canWriteMsg,
+      openLoginModal,
+      canVote,
+      hasPermission,
+      date,
+      edit,
+      createIssue,
+      removeTask,
+      openCommentSection,
+      closeCommentsSection,
+      back
+    }
   }
 })
-export default class PlanDetail extends Vue {
-
-  @Prop({})
-  currentUser!: server.Myself | null;
-
-  @Prop({ required: true })
-  selectedPlan!: server.Plan | null;
-
-  @Prop()
-  plans?: server.Plan;
-
-  @ProvideReactive()
-  customFields?: any[] = [];
-
-  @Prop()
-  loggedIn!: boolean;
-
-  get canSeeOthersComments() {
-    // TODO: Check if user roles matches rolesCanSeeOthersComments
-    return this.selectedPlan?.rolesCanSeeOthersComments
-  }
-
-  get canWriteComments() {
-    return this.selectedPlan?.rolesCanWriteComments
-  }
-
-  get likeButton() {
-    return CommonRegistry.Instance.getComponent("likeButton");
-  }
-
-  liked: boolean = false
-  count: number = 0
-  async addLike() {
-    const l = this.liked
-    this.liked = !l
-
-    if (l == false) {
-      this.count++
-    }
-
-    if (l == true) {
-      this.count--
-    }
-
-
-  }
-
-  get taskCardComponent() {
-    return CommonRegistry.Instance.getComponent("taskCardComponent");
-  }
-
-  get citizenTaskCardComponent() {
-    return CommonRegistry.Instance.getComponent("citizenTaskCardComponent");
-  }
-
-  tasksList?: taskType[] = [];
-
-  type = "PLANS";
-  showpane: 'comments' | 'issues' = "comments";
-
-  async mounted() {
-    this.getPlanTasks();
-
-    this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
-
-    if (!this.canSeeMsg() && !this.canWriteMsg()) {
-      this.showpane = "issues";
-    }
-  }
-
-  async getPlanTasks() {
-    let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
-    let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, this.selectedPlan?.id)));
-    this.tasksList = tasks.flat();
-  }
-
-  async createIssue() {
-
-    let editor = CommonRegistry.Instance.getComponent("taskEditor");
-    let model = await MessageService.Instance.ask("TASK-MODEL") as any;
-    model.reference = this.selectedPlan!.id
-    let result = (await Projector.Instance.projectAsyncTo(editor as any, model))
-    // await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [result.id], this.selectedPlan!.id!)
-
-    this.getPlanTasks();
-  }
-
-  async removeTask(id: string, taskId: any) {
-    await MessageService.Instance.ask("CHANGE_TASKS_REFERENCE", [taskId], null)
-    this.getPlanTasks();
-  }
-
-
-  date(value: Date, format: string = "L") {
-    return moment(value).format(format)
-  }
-
-  commentSectionOpened = false;
-
-  get planId() {
-    return this.selectedPlan!.id;
-  }
-
-  get sharedPreviewComponent() {
-    return CommonRegistry.Instance.getComponent('shared-preview');
-  }
-
-  
-
-  get selectedPlanTitle(): string {
-    return this.selectedPlan!.title
-  }
-
-  get mediaGallery() {
-    return CommonRegistry.Instance.getComponent('public-media-gallery');
-  }
-
-  get discussionRoom() {
-    return CommonRegistry.Instance.getComponent('discussion-room-crowd')
-  }
-
-  get workspaceId() {
-    return this.selectedPlan!.workspaceId
-  }
-
-  edit() {
-    this.back()
-    this.$emit('edit', this.selectedPlan)
-  }
-
-  openCommentSection(): void {
-    this.commentSectionOpened = true;
-  }
-
-  closeCommentsSection(): void {
-    this.commentSectionOpened = false;
-  }
-
-  back() {
-    this.$emit('goback')
-  }
-
-  hasPermission(permission: string): boolean {
-    return this.$can(`${this.type}.${permission}`);
-  }
-
-  userRoles: string[] = []
-
-  canVote() {
-    if (this.selectedPlan && (!this.selectedPlan.rolesCanRate.length || this.selectedPlan.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
-      return true
-    }
-  }
-
-  canSeeMsg() {
-    if (this.selectedPlan && (!this.selectedPlan.rolesCanSeeOthersComments.length || this.selectedPlan.rolesCanSeeOthersComments.some((r) => this.userRoles.includes(r)))) {
-      return true
-    } else return false
-  }
-
-  canWriteMsg() {
-    if (this.selectedPlan && (!this.selectedPlan.rolesCanWriteComments.length || this.selectedPlan.rolesCanWriteComments.some((r) => this.userRoles.includes(r)))) {
-      return true
-    }
-  }
-
-  async openLoginModal(): Promise<void> {
-    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as never, {})
-  }
-}

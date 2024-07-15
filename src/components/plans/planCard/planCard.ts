@@ -1,91 +1,113 @@
-import Component from "vue-class-component";
-import Vue from "vue";
-import { Prop, Watch } from "vue-property-decorator";
+import { computed, defineComponent, onMounted, PropType, ref } from "vue";
 import { store } from "@/store";
-import { CONFIGURATION } from "@/configuration";
 import { Icon } from "@/utility/Icon";
 import { CommonRegistry, MessageService, Projector } from "vue-mf-module";
 import { Shared } from "@/utility/Shared";
 
-@Component
-export default class PlanCard extends Vue {
+export default defineComponent({
+  name: 'planCard',
+  props: {
+    value: {
+      type: Object as PropType<server.Plan>,
+      required: true
+    },
+    showCommands: {
+      type: Boolean,
+      default: true
+    },
+    selectedPlan: {
+      type: Object as PropType<server.Plan>
+    },
+    plansGroupRoot: {
+      type: Object as PropType<server.Group>,
+      required: true
+    },
+    loggedIn: {
+      type: Boolean,
+      // required: true
+    }
+  },
+  setup(props, { emit }) {
 
-  @Prop()
-  value!: server.Plan;
+    const coverImage = ref<string | null>(null);
+    const loading = ref<boolean>(true);
+    const group = ref<server.Group | null>(null);
+    const state = ref<server.State | null>(null);
+    const states = ref<server.State[]>([]);
+    const userRoles = ref<string[]>([])
 
-  @Prop({ default: true })
-  showCommands!: boolean;
+    const likeViewer = computed(() => {
+      return CommonRegistry.Instance.getComponent("likeViewer");
+    })
 
-  @Prop({ required: true })
-  selectedPlan!: server.Plan
+    const iconCode = computed<string>(() => {
+      return Icon.getIconCode(props.value.group.iconCode);
+    })
 
-  @Prop()
-  plansGroupRoot: server.Group = {} as server.Group;
+    const imagePreview = computed(() => {
+      return CommonRegistry.Instance.getComponent("image-preview")
+    })
 
-  @Prop()
-  loggedIn!: boolean;
+    const CoverImage = computed<string | null>(() => {
+      if (!coverImage.value) return '';
+      return Shared.imageFromString(coverImage.value);
+    })
 
-  coverImage: string | null = null;
-  loading = true;
-  group: server.Group | null = null;
-  state: server.State | null = null;
-  states: server.State[]= [];
+    const type = computed<string>(() => {
+      return "PLANS";
+    })
 
-  get likeViewer() {
-    return CommonRegistry.Instance.getComponent("likeViewer");
-  }
+    onMounted(mounted)
+    async function mounted() {
+      try {
+        userRoles.value = await MessageService.Instance.ask("USER_ROLES") as string[]
+      } catch (e) { /**/ }
 
-  get iconCode(): string {
-    return Icon.getIconCode(this.value.group.iconCode);
-  }
+      if (props.value.coverImageIds?.sharedToken)
+        coverImage.value = await Shared.getShared(props.value.coverImageIds.sharedToken);
 
-  get imagePreview() {
-    return CommonRegistry.Instance.getComponent("image-preview")
-  }
+      if (props.value.groupId) {
+        group.value = props.value.group;
+      }
 
-  async mounted() {
-    try{
-    this.userRoles = await MessageService.Instance.ask("USER_ROLES") as string[]
-    }catch(e){}
+      if (props.value.id) {
+        states.value = store.getters.crowdplanning.getStates(props.plansGroupRoot.id ?? props.value.groupId);
+      }
 
-    if (this.value.coverImageIds?.sharedToken)
-      this.coverImage = await Shared.getShared(this.value.coverImageIds.sharedToken);
+      state.value = states.value?.find(x => x.shortName === props.value.state) as server.State;
 
-    if (this.value.groupId) {
-      this.group = this.value.group;
+      loading.value = false;
     }
 
-    if (this.value.id) {
-      this.states = store.getters.crowdplanning.getStates(this.plansGroupRoot.id ?? this.value.groupId);
+    function selectPlan() {
+      emit('selectPlan', props.value)
     }
 
-    this.state = this.states?.find(x => x.shortName === this.value.state) as server.State; 
+    function canVote() {
+      if (props.value && (!props.value.rolesCanRate.length || props.value.rolesCanRate.some((r) => userRoles.value.includes(r)))) {
+        return true
+      }
+    }
 
-    this.loading = false;
-  }
+    async function openLoginModal(): Promise<void> {
+      await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as never, {})
+    }
 
-  selectPlan() {
-    this.$emit('selectPlan', this.value)
-  }
-
-  get CoverImage(): string | null {
-    if (!this.coverImage) return '';
-    return Shared.imageFromString(this.coverImage);
-  }
-
-  get type(): string {
-    return CONFIGURATION.context;
-  }
-
-  userRoles: string[] = []
-
-  canVote() {
-    if (this.value && (!this.value.rolesCanRate.length || this.value.rolesCanRate.some((r) => this.userRoles.includes(r)))) {
-      return true
+    return {
+      coverImage,
+      loading,
+      group,
+      state,
+      states,
+      likeViewer,
+      iconCode,
+      imagePreview,
+      userRoles,
+      CoverImage,
+      type,
+      selectPlan,
+      canVote,
+      openLoginModal
     }
   }
-
-  async openLoginModal(): Promise<void> {
-    await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as never, {})
-  }
-}
+})

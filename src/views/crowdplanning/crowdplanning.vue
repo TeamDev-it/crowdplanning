@@ -47,7 +47,6 @@
             :center="mapCenter"
             :states="states"
             :plans="filteredPlans"
-            :group="selectedGroup ?? plansGroupRoot"
           />
         </div>
       </div>

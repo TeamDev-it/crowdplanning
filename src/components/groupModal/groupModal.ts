@@ -1,63 +1,71 @@
-import Component from "vue-class-component";
-import Vue from 'vue';
-import { Prop } from "vue-property-decorator";
+import { defineComponent, PropType, ref } from 'vue';
 import { IProjectableModel, MessageService } from "vue-mf-module";
 import { groupsService } from "@/services/groupsService";
 
-@Component
-export default class GroupModal extends Vue {
-  @Prop()
-  value!: IProjectableModel<server.Group>;
-
-  copyValue!: server.Group 
-
-  beforeMount() {
-    this.copyValue = structuredClone(this.value.data);
-  }
-
-  errors: { [id: string]: string } = {};
-  setError(id: string, value: unknown) {
-    Vue.set(this.errors, id, value);
-  }
-
-  async confirm(): Promise<void> {
-    Object.assign(this.value.data, this.copyValue)
-    if (this.value.data && !this.value.data.id) {
-      const createdGroup = await groupsService.Set(this.value.data);
-      if (createdGroup)
-        this.value.resolve(createdGroup);
-    } else {
-      const updatedGroup = await groupsService.Set(this.value.data);
-
-      if (updatedGroup)
-        this.value.resolve(updatedGroup);
+export default defineComponent({
+  name: 'groupModal',
+  props: {
+    value: {
+      type: Object as PropType<IProjectableModel<server.Group>>,
+      required: true
     }
-
-    MessageService.Instance.send("CHANGED_GROUP")
-  }
-
-  close(): void {
-    try {
-      this.value?.reject();
-    } catch {
-      // 
-    }
-
-    this.value.resolve(this.value.data);
-  }
-
-  async deleteGroup(): Promise<void> {
+  },
+  setup(props) {
     
-    await groupsService.deleteGroup(this.value.data.id);
-    Vue.set(this.value.data, 'deleted', true);
-    this.value.resolve(this.value.data);
+    const copyValue = ref<server.Group>(structuredClone(props.value.data));
+    const errors = ref<{ [id: string]: string }>({});
 
-    MessageService.Instance.send("CHANGED_GROUP");
+    function setError(id: string, value: unknown) {
+      Vue.set(errors.value, id, value);
+    }
 
-    try {
-      this.value.resolve(this.value.data);
-    } catch {
-      //
+    async function confirm(): Promise<void> {
+      Object.assign(props.value.data, copyValue.value)
+      if (props.value.data && !props.value.data.id) {
+        const createdGroup = await groupsService.Set(props.value.data);
+        if (createdGroup)
+          props.value.resolve(createdGroup);
+      } else {
+        const updatedGroup = await groupsService.Set(props.value.data);
+  
+        if (updatedGroup)
+          props.value.resolve(updatedGroup);
+      }
+  
+      MessageService.Instance.send("CHANGED_GROUP")
+    }
+
+    function close(): void {
+      try {
+        props.value?.reject();
+      } catch {
+        // 
+      }
+      props.value.resolve(props.value.data);
+    }
+
+    async function deleteGroup(): Promise<void> {
+    
+      await groupsService.deleteGroup(props.value.data.id);
+      Vue.set(props.value.data, 'deleted', true);
+      props.value.resolve(props.value.data);
+  
+      MessageService.Instance.send("CHANGED_GROUP");
+  
+      try {
+        props.value.resolve(props.value.data);
+      } catch {
+        //
+      }
+    }
+  
+    return {
+      copyValue,
+      errors,
+      setError,
+      confirm,
+      close,
+      deleteGroup
     }
   }
-}
+})

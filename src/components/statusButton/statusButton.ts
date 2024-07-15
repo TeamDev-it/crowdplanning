@@ -1,103 +1,141 @@
 import { groupsService } from "@/services/groupsService";
 import { store } from "@/store";
-import Vue from "vue";
-import Component from "vue-class-component";
+import { computed, defineComponent, onMounted, onUnmounted, PropType, Ref, ref } from "vue";
+
 import { MessageService } from "vue-mf-module";
-import { Prop } from "vue-property-decorator";
 
-@Component({})
-export default class StatusButton extends Vue {
 
-  @Prop()
-  value!: server.State;
+export default defineComponent({
+  name: 'statusButton',
+  props: {
+    value: {
+      type: String ,
+      required: false
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
+    showAsSelect: {
+      type: Boolean,
+      default: false
+    },
+    disableRoot: {
+      type: Boolean,
+      default: false
+    },
+    currentUser: {
+      type: Object as PropType<server.Myself>
+    }
+  },
+  setup(props, { emit }) {
 
-  @Prop({ default: false })
-  readonly?: boolean;
 
-  @Prop({ default: false })
-  showAsSelect?: boolean;
+    const plansGroupRoot = ref<server.Group>({} as server.Group);
+    const listOpened = ref<boolean>(false);
+    const groupOpened = ref<boolean>(false);
+    const workspaceId = ref<string>("");
+    const statusName = ref<string>("");
+    const states = ref<server.State[]>([]);
 
-  @Prop({ default: false })
-  disableRoot?: boolean;
+    const el = ref(null) as unknown as Ref<HTMLElement>;
 
-  @Prop()
-  currentUser!: server.Myself;
+    const horizontalPosition = computed(() => {
+      var bb = el.value.getBoundingClientRect();
+      return bb.x;
+    })
 
-  plansGroupRoot: server.Group = {} as server.Group;
-  listOpened: boolean = false;
-  groupOpened: boolean = false;
-  workspaceId = "";
+    const topPosition = computed(() => {
+      var bb = el.value.getBoundingClientRect();
+      return window.innerHeight - bb.y - bb.height < 300 ? bb.y - (plansGroupRoot.value.children.length + 1) * 40 - 10 : bb.y + bb.height;
+    })
 
-  statusName = "";
+    const width = computed(() => {
+      var bb = el.value.getBoundingClientRect();
+      return bb.width;
+    })
 
-  states: server.State[] = [];
+    onMounted(mounted)
+    async function mounted() {
+      MessageService.Instance.subscribe("closeCrowdPopup", () => listOpened.value = false);
+      statusName.value = props.value as unknown as string;
+      let allGroups = [];
 
-  async mounted() {
-    MessageService.Instance.subscribe("closeCrowdPopup", () => this.listOpened = false);
-    this.statusName = this.value as unknown as string;
-    let allGroups = [];
-    
-    allGroups = await groupsService.getGroups();
+      allGroups = await groupsService.getGroups();
 
-    this.plansGroupRoot = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
+      plansGroupRoot.value = allGroups.find(x => !x.parentGroupId) ?? {} as server.Group;
 
-    if (this.plansGroupRoot) {
-      this.states = Array.from(store.getters.crowdplanning.getStates(this.plansGroupRoot.id) || []);
+      if (plansGroupRoot.value) {
+        states.value = Array.from(store.getters.crowdplanning.getStates(plansGroupRoot.value.id) || []);
+      }
+
+      states.value.sort((a, b) => a.id - b.id);
     }
 
-    this.states.sort((a, b) => a.id - b.id);
+    function buildTree(objects: server.Group[]): server.Group[] {
+      const tree: server.Group[] = [];
+      const objectMap: { [key: string]: server.Group } = {};
+
+      objects.forEach(obj => {
+        objectMap[obj.id] = obj;
+        obj.children = [];
+      });
+
+      objects.forEach(obj => {
+        if (obj.parentGroupId !== null && objectMap[obj.parentGroupId]) {
+          objectMap[obj.parentGroupId].children.push(obj);
+        } else {
+          tree.push(obj);
+        }
+      });
+
+      return tree;
+    }
+
+    function toggleOpened() {
+      if (props.readonly) return;
+      MessageService.Instance.send("closeCrowdPopup");
+      listOpened.value = !listOpened.value;
+    }
+
+    function openList() {
+      if (props.readonly) return;
+      MessageService.Instance.send("closeCrowdPopup");
+      listOpened.value = true;
+      MessageService.Instance.subscribe("closeCrowdPopup", () => closeList());
+    }
+
+    function closeList() {
+      listOpened.value = false
+      MessageService.Instance.unsubscribe("closeCrowdPopup");
+    }
+
+    function emitState(val: string) {
+      emit("input", val)
+      listOpened.value = false
+    }
+
+    onUnmounted(unmounted)
+    function unmounted() {
+      MessageService.Instance.unsubscribe("closeCrowdPopup");
+    }
+
+
+    return {
+      plansGroupRoot,
+      listOpened,
+      groupOpened,
+      workspaceId,
+      statusName,
+      states,
+      horizontalPosition,
+      topPosition,
+      width,
+      buildTree,
+      toggleOpened,
+      emitState,
+      openList,
+      closeList
+    }
   }
-
-
-
-  buildTree(objects: server.Group[]): server.Group[] {
-    const tree: server.Group[] = [];
-    const objectMap: { [key: string]: server.Group } = {};
-
-    objects.forEach(obj => {
-      objectMap[obj.id] = obj;
-      obj.children = [];
-    });
-
-    objects.forEach(obj => {
-      if (obj.parentGroupId !== null && objectMap[obj.parentGroupId]) {
-        objectMap[obj.parentGroupId].children.push(obj);
-      } else {
-        tree.push(obj);
-      }
-    });
-
-    return tree;
-  }
-
-  get horizontalPosition() {
-    var bb = this.$el.getBoundingClientRect();
-    return bb.x;
-  }
-
-  get topPosition() {
-    var bb = this.$el.getBoundingClientRect();
-    return window.innerHeight - bb.y - bb.height < 300 ? bb.y - (this.plansGroupRoot.children.length + 1) * 40 - 10 : bb.y + bb.height;
-  }
-
-  get width() {
-    var bb = this.$el.getBoundingClientRect();
-    return bb.width;
-  }
-
-  toggleOpened() {
-    if (this.readonly) return;
-    let listButton = this.listOpened;
-    MessageService.Instance.send("closeCrowdPopup");
-    this.listOpened = !listButton;
-  }
-
-  emitState(val: string) {
-    this.$emit("stateChanged", val)
-  }
-
-  unmounted() {
-    MessageService.Instance.unsubscribe("closeCrowdPopup");
-  }
-
-}
+})
