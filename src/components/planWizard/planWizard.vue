@@ -101,7 +101,7 @@
                 <date-picker v-model="plan.dueDate" 
                 :available-dates="[{start: plan.startDate, end: null}]"
                 @keydown.stop mode="dateTime" timezone="utc">
-                  <template v-slot="{ inputEvents }">
+                  <template v-slot="{ inputEvents }"> 
                     <date-time :value="plan.dueDate" :events="inputEvents"></date-time>
                   </template>
                 </date-picker>

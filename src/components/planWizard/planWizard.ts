@@ -261,7 +261,7 @@ export default defineComponent({
             plan.value!.state = val;
           }
     
-        watch(() => toggleType, ToggleType)
+        watch(() => toggleType.value, ToggleType)
         function ToggleType() {
             if (toggleType.value) {
                 plan.value.planType = 'fromIssues';
