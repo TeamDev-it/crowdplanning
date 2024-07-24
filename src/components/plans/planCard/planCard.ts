@@ -76,8 +76,6 @@ export default defineComponent({
 
       state.value = states.value?.find(x => x.shortName === props.value.state) as server.State;
 
-      console.log(props.value.rolesCanRate, userRoles.value, 'AEEEAEAEAEEAEAE')
-
       loading.value = false;
     }
 
