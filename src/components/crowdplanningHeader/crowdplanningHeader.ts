@@ -11,6 +11,9 @@ export default defineComponent({
     },
     group: {
       type: Object as PropType<server.Group | null>,
+    },
+    states: {
+      type: Array as PropType<server.State[]>,
     }
   },
   setup(props, { emit }) {

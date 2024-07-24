@@ -10,6 +10,7 @@
       @toggleMenu="toggleMenu()"
       @changeViewSimple="changeViewSimple()"
       @changeViewFromIssue="changeViewFromIssue()"
+      :states="states"
     />
     <div class="crowdplanning-content" v-if="!loading" :class="{ noGroups: noGroups }">
       <div class="groups" v-if="!selectedPlan && !addPlanSec && !editPlan">
