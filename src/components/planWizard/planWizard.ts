@@ -71,8 +71,8 @@ export default defineComponent({
             { title: t('plan.wizard-fourth-step', 'Fine'), description: t('plan.wizard-fourth-step.description', 'Crezione progetto conclusa!'), idx: 4, class: 'four' }
         ])
 
-        function closeCrowdPopup() {
-            MessageService.Instance.send("closeCrowdPopup");
+        function closepopups() {
+            MessageService.Instance.send("closepopups");
         }
 
         const states = computed<server.State[]>(() => {
@@ -288,7 +288,7 @@ export default defineComponent({
             toggleType,
             disablePublishButton,
             tasksList,
-            closeCrowdPopup,
+            closepopups,
             close,
             getCurrentStepTitle,
             getCurrentStepDescription,
