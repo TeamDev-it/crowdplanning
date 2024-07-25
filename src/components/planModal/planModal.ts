@@ -313,6 +313,11 @@ export default defineComponent({
       }
     }
 
+
+    function closepopups() {
+      MessageService.Instance.send("closepopups");
+    }
+
     return {
       copyPlan,
       plan,
@@ -346,7 +351,8 @@ export default defineComponent({
       coverRemoved,
       filesUploaded,
       groupChanged,
-      stateChanged
+      stateChanged,
+      closepopups
     }
   }
 })

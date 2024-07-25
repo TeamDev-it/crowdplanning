@@ -4,7 +4,7 @@
       <h3>{{ $t('plan.wizard-create-new-project', 'Crea nuovo progetto') }}</h3>
       <button class="square none" @click="close"><i class="ti ti-x"></i></button>
     </header>
-    <section @scroll="closeCrowdPopup()">
+    <section @scroll="closepopups()">
       <div class="progressBar">
         <div class="bar">
           <div class="outer line">
