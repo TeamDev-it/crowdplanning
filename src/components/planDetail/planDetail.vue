@@ -27,8 +27,8 @@
       </div>
       <div class="right-column" v-if="canSeeMsg() || canWriteMsg() || selectedPlan?.planType == 'fromIssues'">
         <div class="togglebtn">
-          <div v-if="canSeeMsg() || canWriteMsg()" @click="showpane = 'comments'" :class="{ active: showpane == 'comments' }">Commenti</div>
-          <div v-if="selectedPlan?.planType == 'fromIssues'" @click="showpane = 'issues'" :class="{ active: showpane == 'issues' }">Segnalazioni</div>
+          <div v-if="canSeeMsg() || canWriteMsg()" @click="showpane = 'comments'" :class="{ active: showpane == 'comments' }">{{ $t('plans.panel.comments.title', 'Commenti') }}</div>
+          <div v-if="selectedPlan?.planType == 'fromIssues'" @click="showpane = 'issues'" :class="{ active: showpane == 'issues' }">{{ $t('plans.panel.issues.title', 'Segnalazioni') }}</div>
         </div>
         <section :style="{ background: showpane == 'issues' ? 'var(--grey-semidark)' : '' }">
         <div class="comments-section" v-if="(canSeeMsg() || canWriteMsg()) && showpane == 'comments'">
@@ -44,7 +44,7 @@
             :showCommentsCount="true"
             :template="'comments'"
           />
-          <button v-if="!loggedIn" class="log-button" @click="openLoginModal()">Accedi per commentare</button>
+          <button v-if="!loggedIn" class="log-button" @click="openLoginModal()">{{ $t('plans.comments.login', 'Accedi per commentare') }}</button>
         </div>
         <div class="issues-container" v-if="selectedPlan?.planType == 'fromIssues' && showpane == 'issues'">
           <div class="issues-section">

@@ -11,6 +11,9 @@ export default defineComponent({
     },
     group: {
       type: Object as PropType<server.Group | null>,
+    },
+    states: {
+      type: Array as PropType<server.State[]>,
     }
   },
   setup(props, { emit }) {
@@ -37,27 +40,27 @@ export default defineComponent({
 
     const can = getCurrentInstance()!.proxy.$root.$can
 
-    watch(() => seeProjects, changeViewProj)
+    watch(() => seeProjects.value, changeViewProj)
     function changeViewProj() {
       emit("changeViewProj", seeProjects.value)
     }
 
-    watch(() => seeMap, changeViewMap)
+    watch(() => seeMap.value, changeViewMap)
     function changeViewMap() {
       emit("changeViewMap", seeMap.value)
     }
 
-    watch(() => fromIssue, changeViewFromIssue)
+    watch(() => fromIssue.value, changeViewFromIssue)
     function changeViewFromIssue() {
       emit("changeViewFromIssue")
     }
 
-    watch(() => simple, changeViewSimple)
+    watch(() => simple.value, changeViewSimple)
     function changeViewSimple() {
       emit("changeViewSimple")
     }
 
-    watch(() => expiredPrj, noExpiredPrj)
+    watch(() => expiredPrj.value, noExpiredPrj)
     async function noExpiredPrj() {
       emit("expiredPrj")
     }

@@ -26,7 +26,7 @@
       <div class="btn">
         <button class="success list" :class="{ plain: !visualListOpened }" @click="toggleOpened2()" @blur="visualListOpened = false">
           <i class="ti ti-note"></i>
-          <span>{{ $t(`visualwhat`, 'visualizza') }}</span>
+          <span>{{ $t(`crowdplanning.visualwhat`, 'visualizza') }}</span>
           <div class="viewOpt" v-show="visualListOpened">
             <div class="viewCont">
               <div class="view">
@@ -42,7 +42,7 @@
         </button>
         <button class="success list" :class="{ plain: !showListOpened }" @click="toggleOpened()" @blur="showListOpened = false">
           <i class="ti ti-eye"></i>
-          <span>{{ $t(`showwhat`, 'mostra') }}</span>
+          <span>{{ $t(`crowdplanning.showwhat`, 'mostra') }}</span>
           <div class="viewOpt" v-show="showListOpened">
             <div class="viewCont">
               <div class="view">
@@ -56,7 +56,7 @@
             </div>
           </div>
         </button>
-        <button class="square success add" v-if="currentUser && hasPermission('plans.cancreate')" @click="addPlan()">
+        <button :disabled="!states?.length" class="square success add" v-if="currentUser && hasPermission('plans.cancreate')" @click="addPlan()">
           <i class="ti ti-plus"></i>
         </button>
       </div>

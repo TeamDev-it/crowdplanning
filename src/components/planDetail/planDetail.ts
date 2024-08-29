@@ -182,20 +182,50 @@ export default defineComponent({
     }
 
     function canVote() {
-      if (props.selectedPlan && (!props.selectedPlan.rolesCanRate.length || props.selectedPlan.rolesCanRate.some((r) => userRoles.value.includes(r)))) {
-        return true
+      if (props.selectedPlan && !props.selectedPlan.rolesCanRate.length) return true
+
+      if (props.selectedPlan && props.selectedPlan.rolesCanRate.length) {
+        let rolesCanRate = props.selectedPlan.rolesCanRate.map(r => r.trim().toUpperCase())
+
+        for (let ur of userRoles.value) {
+          if (rolesCanRate.includes(ur.trim().toUpperCase())) {
+            return true
+          }
+        }
+
+        return false
       }
     }
 
     function canSeeMsg() {
-      if (props.selectedPlan && (!props.selectedPlan.rolesCanSeeOthersComments.length || props.selectedPlan.rolesCanSeeOthersComments.some((r) => userRoles.value.includes(r)))) {
-        return true
-      } else return false
+      if (props.selectedPlan && !props.selectedPlan.rolesCanSeeOthersComments.length) return true
+
+      if (props.selectedPlan && props.selectedPlan.rolesCanSeeOthersComments.length) {
+        let rolesCanSeeOthersComments = props.selectedPlan.rolesCanSeeOthersComments.map(r => r.trim().toUpperCase())
+
+        for (let ur of userRoles.value) {
+          if (rolesCanSeeOthersComments.includes(ur.trim().toUpperCase())) {
+            return true
+          }
+        }
+
+        return false
+      }
     }
 
     function canWriteMsg() {
-      if (props.selectedPlan && (!props.selectedPlan.rolesCanWriteComments.length || props.selectedPlan.rolesCanWriteComments.some((r) => userRoles.value.includes(r)))) {
-        return true
+      if (props.selectedPlan && !props.selectedPlan.rolesCanWriteComments.length) return true
+
+      if (props.selectedPlan && props.selectedPlan.rolesCanWriteComments.length) {
+        let rolesCanWriteComments = props.selectedPlan.rolesCanWriteComments.map(r => r.trim().toUpperCase())
+
+        for (let ur of userRoles.value) {
+          if (rolesCanWriteComments.includes(ur.trim().toUpperCase())) {
+            return true
+          }
+        }
+
+        return false
       }
     }
 
