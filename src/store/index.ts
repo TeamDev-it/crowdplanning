@@ -4,7 +4,7 @@ import Vue from "vue";
 import { cloneDeep } from 'lodash';
 Vue.use(Vuex);
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+
 export interface CrowdplanningStoreModel {
   // selectedGroup: server.Group | null,
   searchedValue: string,
@@ -14,7 +14,6 @@ export interface CrowdplanningStoreModel {
   plans: server.Plan[],
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CrowdplanningStoreGetters {
   getSearchedValue(): string;
   getStates(groupId: string): server.State[];
@@ -28,7 +27,7 @@ export interface CrowdplanningStoreGetters {
   //  getSelectedPlanId(): string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+
 export interface CrowdplanningStoreActions {
   setSearchedValue(value: string): void;
   setStates(model: { groupId: string, states: server.State[] }): void;
