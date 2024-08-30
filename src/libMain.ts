@@ -6,7 +6,6 @@ import { routes } from "./router";
 
 declare let process: any;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
 
 const menuimage = new URL("@/assets/crowdplanning.png", import.meta.url);
 export default ModuleInitializer({
@@ -34,11 +33,11 @@ export default ModuleInitializer({
     CommonRegistry.Instance.provideComponent(() => import("@/components/planMapToolTip/planMapTooltip.vue"), "maptooltip-PLANS");
 
     MessageService.Instance.subscribe("OPEN_PLANS_STATES_MODAL", (group: server.Group) => {
-      Projector.Instance.projectAsyncTo((() => import('@/components/statesModal/crowdStatesModal.vue')) as never, group)
+      Projector.Instance.projectAsyncTo((() => import('@/components/statesModal/crowdStatesModal.vue')) as any, group)
     })
 
     MessageService.Instance.subscribe("OPEN_TASK_SELECTOR_MODAL", (planId: string) => {
-      Projector.Instance.projectAsyncTo((() => import('@/components/taskSelectorModal/taskSelectorModal.vue')) as never, planId)
+      Projector.Instance.projectAsyncTo((() => import('@/components/taskSelectorModal/taskSelectorModal.vue')) as any, planId)
     })
 
 

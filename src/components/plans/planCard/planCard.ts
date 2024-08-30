@@ -90,7 +90,7 @@ export default defineComponent({
     }
 
     async function openLoginModal(): Promise<void> {
-      await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as never, {})
+      await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/loginModal/loginModal.vue')) as any, {})
     }
 
     return {
