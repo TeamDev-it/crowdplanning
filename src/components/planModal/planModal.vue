@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="content" v-if="plan">
-      <div class="right-column">
+      <div class="right-column" @scroll="closepopups()">
         <template v-if="(plan && plan.description) || !editable">
           <fieldset>
             <small>{{ $t('plans.modal.title', 'titolo') }}*</small>

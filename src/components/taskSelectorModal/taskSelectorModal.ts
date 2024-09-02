@@ -57,7 +57,7 @@ export default defineComponent({
 
         async function getPlanTasks() {
             let groups = await MessageService.Instance.ask<server.Group[]>('GET_TASKS_GROUPS')
-            let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, this.value?.data.id)));
+            let tasks = await Promise.all(groups.map(g => MessageService.Instance.ask<taskType[]>('GET_TASKS_BY_GROUP', g.id, props.value?.data.id)));
             tasksList.value = tasks.map(tasks => tasks.map(t => t.id)).flat() as unknown as string[];
         }
 

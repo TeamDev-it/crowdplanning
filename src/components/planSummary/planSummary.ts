@@ -64,9 +64,19 @@ export default defineComponent({
     }
 
     function canSeeRating() {
-      if (props.plan && (!props.plan.rolesCanSeeOthersRatings.length || props.plan.rolesCanSeeOthersRatings.some((r) => userRoles.value.includes(r)))) {
-        return true
-      } 
+      if (props.plan && !props.plan.rolesCanSeeOthersRatings.length) return true
+
+      if (props.plan && props.plan.rolesCanSeeOthersRatings.length) {
+        let rolesCanSeeOthersRatings = props.plan.rolesCanSeeOthersRatings.map(r => r.trim().toUpperCase())
+
+        for (let ur of userRoles.value) {
+          if (rolesCanSeeOthersRatings.includes(ur.trim().toUpperCase())) {
+            return true
+          }
+        }
+
+        return false
+      }
     }
   
     return {

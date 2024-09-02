@@ -57,7 +57,7 @@ export default defineComponent({
 
     onMounted(mounted)
     async function mounted() {
-      MessageService.Instance.subscribe("closeCrowdPopup", () => listOpened.value = false);
+      MessageService.Instance.subscribe("closepopups", () => listOpened.value = false);
       statusName.value = props.value as unknown as string;
       let allGroups = [];
 
@@ -94,20 +94,22 @@ export default defineComponent({
 
     function toggleOpened() {
       if (props.readonly) return;
-      MessageService.Instance.send("closeCrowdPopup");
+      MessageService.Instance.send("closepopups");
       listOpened.value = !listOpened.value;
     }
 
     function openList() {
       if (props.readonly) return;
-      MessageService.Instance.send("closeCrowdPopup");
+      MessageService.Instance.send("closepopups");
       listOpened.value = true;
-      MessageService.Instance.subscribe("closeCrowdPopup", () => closeList());
+      MessageService.Instance.subscribe("closepopups", () => closeList());
+      MessageService.Instance.subscribe("DOCUMENT_CLICKED", () => closeList());
     }
 
     function closeList() {
       listOpened.value = false
-      MessageService.Instance.unsubscribe("closeCrowdPopup");
+      MessageService.Instance.unsubscribe("closepopups");
+      MessageService.Instance.unsubscribe("DOCUMENT_CLICKED");
     }
 
     function emitState(val: string) {
@@ -117,7 +119,7 @@ export default defineComponent({
 
     onUnmounted(unmounted)
     function unmounted() {
-      MessageService.Instance.unsubscribe("closeCrowdPopup");
+      MessageService.Instance.unsubscribe("closepopups");
     }
 
 
