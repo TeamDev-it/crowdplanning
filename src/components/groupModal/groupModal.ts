@@ -1,4 +1,4 @@
-import { defineComponent, PropType, ref } from 'vue';
+import Vue, { defineComponent, PropType, ref } from 'vue';
 import { IProjectableModel, MessageService } from "vue-mf-module";
 import { groupsService } from "@/services/groupsService";
 

@@ -26,6 +26,12 @@ export default defineComponent({
   setup(props) {
     
     const coverImage = ref<string | null>(null);
+    const userRoles = ref<string[]>([])
+    const type = ref<string>('PLANS');
+    
+    const likeCounter = computed(() => {
+      return CommonRegistry.Instance.getComponent("likeCounter");
+    })
 
     const CoverImage = computed<string | null>(() => {
       if (!coverImage.value)
@@ -47,6 +53,9 @@ export default defineComponent({
 
     onMounted(mounted)
     async function mounted() {
+
+      userRoles.value = await MessageService.Instance.ask("USER_ROLES") as string[]
+
       if (plan.value.coverImageIds?.sharedToken)
         coverImage.value = await Shared.getShared(plan.value.coverImageIds.sharedToken);
     }
@@ -60,13 +69,23 @@ export default defineComponent({
       MessageService.Instance.send("OPEN_CROWDPLAN", plan.value.id);
     }
 
+    function canSeeRating() {
+      if (plan.value && (!plan.value.rolesCanSeeOthersRatings.length || plan.value.rolesCanSeeOthersRatings.some((r) => userRoles.value.includes(r)))) {
+        return true
+      } 
+    }
+
+
     return {
+      type,
+      likeCounter,
       coverImage,
       CoverImage,
       plan,
       imagePreview,
       iconCode,
-      openPlan
+      openPlan,
+      canSeeRating,
     }
   }
 })

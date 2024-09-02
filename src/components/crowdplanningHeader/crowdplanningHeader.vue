@@ -56,7 +56,7 @@
             </div>
           </div>
         </button>
-        <button class="square success add" v-if="currentUser && hasPermission('plans.cancreate')" @click="addPlan()">
+        <button :disabled="!states?.length" class="square success add" v-if="currentUser && hasPermission('plans.cancreate')" @click="addPlan()">
           <i class="ti ti-plus"></i>
         </button>
       </div>

@@ -58,7 +58,8 @@ export default defineComponent({
 
     onMounted(mounted)
     async function mounted() {
-      MessageService.Instance.subscribe("closeCrowdPopup", () => listOpened.value = false)
+      MessageService.Instance.subscribe("closepopups", () => listOpened.value = false)
+      MessageService.Instance.subscribe("DOCUMENT_CLICKED", () => listOpened.value = false)
       let allGroups = [];
   
       allGroups = await groupsService.getGroups();
@@ -79,7 +80,8 @@ export default defineComponent({
   
     onUnmounted(unmounted)
     function unmounted() {
-      MessageService.Instance.unsubscribe("closeCrowdPopup");
+      MessageService.Instance.unsubscribe("closepopups");
+      MessageService.Instance.unsubscribe("DOCUMENT_CLICKED");
     }
   
     function buildTree(objects: server.Group[]): server.Group[] {
@@ -107,20 +109,20 @@ export default defineComponent({
   
     function toggleOpened() {
       if (props.readonly) return;
-      MessageService.Instance.send("closeCrowdPopup");
+      MessageService.Instance.send("closepopups");
       listOpened.value = !listOpened.value;
     }
 
     function openList() {
       if (props.readonly) return;
-      MessageService.Instance.send("closeCrowdPopup");
+      MessageService.Instance.send("closepopups");
       listOpened.value = true;
-      MessageService.Instance.subscribe("closeCrowdPopup", () => closeList());
+      MessageService.Instance.subscribe("closepopups", () => closeList());
     }
 
     function closeList() {
       listOpened.value = false
-      MessageService.Instance.unsubscribe("closeCrowdPopup");
+      MessageService.Instance.unsubscribe("closepopups");
     }
   
     // watch(() => props.value, emitGroup)

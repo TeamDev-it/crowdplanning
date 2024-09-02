@@ -1,0 +1,56 @@
+.plan-map-tooltip {
+    // display: grid;
+    // grid-template-rows: 45% 55%;
+    min-height: 100px;
+    background-color: var(--background-color);
+    width: 300px;
+    padding: 0.5rem 0.6rem;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    max-height: 270px;
+  
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 0.3rem;
+  
+    .image {
+      position: relative;
+      display: flex;
+      overflow: hidden;
+      justify-content: center;
+      height: auto;
+      flex-flow: column;
+    }
+  
+    .card-content {
+      overflow: hidden;
+    }
+    .info {
+      .description {
+        font-size: 0.9em;
+        word-wrap: break-word;
+        text-overflow: ellipsis;
+        height: 63px;
+        line-height: 1.6em;
+        overflow: hidden;
+        text-align: left;
+        position: relative;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .row {
+        align-items: center;
+        justify-content: space-between;
+        flex-flow: row-reverse;
+
+        .goToDetail {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }

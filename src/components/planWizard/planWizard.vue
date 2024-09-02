@@ -4,7 +4,7 @@
       <h3>{{ $t('plan.wizard-create-new-project', 'Crea nuovo progetto') }}</h3>
       <button class="square none" @click="close"><i class="ti ti-x"></i></button>
     </header>
-    <section @scroll="closeCrowdPopup()">
+    <section @scroll="closepopups()">
       <div class="progressBar">
         <div class="bar">
           <div class="outer line">
@@ -101,7 +101,7 @@
                 <date-picker v-model="plan.dueDate" 
                 :available-dates="[{start: plan.startDate, end: null}]"
                 @keydown.stop mode="dateTime" timezone="utc">
-                  <template v-slot="{ inputEvents }">
+                  <template v-slot="{ inputEvents }"> 
                     <date-time :value="plan.dueDate" :events="inputEvents"></date-time>
                   </template>
                 </date-picker>

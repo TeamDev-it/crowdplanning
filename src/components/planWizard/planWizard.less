@@ -184,7 +184,7 @@
             display: flex;
             flex-flow: column;
             gap: 25px;
-            
+
             &.crowdplanning-roles-selector {
               &.disabled {
                 pointer-events: none;
@@ -203,6 +203,10 @@
                 }
               }
             }
+
+            small {
+              z-index: 1
+            }
           }
 
           .opt {
@@ -214,6 +218,13 @@
           }
         }
       }
+    }
+
+    .date-picker-container {
+      width: 100%;
+      display: flex;
+      height: 100%;
+      align-items: center;
     }
   }
 
@@ -258,5 +269,3 @@
     padding: 0 !important;
   }
 }
-
-
