@@ -249,7 +249,6 @@ export interface DataResponse {
 
 // const reISO = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*))(?:Z?|(\+|-)([\d|:]*))?$/;
 const reISO = /(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/;
-// eslint-disable-next-line no-useless-escape
 const reMsAjax = /^\/Date\((d|-|.*)\)[\/|\\]$/;
 
 export function toDate(key: string, value: string) {
