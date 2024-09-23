@@ -79,7 +79,7 @@ setup(props, { emit }) {
 
     if (!props.rootGroup || !props.rootGroup.id) return;
 
-    const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
+    const result = await Projector.Instance.projectAsyncTo(groupModal as any, g);
 
     if (result) {
       changedGroup(result);

@@ -45,7 +45,7 @@ export default defineComponent({
     }
   
     async function edit(): Promise<void> {
-      await Projector.Instance.projectAsyncTo(groupModal as never, props.value);
+      await Projector.Instance.projectAsyncTo(groupModal as any, props.value);
     }
   
     function setSelectedCategory(item: server.Group) {
@@ -56,7 +56,7 @@ export default defineComponent({
       const g = {} as server.Group;
       g.parentGroupId = props.value.id;
       g.iconCode = props.value.iconCode;
-      const result = await Projector.Instance.projectAsyncTo(groupModal as never, g);
+      const result = await Projector.Instance.projectAsyncTo(groupModal as any, g);
   
       if (result) {
         getChildren();

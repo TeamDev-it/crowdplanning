@@ -164,7 +164,7 @@ export default defineComponent({
     }
 
     async function openAuthModal(): Promise<void> {
-      await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/authModal/authModal.vue')) as never, {})
+      await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "plansModal" */ '@/components/authModal/authModal.vue')) as any, {})
     }
 
     async function getData(): Promise<void> {
@@ -253,7 +253,7 @@ export default defineComponent({
         planType: "simple",
       }
 
-      await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "planWizard" */ '@/components/planWizard/planWizard.vue')) as never, editable.value)
+      await Projector.Instance.projectAsyncTo((() => import(/* webpackChunkName: "planWizard" */ '@/components/planWizard/planWizard.vue')) as any, editable.value)
     }
 
     function edit(value: server.Plan | null) {

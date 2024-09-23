@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-namespace */
+
 declare namespace server {
     interface relatedItemOptions {
         relationType: string;
